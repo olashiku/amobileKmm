@@ -1,0 +1,50 @@
+package com.exquisite.a_mobile_kmm.feature.booking.domain.model
+
+data class ToiletBookingModel(
+    val id: Int,
+    val numberOfVipToilet: Int,
+    val toiletEstimate: ToiletEstimate,
+    val companyName: String,
+    val companyEmail: String,
+    val recipientPhoneNumber: String,
+    val numberOfStandardToilet: Int,
+    val bookingDate: String,
+    val startDate: String,
+    val startTime: String,
+    val endDate: String,
+    val endTime: String,
+    val isOverNight: Boolean,
+    val finishingDate: String,
+    val pictureOfEventLocation: String,
+    val pictureOfToiletPlacement: String,
+    val typeOfEvent: String,
+    val extraNote: String,
+    val address: String,
+    val contactPersonEmail: String,
+    val contactPersonName: String,
+    val paymentStatus: String,
+    val serviceStatus: String,
+    val createdAt: String,
+    val updatedAt: String
+)
+
+data class ToiletEstimate(
+    val id: Int,
+    val minimumNumberOfGuest: String,
+    val maximumNumberOfGuest: String,
+    val serviceType: String,
+    val numberOfStandardToilet: String,
+    val numberOfVipToilets: String,
+    val eventStartDate: String,
+    val eventEndDate: String,
+    val eventStartTime: String,
+    val eventEndTime: String,
+    val numberOfDays: Int,
+    val discountGiven: Double,
+    val overnight: Double,
+    val totalNumberOfGuests: Int,
+    val totalAmount: Double,
+    val recommendedNumberOfStandardToilets: Int,
+    val recommendedNumberOfVipToilets: Int,
+    val uniqueRef: String
+)
