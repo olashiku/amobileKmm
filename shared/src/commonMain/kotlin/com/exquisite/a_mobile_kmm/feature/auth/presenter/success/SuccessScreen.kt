@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.exquisite.dripp.core.components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import org.jetbrains.compose.resources.painterResource
 
 @Composable

@@ -1,119 +1,78 @@
 package com.exquisite.a_mobile_kmm
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import com.exquisite.a_mobile_kmm.core.nav.CreatePassword
-import com.exquisite.a_mobile_kmm.core.nav.ForgotPassword
+import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
+import com.exquisite.a_mobile_kmm.core.nav.AuthNav
+import com.exquisite.a_mobile_kmm.core.nav.AuthenticationNavigation
+import com.exquisite.a_mobile_kmm.core.nav.DashboardNav
+import com.exquisite.a_mobile_kmm.core.nav.DashboardNavigation
 import com.exquisite.a_mobile_kmm.core.nav.Login
-import com.exquisite.a_mobile_kmm.core.nav.Onboard
-import com.exquisite.a_mobile_kmm.core.nav.Otp
-import com.exquisite.a_mobile_kmm.core.nav.SignUp
 import com.exquisite.a_mobile_kmm.core.nav.Splash
-import com.exquisite.a_mobile_kmm.core.nav.Success
-import com.exquisite.a_mobile_kmm.core.nav.UploadImage
 import com.exquisite.a_mobile_kmm.core.theme.AMobileTheme
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.create_password.CreatePasswordScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.forgot_password.ForgotPasswordScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.login.LoginScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.onboard.OnboardScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.otp.OtpScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.signup.SignupScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.splash.SplashScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.success.SuccessScreen
-import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.UploadImageScreen
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun App() {
     AMobileTheme {
-        val navController = rememberNavController()
 
-        NavHost(
-            navController = navController,
-            startDestination = Splash
+        val navController = rememberNavController()
+        val scope = rememberCoroutineScope()
+        val dataStore: AMobileDataStore = koinInject()
+
+        var authStartDestination by remember { mutableStateOf<Any?>(null) }
+        var isLoggedIn by remember { mutableStateOf(false) }
+
+        LaunchedEffect(Unit) {
+            dataStore.hasLoggedIn().collect { loggedIn ->
+                println("App: hasLoggedIn: $loggedIn")
+                isLoggedIn = loggedIn ?: false
+            }
+        }
+
+        NavHost(navController = navController,
+            startDestination = if(isLoggedIn) DashboardNav else AuthNav
         ) {
 
-            composable<Splash> {
-                SplashScreen()
-                LaunchedEffect(Unit) {
-                    delay(1000)
-                    navController.navigate(Onboard)
-                }
+            composable<AuthNav> {
+                AuthenticationNavigation(
+                    goToDashboard = {
+                        navController.navigate(DashboardNav){
+                            popUpTo(AuthNav) { inclusive = true }
+                        }
+                    },
+                    startDestination = Splash
+                )
+            }
+            composable<DashboardNav> {
+                DashboardNavigation(
+                    onLogout = {
+                        scope.launch {
+                            // Clear all user data from DataStore
+                            //    dataStore.clearAllData()
+
+                            // Set start destination to Login screen
+                            authStartDestination = Login
+
+                            // Navigate back to Auth screen
+                            navController.navigate(AuthNav) {
+                                popUpTo(DashboardNav) { inclusive = true }
+                            }
+                        }
+                    }
+                )
             }
 
-            composable<Onboard> {
-                OnboardScreen {
-                    navController.navigate(Login)
-                }
-            }
-
-            composable<Login> {
-                LoginScreen({
-
-                }, {
-                    navController.navigate(ForgotPassword)
-                }, {
-                    navController.navigate(SignUp)
-                })
-
-            }
-
-            composable<ForgotPassword> {
-                ForgotPasswordScreen({
-                    navController.popBackStack()
-                }, { uniqueRef,email,from ->
-                    navController.navigate(Otp(uniqueRef, email,from))
-                })
-            }
-
-            composable<SignUp> {
-                SignupScreen({
-                    navController.popBackStack()
-                }, { uniqueRef, email,from ->
-                    navController.navigate(Otp(uniqueRef, email,from))
-                }, {
-
-                })
-            }
-
-            composable<Otp> { backStack ->
-                val otp = backStack.toRoute<Otp>()
-                OtpScreen(otp, {
-                    navController.popBackStack()
-                }, { realOtp ->
-                    navController.navigate(CreatePassword(otp.uniqueRef, realOtp,otp.from))
-                })
-            }
-
-            composable<CreatePassword> { backStack ->
-                val createPassword = backStack.toRoute<CreatePassword>()
-                CreatePasswordScreen(createPassword,{
-                    navController.popBackStack()
-                }, { password ->
-                    navController.navigate(UploadImage(createPassword.uniqueRef,createPassword.realOtp, password))
-                },
-                { from ->
-                    navController.navigate(Success("CreatePassword"))
-                })
-            }
-
-            composable<UploadImage> { backStack ->
-                val uploadImage = backStack.toRoute<UploadImage>()
-                UploadImageScreen(uploadImage,{
-                    navController.popBackStack()
-                }, {
-                    navController.navigate(Success("UploadImage"))
-                })
-            }
-            composable<Success> { backTrack->
-                val successData = backTrack.toRoute<Success>()
-
-                SuccessScreen(successData.from) { navController.popBackStack(Login, false) }
-            }
         }
     }
 }

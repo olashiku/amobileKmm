@@ -31,8 +31,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.nav.CreatePassword
 import com.exquisite.a_mobile_kmm.core.screenUtils.Strings
 import com.exquisite.dripp.core.components.CustomSnackbarHost
-import com.exquisite.dripp.core.components.PrimaryButton
-import com.exquisite.dripp.core.components.ValidatedPasswordTextField
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedPasswordTextField
 import com.exquisite.dripp.core.components.rememberSnackBar
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper

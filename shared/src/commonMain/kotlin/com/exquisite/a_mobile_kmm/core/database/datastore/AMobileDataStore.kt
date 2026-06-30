@@ -26,7 +26,8 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
 
     private companion object {
         val ID_KEY = stringPreferencesKey("id")
-        val FULL_NAME_KEY = stringPreferencesKey("full_name")
+        val FIRST_NAME = stringPreferencesKey("first_name")
+        val LAST_NAME = stringPreferencesKey("last_name")
         val EMAIL_KEY = stringPreferencesKey("email")
         val PHONE_KEY = stringPreferencesKey("phone")
         val TOKEN_KEY = stringPreferencesKey("token")
@@ -59,12 +60,13 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
     }
 
     suspend fun saveUserProfile(
-        id: String, fullName: String, email: String, phone: String,
+        id: String, firstName: String,  lastName: String,email: String, phone: String,
         profilePicture: String, token: String
     ) {
         dataStore.edit { preferences ->
             preferences[ID_KEY] = id
-            preferences[FULL_NAME_KEY] = fullName
+            preferences[FIRST_NAME] = firstName
+            preferences[LAST_NAME] = lastName
             preferences[EMAIL_KEY] = email
             preferences[PHONE_KEY] = phone
             preferences[TOKEN_KEY] = token
@@ -101,7 +103,7 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
 
     suspend fun saveName(name:String){
         dataStore.edit {  preferences ->
-            preferences[FULL_NAME_KEY] = name
+            preferences[FIRST_NAME] = name
         }
     }
 

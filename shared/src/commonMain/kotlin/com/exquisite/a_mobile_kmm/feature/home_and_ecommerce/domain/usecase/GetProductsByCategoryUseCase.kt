@@ -21,11 +21,7 @@ class GetProductsByCategoryUseCase(private val ecommerceRepository: EcommerceRep
                 is Result.Success -> {
                     if (result.data.responseCode == "00") {
                         val productsListModel = result.data.toProductsListModel()
-                        if (productsListModel != null) {
-                            UseCaseResult.Success(productsListModel)
-                        } else {
-                            UseCaseResult.Error("Invalid products response data")
-                        }
+                        UseCaseResult.Success(productsListModel)
                     } else {
                         UseCaseResult.Error(result.data.responseMessage)
                     }

@@ -24,10 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.rememberSnackBar
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProductSearchScreen(
-    viewModel: ProductSearchViewModel,
+    viewModel: ProductSearchViewModel = koinViewModel<ProductSearchViewModel>(),
     modifier: Modifier = Modifier
 ) {
     val productSearchState = viewModel.productSearchState.collectAsStateWithLifecycle()

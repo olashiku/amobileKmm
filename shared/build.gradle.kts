@@ -31,6 +31,9 @@ kotlin {
     
     sourceSets {
         androidMain.dependencies {
+            implementation(compose.preview)
+            implementation(libs.compose.uiToolingPreview)
+            implementation(libs.compose.uiTooling)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.ktor.android)
             implementation(libs.koin.android)
@@ -41,9 +44,8 @@ kotlin {
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
-            implementation(libs.compose.components.resources)
+            implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.peekaboo.ui)
             implementation(libs.peekaboo.image.picker)
@@ -79,9 +81,7 @@ kotlin {
 }
 
 dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
     // Room/KSP dependencies
-    add("kspCommonMainMetadata", libs.room.compiler)
     add("kspAndroid", libs.room.compiler)
     add("kspIosSimulatorArm64", libs.room.compiler)
     add("kspIosArm64", libs.room.compiler)

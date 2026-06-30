@@ -33,7 +33,7 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.deliver_o
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.home.HomeViewModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_listing.ProductListingViewModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_search.ProductSearchViewModel
-import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.search_product.SearchProductViewModel
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_details.ProductDetailsViewModel
 import com.exquisite.a_mobile_kmm.feature.booking.data.repository.BookingRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.booking.domain.repository.BookingRepository
 import com.exquisite.a_mobile_kmm.feature.booking.domain.usecase.GetCleaningBookingUseCase
@@ -112,11 +112,11 @@ import com.exquisite.a_mobile_kmm.feature.address.domain.usecase.GetAddressesUse
 import com.exquisite.a_mobile_kmm.feature.address.domain.usecase.UpdateAddressUseCase
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_form.AddressFormViewModel
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_list.AddressListViewModel
-import com.exquisite.a_mobile_kmm.feature.profile.data.repository.ProfileRepositoryImpl
-import com.exquisite.a_mobile_kmm.feature.profile.domain.repository.ProfileRepository
-import com.exquisite.a_mobile_kmm.feature.profile.domain.usecase.ChangePasswordUseCase
-import com.exquisite.a_mobile_kmm.feature.profile.domain.usecase.EditProfileUseCase
-import com.exquisite.a_mobile_kmm.feature.profile.presenter.profile_form.ProfileFormViewModel
+import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.repository.ProfileRepositoryImpl
+import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.repository.ProfileRepository
+import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.ChangePasswordUseCase
+import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.EditProfileUseCase
+import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile_form.ProfileFormViewModel
 import com.exquisite.a_mobile_kmm.feature.wallet.data.repository.WalletRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.repository.WalletRepository
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.usecase.CompleteTopUpAccountUseCase
@@ -238,7 +238,7 @@ val sharedModule :Module = module {
     single{ HomeViewModel(get()) }
     single{ ProductListingViewModel(get()) }
     single{ ProductSearchViewModel(get()) }
-    single{ SearchProductViewModel(get()) }
+    single{ ProductDetailsViewModel() }
     single{ CheckoutListViewModel(get()) }
     single{ DeliverOptionViewModel(get(), get(), get()) }
     single{ OrderListingViewModel(get()) }

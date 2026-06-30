@@ -38,9 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.LoadingDialog
-import com.exquisite.dripp.core.components.PrimaryButton
-import com.exquisite.dripp.core.components.PrimaryCheckBox
-import com.exquisite.dripp.core.components.ValidatedTextField
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryCheckBox
+import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedTextField
 import com.exquisite.dripp.core.components.rememberSnackBar
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper

@@ -37,8 +37,8 @@ import com.exquisite.a_mobile_kmm.core.screenUtils.Strings
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.LoadingDialog
-import com.exquisite.dripp.core.components.PrimaryButton
-import com.exquisite.dripp.core.components.ValidatedTextField
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedTextField
 import com.exquisite.dripp.core.components.rememberSnackBar
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel

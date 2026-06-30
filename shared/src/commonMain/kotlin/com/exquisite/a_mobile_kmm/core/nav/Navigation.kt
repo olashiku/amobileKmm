@@ -1,8 +1,10 @@
 package com.exquisite.a_mobile_kmm.core.nav
 
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductItem
 import kotlinx.serialization.Serializable
 
 
+// Authentication navigation
 @Serializable
 object Splash
 
@@ -36,4 +38,40 @@ data class  UploadImage(val uniqueRef:String,val otp:String,val password:String)
 
 @Serializable
 data class Success(val from:String)
+
+@Serializable
+object Home
+
+@Serializable
+object Booking
+
+@Serializable
+object Cart
+
+@Serializable
+object Academy
+
+@Serializable
+object Profile
+@Serializable
+object AuthNav
+
+@Serializable
+object DashboardNav
+
+@Serializable
+data class ProductDetails(
+    val productItem: String
+)
+
+@Serializable
+object Search
+
+@Serializable
+data class ProductListing(
+    val categoryId:Int,
+    val categoryName:String
+)
+
+
 

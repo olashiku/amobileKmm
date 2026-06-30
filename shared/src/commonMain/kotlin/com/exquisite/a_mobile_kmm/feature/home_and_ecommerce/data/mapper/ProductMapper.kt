@@ -27,34 +27,24 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.Shippi
  * Maps GetAppProductsResponseDto to AppProductsModel domain model
  * Returns null if any required fields are missing
  */
-fun GetAppProductsResponseDto.toAppProductsModel(): AppProductsModel? {
-    val categoriesList = data?.mapNotNull { it.toDomainModel() } ?: return null
-    return if (categoriesList.isNotEmpty()) {
-        AppProductsModel(categories = categoriesList)
-    } else {
-        null
-    }
+fun GetAppProductsResponseDto.toAppProductsModel(): AppProductsModel {
+    val categoriesList = data?.map { it.toDomainModel() }
+    return AppProductsModel(categories = categoriesList?:emptyList())
+
 }
 
 /**
  * Maps CategoryProductDto to CategoryProduct domain model
  * Returns null if any required fields are missing
  */
-fun CategoryProductDto.toDomainModel(): CategoryProduct? {
-    return if (categoryId != null && category != null && product != null) {
-        val productsList = product.mapNotNull { it.toDomainModel() }
-        if (productsList.isNotEmpty()) {
-            CategoryProduct(
-                categoryId = categoryId,
-                category = category,
-                products = productsList
-            )
-        } else {
-            null
-        }
-    } else {
-        null
-    }
+fun CategoryProductDto.toDomainModel(): CategoryProduct {
+        val productsList = product?.mapNotNull { it.toDomainModel() }
+   return CategoryProduct(
+        categoryId = categoryId?:0,
+        category = category?:"",
+        products = productsList?:emptyList()
+    )
+
 }
 
 /**
@@ -129,15 +119,11 @@ fun CategoryDto.toDomainModel(): Category? {
 
 /**
  * Maps GetProductsByCategoryResponseDto to ProductsListModel domain model
- * Returns null if any required fields are missing
+ * Returns an empty ProductsListModel if data is null or empty
  */
-fun GetProductsByCategoryResponseDto.toProductsListModel(): ProductsListModel? {
-    val productsList = data?.mapNotNull { it.toDomainModel() } ?: return null
-    return if (productsList.isNotEmpty()) {
-        ProductsListModel(products = productsList)
-    } else {
-        null
-    }
+fun GetProductsByCategoryResponseDto.toProductsListModel(): ProductsListModel {
+    val productsList = data?.mapNotNull { it.toDomainModel() } ?: emptyList()
+    return ProductsListModel(products = productsList)
 }
 
 /**

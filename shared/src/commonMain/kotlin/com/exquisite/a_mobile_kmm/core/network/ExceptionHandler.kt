@@ -68,8 +68,10 @@ fun Throwable.handleException(): String {
 
         is IllegalArgumentException -> "Invalid data: ${this.message ?: "Please check your input"}"
         // Generic fallback
+
         else -> {
-            if(this.message?.contains("connect", ignoreCase = true) == true || message?.contains("UnknownHostException") == true){
+            println("exception_message ${this.message}")
+            if(this.message?.contains("connect", ignoreCase = true) == true || message?.contains("UnknownHostException",ignoreCase = true) == true){
                 "Please check your internet connection."
             }else{
                 "Something went wrong. Please try again."

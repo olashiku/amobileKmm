@@ -15,8 +15,10 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
-class LoginUseCase(private val authRepository: AuthRepository,
-                   private val dataStore: AMobileDataStore) {
+class LoginUseCase(
+    private val authRepository: AuthRepository,
+    private val dataStore: AMobileDataStore
+) {
 
     suspend operator fun invoke(
         email: String,
@@ -33,6 +35,7 @@ class LoginUseCase(private val authRepository: AuthRepository,
                     if (result.data.responseCode == "00") {
                         val loginModel = result.data.toLoginModel()
                         if (loginModel != null) {
+                            saveUserDetails(loginModel)
                             UseCaseResult.Success(loginModel)
                         } else {
                             UseCaseResult.Error("Invalid login response data")
@@ -41,6 +44,7 @@ class LoginUseCase(private val authRepository: AuthRepository,
                         UseCaseResult.Error(result.data.responseMessage)
                     }
                 }
+
                 is Result.Exception -> {
                     UseCaseResult.Error(result.exception.handleException())
                 }
@@ -56,5 +60,18 @@ class LoginUseCase(private val authRepository: AuthRepository,
 
     fun getRememberMe(): Flow<Boolean> {
         return dataStore.getRememberMe()
+    }
+
+    suspend fun saveUserDetails(loginModel: LoginModel) {
+        dataStore.saveHasLoggedIn(true)
+        dataStore.saveUserProfile(
+            loginModel.user.id.toString(),
+            loginModel.user.firstName,
+            loginModel.user.lastName,
+            loginModel.user.email,
+            loginModel.user.phone,
+            loginModel.user.profilePictureUrl ?: "",
+            loginModel.authorization
+        )
     }
 }

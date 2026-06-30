@@ -27,8 +27,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
-import com.exquisite.dripp.core.components.LineButton
-import com.exquisite.dripp.core.components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.LineButton
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 

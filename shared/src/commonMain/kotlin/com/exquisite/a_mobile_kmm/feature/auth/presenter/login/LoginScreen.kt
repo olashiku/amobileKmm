@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,10 +39,10 @@ import androidx.compose.ui.unit.dp
 import com.exquisite.a_mobile_kmm.core.screenUtils.Strings
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.LoadingDialog
-import com.exquisite.dripp.core.components.PrimaryButton
-import com.exquisite.dripp.core.components.PrimaryCheckBox
-import com.exquisite.dripp.core.components.ValidatedPasswordTextField
-import com.exquisite.dripp.core.components.ValidatedTextField
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryCheckBox
+import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedPasswordTextField
+import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedTextField
 import com.exquisite.dripp.core.components.rememberSnackBar
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper
@@ -85,7 +84,6 @@ fun LoginScreen(
 
         is LoginState.Success -> {
             snackBar.showSuccess("welcome")
-
             goToDashboard.invoke()
         }
 

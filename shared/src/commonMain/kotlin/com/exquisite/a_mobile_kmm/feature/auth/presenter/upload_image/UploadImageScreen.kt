@@ -47,11 +47,11 @@ import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.nav.UploadImage
 import com.exquisite.a_mobile_kmm.core.camera.rememberCameraLauncher
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
-import com.exquisite.dripp.core.components.AvatarIcon
+import com.exquisite.a_mobile_kmm.core.screen_components.AvatarIcon
 import com.exquisite.dripp.core.components.CustomSnackbarHost
-import com.exquisite.dripp.core.components.LineButtonBlackText
+import com.exquisite.a_mobile_kmm.core.screen_components.LineButtonBlackText
 import com.exquisite.dripp.core.components.LoadingDialog
-import com.exquisite.dripp.core.components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.dripp.core.components.rememberSnackBar
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
