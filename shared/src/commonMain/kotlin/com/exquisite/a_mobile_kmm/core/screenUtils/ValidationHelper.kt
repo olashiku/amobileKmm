@@ -97,6 +97,27 @@ object ValidationHelper {
             )
         }
     }
+
+    fun validateAddress(address: String): ValidationResult {
+        return when {
+            address.isEmpty() -> ValidationResult(
+                false,
+                "Address is required"
+            )
+            address.length < 2 -> ValidationResult(
+                false,
+                "Address must be at least 2 characters"
+            )
+            !address.all { it.isLetter() || it.isWhitespace() } ->
+                ValidationResult(
+                    false,
+                    "Last name can only contain letters"
+                )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
     
     fun validatePhoneNumber(phone: String): ValidationResult {
         val cleanPhone = phone.replace(Regex("[\\s\\-\\(\\)]"), "")

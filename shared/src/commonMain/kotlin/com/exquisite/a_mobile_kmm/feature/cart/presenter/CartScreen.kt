@@ -31,6 +31,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,16 +39,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
+import com.exquisite.a_mobile_kmm.core.screen_components.EmptyState
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold20
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun  CartScreen(modifier: Modifier = Modifier) {
+fun  CartScreen(toCheckout:()->Unit,
+    modifier: Modifier = Modifier, viewModel: CartViewModel = koinViewModel<CartViewModel>()) {
+
+    val state = viewModel.cartState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit){
+        viewModel.getAllItems()
+    }
+
+   val cartItems = state.value
 
     Column(
         modifier = modifier
@@ -74,51 +88,56 @@ fun  CartScreen(modifier: Modifier = Modifier) {
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(20.dp)){
-                repeat(3){
-                    CartItemCard(false,"https://res.cloudinary.com/dc6djvl7n/image/upload/properties_image/1750872176283_Screenshot%202025-06-21%20at%2003.40.03.png","School of hard knocks","5000",4,{},{},{})
+
+            if(cartItems.isEmpty()){
+                EmptyState("Cart Empty!", "You have not added any item to your cart")
+            }else{
+                Column(verticalArrangement = Arrangement.spacedBy(20.dp)){
+
+                    cartItems.forEach{ item ->
+                        CartItemCard(item.productId,item.productImage,item.productName,item.productPrice,item.quantity,viewModel)
+                    }
+
                 }
             }
         }
 
         // Fixed bottom button
-        Button(
-            onClick = { /* Handle checkout */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = OrangeAccent
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = "Proceed to Checkout",
-                style = getPoppinsBold16(),
-                color = Color.White
-            )
+        if(cartItems.isNotEmpty()){
+            Button(
+                onClick = { toCheckout.invoke() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OrangeAccent
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Proceed to Checkout",
+                    style = getPoppinsBold16(),
+                    color = Color.White
+                )
+            }
         }
+
     }
 }
 
 
 private val OrangeAccent   = Color(0xFFFF8C00)
-private val SelectedBorder = Color(0xFF4A9EF5)
 private val SurfaceGray    = Color(0xFFF2F2F2)
-private val TextPrimary    = Color(0xFF1A1A1A)
 
 @Composable
 fun CartItemCard(
-    isSelected: Boolean = false,
+    productId:Int,
     imageUrl: String = "",
     name: String = "",
-    price: String = "",
-    quantity: Int =3,
-    onCheckedChange: (Boolean) -> Unit,
-    onDecrease: () -> Unit,
-    onIncrease: () -> Unit,
-    onDelete: () -> Unit = {},
+    price: Double = 0.0,
+    quantity: Int ,
+    viewModel:CartViewModel,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -134,41 +153,14 @@ fun CartItemCard(
                     .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
 
-                // ── Checkbox ──────────────────────────────────────────────────────────
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(26.dp)
-                        .clip(CircleShape)
-                        .background(if (isSelected) OrangeAccent else Color.Transparent)
-                        .border(2.dp, if (isSelected) OrangeAccent else Color.LightGray, CircleShape)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { onCheckedChange(!isSelected) }
-                ) {
-                    if (isSelected) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Selected",
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
 
-                Spacer(Modifier.width(10.dp))
 
                 // ── Product image ─────────────────────────────────────────────────────
                 Box(
                     modifier = Modifier
                         .size(90.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .then(
-                            if (isSelected)
-                                Modifier.border(2.5.dp, SelectedBorder, RoundedCornerShape(14.dp))
-                            else Modifier
-                        )
+
                 ) {
                     AsyncImage(
                         model = imageUrl,
@@ -189,7 +181,7 @@ fun CartItemCard(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        text = "₦$price",
+                        text = "₦${price.formatBalance()}",
                         style = getPoppinsBold18(),
                         color = Color(0xFF252525)
                     )
@@ -210,11 +202,9 @@ fun CartItemCard(
                             .clip(CircleShape)
                             .background(SurfaceGray)
                             .border(1.dp, Color.LightGray, CircleShape)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                                onClick = onDecrease
-                            )
+                            .clickable {
+                                viewModel.removeItem(productId,1,quantity)
+                            }
                     ) {
                         Text("−",  style = getPoppinsBold20(),
                             color = Color(0xFF252525))
@@ -236,7 +226,9 @@ fun CartItemCard(
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null,
-                                onClick = onIncrease
+                                onClick = {
+                                    viewModel.addItem(productId,name,imageUrl,price,1)
+                                }
                             )
                     ) {
                         Text("+", style = getPoppinsBold20(), color = Color.White)
@@ -253,11 +245,9 @@ fun CartItemCard(
                     .size(28.dp)
                     .clip(CircleShape)
                     .background(Color(0xFFFFEBEE))
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = onDelete
-                    )
+                    .clickable {
+                        viewModel.removeItemById(productId)
+                    }
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,

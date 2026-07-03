@@ -121,10 +121,12 @@ fun CategoryDto.toDomainModel(): Category? {
  * Maps GetProductsByCategoryResponseDto to ProductsListModel domain model
  * Returns an empty ProductsListModel if data is null or empty
  */
-fun GetProductsByCategoryResponseDto.toProductsListModel(): ProductsListModel {
+fun GetProductsByCategoryResponseDto.toProductsListModel(): List<ProductItem> {
     val productsList = data?.mapNotNull { it.toDomainModel() } ?: emptyList()
-    return ProductsListModel(products = productsList)
+    return productsList
 }
+
+
 
 /**
  * Maps CreateOrderResponseDto to CreateOrderModel domain model

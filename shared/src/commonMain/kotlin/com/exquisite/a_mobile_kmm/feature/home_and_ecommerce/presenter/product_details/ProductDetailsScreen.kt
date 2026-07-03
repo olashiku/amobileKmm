@@ -37,7 +37,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButtonWithIcon
@@ -54,7 +59,10 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold24
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsLight16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular24
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
+import com.exquisite.a_mobile_kmm.feature.cart.domain.model.CartModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductItem
+import com.exquisite.dripp.core.components.CustomSnackbarHost
+import com.exquisite.dripp.core.components.rememberSnackBar
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -66,12 +74,16 @@ fun ProductDetailsScreen(
     onBackClick: () -> Unit = {},
     onSearchClick: () -> Unit = {},
     onCartClick: () -> Unit = {},
-    cartItemCount: Int = 2,
     viewModel: ProductDetailsViewModel = koinViewModel<ProductDetailsViewModel>(),
     modifier: Modifier = Modifier
 ) {
+    var quantity by remember {mutableStateOf(1)}
     val pagerState = rememberPagerState(pageCount = { productItem.images.size })
     val scope = rememberCoroutineScope()
+    val (snackBar, snackBarHostState) = rememberSnackBar()
+
+    val cartCount = viewModel.cartState.collectAsStateWithLifecycle().value
+
 
     Box(
         modifier = Modifier.fillMaxSize().background(
@@ -109,18 +121,18 @@ fun ProductDetailsScreen(
                                 contentDescription = "Back",
                             )
                         }
-                        BadgedBox(
-                            badge = {
-                                if (cartItemCount > 0) {
-                                    Badge { Text(text = cartItemCount.toString()) }
+                        if (cartCount > 0) {
+                            BadgedBox(
+                                badge = {
+                                    Badge { Text(text = if (cartCount > 99) "99+" else cartCount.toString()) }
                                 }
-                            }
-                        ) {
-                            IconButton(onClick = onCartClick) {
-                                Image(
-                                    painter = painterResource(Res.drawable.cart_icon),
-                                    contentDescription = "Back",
-                                )
+                            ) {
+                                IconButton(onClick = onCartClick) {
+                                    Image(
+                                        painter = painterResource(Res.drawable.cart_icon),
+                                        contentDescription = "Back",
+                                    )
+                                }
                             }
                         }
                     },
@@ -214,6 +226,7 @@ fun ProductDetailsScreen(
             }
         }
 
+
         // Fixed button at the bottom
         Column(
             modifier = Modifier
@@ -229,20 +242,27 @@ fun ProductDetailsScreen(
                     modifier = modifier.weight(2f),
                     initialQuantity = 1,
                     onQuantityChange = { newQuantity ->
-                        println("Quantity changed to: $newQuantity")
+                        quantity = newQuantity
                     }
                 )
                 PrimaryButtonWithIcon(
                     "Add to Cart",
                     Res.drawable.cart_icon_white,
                     {
-
+                        viewModel.addToCart(CartModel(productItem.product?.id?:0,productItem.product?.name?:"",productItem.images[0],productItem.product?.price?:0.0,quantity))
+                        snackBar.showSuccess("Item added to cart successfully")
                     },
                     modifier = modifier.weight(3f)
                 )
             }
 
         }
+
+        // Snackbar at bottom
+        CustomSnackbarHost(
+            snackbarHostState = snackBarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter).padding(20.dp)
+        )
 
     }
 }

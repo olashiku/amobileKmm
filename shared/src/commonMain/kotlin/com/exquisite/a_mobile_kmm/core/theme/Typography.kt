@@ -247,6 +247,7 @@ fun poppinsTextStyle(
 @Composable fun getPoppinsBold10() = poppinsTextStyle(FontWeight.Bold, 10, 14)
 @Composable fun getPoppinsBold12() = poppinsTextStyle(FontWeight.Bold, 12, 16)
 @Composable fun getPoppinsBold14() = poppinsTextStyle(FontWeight.Bold, 14, 20)
+@Composable fun getPoppinsBold15() = poppinsTextStyle(FontWeight.Bold, 15, 22)
 @Composable fun getPoppinsBold16() = poppinsTextStyle(FontWeight.Bold, 16, 22)
 @Composable fun getPoppinsBold18() = poppinsTextStyle(FontWeight.Bold, 18, 26)
 @Composable fun getPoppinsBold20() = poppinsTextStyle(FontWeight.Bold, 20, 28)

@@ -7,10 +7,10 @@ import kotlinx.serialization.builtins.ListSerializer
 @Serializable
 data class GetProductsByCategoryResponseDto(
     @Serializable(with = ProductListSerializer::class)
-    val data: List<ProductDto>? = null,
+    val data: List<ProductItemDto>? = null,
     val responseMessage: String = "",
     val responseCode: String = ""
 )
 
 object ProductListSerializer :
-    EmptyObjectAsNullSerializer<List<ProductDto>>(ListSerializer(ProductDto.serializer()))
+    EmptyObjectAsNullSerializer<List<ProductItemDto>>(ListSerializer(ProductItemDto.serializer()))

@@ -9,6 +9,7 @@ androidx-core = "1.13.1"
 androidx-espresso = "3.6.0"
 androidx-lifecycle = "2.8.4"
 androidx-testExt = "1.2.1"
+androidx-navigation = "2.8.0-alpha10"
 composeMultiplatform = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.0.21"
@@ -67,6 +68,7 @@ ktor-ios = { module = "io.ktor:ktor-client-ios", version.ref = "ktor" }
 kotlin-date-time = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-date-time" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 
 # Room Libraries
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

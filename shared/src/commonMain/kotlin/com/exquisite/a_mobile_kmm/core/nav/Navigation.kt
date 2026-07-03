@@ -1,6 +1,5 @@
 package com.exquisite.a_mobile_kmm.core.nav
 
-import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductItem
 import kotlinx.serialization.Serializable
 
 
@@ -72,6 +71,15 @@ data class ProductListing(
     val categoryId:Int,
     val categoryName:String
 )
+
+@Serializable
+object CheckoutList
+
+@Serializable
+ object AddressList
+
+@Serializable
+ object AddressForm
 
 
 

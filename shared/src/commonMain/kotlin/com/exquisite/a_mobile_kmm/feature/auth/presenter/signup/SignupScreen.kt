@@ -45,7 +45,6 @@ import com.exquisite.dripp.core.components.rememberSnackBar
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -255,9 +254,4 @@ fun TermsAndConditions(goToTermsAndConditions: () -> Unit, isTermsClicked: (Bool
         )
         Spacer(modifier = Modifier.weight(1f))
     }
-}
-
-@Preview
-@Composable
-fun Display() {
 }

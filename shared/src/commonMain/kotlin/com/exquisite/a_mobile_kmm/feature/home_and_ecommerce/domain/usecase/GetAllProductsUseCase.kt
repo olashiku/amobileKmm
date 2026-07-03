@@ -4,6 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.mapper.toProductsListModel
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductItem
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductsListModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.repository.EcommerceRepository
 import kotlinx.coroutines.Dispatchers
@@ -18,18 +19,14 @@ class GetAllProductsUseCase(private val ecommerceRepository: EcommerceRepository
     suspend operator fun invoke(
         pageNumber: Int,
         pageSize: Int,
-        searchTerm: String
-    ): Flow<UseCaseResult<ProductsListModel>> {
+        searchTerm: String?
+    ): Flow<UseCaseResult< List<ProductItem>>> {
         return ecommerceRepository.getAllProducts(pageNumber, pageSize, searchTerm).map { result ->
             when (result) {
                 is Result.Success -> {
                     if (result.data.responseCode == "00") {
                         val productsListModel = result.data.toProductsListModel()
-                        if (productsListModel != null) {
-                            UseCaseResult.Success(productsListModel)
-                        } else {
-                            UseCaseResult.Error("Invalid products response data")
-                        }
+                        UseCaseResult.Success(productsListModel)
                     } else {
                         UseCaseResult.Error(result.data.responseMessage)
                     }

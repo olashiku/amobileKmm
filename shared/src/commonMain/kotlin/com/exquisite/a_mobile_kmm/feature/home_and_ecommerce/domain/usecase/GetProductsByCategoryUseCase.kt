@@ -4,6 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.mapper.toProductsListModel
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductItem
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductsListModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.repository.EcommerceRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.map
 
 class GetProductsByCategoryUseCase(private val ecommerceRepository: EcommerceRepository) {
 
-    suspend operator fun invoke(categoryId: Int): Flow<UseCaseResult<ProductsListModel>> {
+    suspend operator fun invoke(categoryId: Int): Flow<UseCaseResult<List<ProductItem>>> {
         return ecommerceRepository.getProductsByCategory(categoryId).map { result ->
             when (result) {
                 is Result.Success -> {

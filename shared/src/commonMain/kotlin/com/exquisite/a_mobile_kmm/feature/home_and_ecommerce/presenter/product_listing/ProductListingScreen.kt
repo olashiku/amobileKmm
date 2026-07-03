@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -63,7 +64,6 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.Produc
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductsListModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.home.ProdItem
 import com.exquisite.dripp.core.components.CustomSnackbarHost
-import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -80,31 +80,39 @@ fun ProductListingScreen(
     viewModel: ProductListingViewModel = koinViewModel<ProductListingViewModel>(),
     modifier: Modifier = Modifier
 ) {
-
     val productListingState = viewModel.productListingState.collectAsStateWithLifecycle()
     val (snackBar, snackBarHostState) = rememberSnackBar()
-    var productList  by remember { mutableStateOf<ProductsListModel?>(null) }
+    var productList  by remember(categoryId) { mutableStateOf<List<ProductItem>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
     val cartItemCount = 0
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(categoryId) {
         viewModel.loadProductsByCategory(categoryId)
     }
+
+     DisposableEffect(categoryId){
+         onDispose{
+             viewModel.clearState()
+         }
+     }
 
 
     when (val state = productListingState.value) {
         is ProductListingState.Idle -> {
-            viewModel.clearState()
+            isLoading = false
         }
 
         is ProductListingState.Loading -> {
-            LoadingDialog(true)
+            isLoading = true
         }
 
         is ProductListingState.Success -> {
+            isLoading = false
             productList = state.data
         }
 
         is ProductListingState.Error -> {
+            isLoading = false
             snackBar.showError("Error: ${state.message}")
         }
     }
@@ -115,58 +123,64 @@ fun ProductListingScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Column {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = categoryName,
-                        style = getPoppinsSemiBold18(),
-                        color = Color(0xFF252525),
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Image(
-                            painter = painterResource(Res.drawable.back_arrow),
-                            contentDescription = "Back",
+            Column {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = categoryName,
+                            style = getPoppinsSemiBold18(),
+                            color = Color(0xFF252525),
                         )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onSearchClick) {
-                        Image(
-                            painter = painterResource(Res.drawable.search_icon),
-                            contentDescription = "searchIcon",
-                        )
-                    }
-                    BadgedBox(
-                        badge = {
-                            if (cartItemCount > 0) {
-                                Badge { Text(text = cartItemCount.toString()) }
-                            }
-                        }
-                    ) {
-                        IconButton(onClick = onCartClick) {
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
                             Image(
-                                painter = painterResource(Res.drawable.cart_icon),
-                                contentDescription = "cartIcon",
+                                painter = painterResource(Res.drawable.back_arrow),
+                                contentDescription = "Back",
                             )
                         }
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFFFFFF), // light gray background
-                ),
-            )
-            // Orange bottom divider
-            HorizontalDivider(
-                thickness = 2.dp,
-                color = Color(0xFFFFA500),
-            )
+                    },
+                    actions = {
+                        IconButton(onClick = onSearchClick) {
+                            Image(
+                                painter = painterResource(Res.drawable.search_icon),
+                                contentDescription = "searchIcon",
+                            )
+                        }
+                        BadgedBox(
+                            badge = {
+                                if (cartItemCount > 0) {
+                                    Badge { Text(text = cartItemCount.toString()) }
+                                }
+                            }
+                        ) {
+                            IconButton(onClick = onCartClick) {
+                                Image(
+                                    painter = painterResource(Res.drawable.cart_icon),
+                                    contentDescription = "cartIcon",
+                                )
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFFFFFFFF), // light gray background
+                    ),
+                )
+                // Orange bottom divider
+                HorizontalDivider(
+                    thickness = 2.dp,
+                    color = Color(0xFFFFA500),
+                )
+            }
+            Spacer(modifier = modifier.height(22.dp))
+            Column(modifier = modifier.padding(horizontal = 20.dp)){
+                if (isLoading) {
+                    ProductListGridSkeleton(itemCount = 6)
+                } else {
+                    ProductListGrid(productList, onProductClick)
+                }
+            }
         }
-
-        Spacer(modifier = modifier.height(22.dp))
-        ProductListGrid(productList!!,onProductClick)
-
 
         // Snackbar at bottom
         CustomSnackbarHost(
@@ -180,18 +194,18 @@ fun ProductListingScreen(
 
 @Composable
 private fun ProductListGrid(
-    productListModel: ProductsListModel,
+    productItem: List<ProductItem>,
     onProductClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = modifier.height(200.dp),
-        horizontalArrangement = Arrangement.spacedBy(50.dp),
+        modifier = modifier.wrapContentHeight(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(productListModel.products.size) { index ->
-         //   ProdItem(getCategoryProduct = onProductClick,product = productListModel.products[index])
+        items(productItem.size) { index ->
+            ProdItem(getCategoryProduct = onProductClick,product = productItem[index])
 
         }
     }

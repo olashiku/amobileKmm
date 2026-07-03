@@ -8,6 +8,7 @@ import amobilekmm.shared.generated.resources.notification_icon
 import amobilekmm.shared.generated.resources.settings_icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,14 +19,17 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -50,13 +54,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
+import com.exquisite.a_mobile_kmm.core.screenUtils.getTimeBasedGreeting
 import com.exquisite.a_mobile_kmm.core.screen_components.AvatarIcon
 import com.exquisite.a_mobile_kmm.core.screen_components.Banner
 import com.exquisite.a_mobile_kmm.core.screen_components.EmptyState
 import com.exquisite.a_mobile_kmm.core.screen_components.LinerBackground
 import com.exquisite.a_mobile_kmm.core.screen_components.MenuItem
+import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium16
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold20
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CategoryProduct
@@ -67,24 +74,32 @@ import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.rememberSnackBar
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.vectorResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    getCategoryProduct:(String)->Unit,
-    goToProductListing:(Int,String)->Unit,
+    goToSearchDialog: () -> Unit = {},
+    goToCartScreen: () -> Unit = {},
+    getCategoryProduct: (String) -> Unit,
+    goToProductListing: (Int, String) -> Unit,
     viewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
-    modifier: Modifier = Modifier
+    modifier : Modifier = Modifier
 ) {
-    val homeState = viewModel.homeState.collectAsStateWithLifecycle()
+
     val (snackBar, snackBarHostState) = rememberSnackBar()
+
+    // states
+    val homeState = viewModel.homeState.collectAsStateWithLifecycle()
+    val cartState = viewModel.cartState.collectAsStateWithLifecycle()
+    val customerNameState = viewModel.customerName.collectAsStateWithLifecycle()
+    val profilePictureState = viewModel.profilePicture.collectAsStateWithLifecycle()
+
 
 
     val dashboardMenu = getDashboardModel()
-    var productsListing by remember {mutableStateOf(listOf<CategoryProduct>())}
+    var productsListing by remember { mutableStateOf(listOf<CategoryProduct>()) }
 
-    var isLoading by remember {mutableStateOf(false)}
+    var isLoading by remember { mutableStateOf(false) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -92,7 +107,7 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
         viewModel.loadProducts()
     }
 
@@ -100,13 +115,16 @@ fun HomeScreen(
         is HomeState.Idle -> {
             isLoading = false
         }
+
         is HomeState.Loading -> {
             isLoading = true
         }
+
         is HomeState.Success -> {
             isLoading = false
             productsListing = state.data.categories
         }
+
         is HomeState.Error -> {
             isLoading = false
             snackBar.showError("Error: ${state.message}")
@@ -135,16 +153,34 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
-                    AvatarIcon(50.dp, vectorResource(Res.drawable.avatar_line))
+                    println("profile_image___"+profilePictureState.value)
+                    if(profilePictureState.value.isEmpty()){
+                        AvatarIcon(50.dp, vectorResource(Res.drawable.avatar_line))
+                    }else {
+                        AsyncImage(
+                            model = profilePictureState.value,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = modifier
+                                .size(50.dp)
+                                .clip(CircleShape)
+                                .border(
+                                    1.dp,
+                                    LocalColorsPalette.current.borderColor,
+                                    CircleShape
+                                )
+                        )
+                    }
+
                     Spacer(modifier = Modifier.width(10.dp))
                     Column {
                         Text(
-                            text = "Good Morning",
+                            text = getTimeBasedGreeting(),
                             style = MaterialTheme.typography.titleSmall
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Oluwayemisi Oguntayo",
+                            text = customerNameState.value,
                             style = getPoppinsSemiBold18()
                         )
                     }
@@ -153,10 +189,35 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(Res.drawable.cart_icon),
-                        contentDescription = "cart"
-                    )
+                    Box {
+                        Image(
+                            painter = painterResource(Res.drawable.cart_icon),
+                            contentDescription = "cart",
+                            modifier = Modifier.clickable {
+                                goToCartScreen.invoke()
+                            }
+                        )
+                        if (cartState.value > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = 6.dp, y = (-6).dp)
+                                    .background(Color.Red, shape = CircleShape)
+                                    .padding(0.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = if (cartState.value > 99) "99+" else cartState.value.toString(),
+                                    color = Color.White,
+                                    style = getPoppinsSemiBold12(),
+                                    modifier = Modifier.padding(0.dp)
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    // TODO:  implement this  later
                     Image(
                         painter = painterResource(Res.drawable.notification_icon),
                         contentDescription = "notifications"
@@ -168,7 +229,9 @@ fun HomeScreen(
 
             // Search and Settings Section
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable {
+                    goToSearchDialog.invoke()
+                },
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 LinerBackground(modifier = Modifier.weight(1f)) {
@@ -247,9 +310,9 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            if(isLoading){
+            if (isLoading) {
                 ProductListingShimmer()
-            }else {
+            } else {
                 if (productsListing.isEmpty()) {
                     EmptyState("No Product!", "Products would be available soon")
                 } else {
@@ -274,8 +337,8 @@ fun HomeScreen(
 @Composable
 fun ProductListing(
     productCategory: List<CategoryProduct>,
-    getCategoryProduct:(String)->Unit,
-    goToProductListing: (Int,String) -> Unit,
+    getCategoryProduct: (String) -> Unit,
+    goToProductListing: (Int, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -283,15 +346,19 @@ fun ProductListing(
         verticalArrangement = Arrangement.spacedBy(32.dp)
     ) {
         productCategory.forEach { category ->
-            ProductGrid(goToProductListing = goToProductListing,getCategoryProduct = getCategoryProduct,category = category)
+            ProductGrid(
+                goToProductListing = goToProductListing,
+                getCategoryProduct = getCategoryProduct,
+                category = category
+            )
         }
     }
 }
 
 @Composable
 fun ProductGrid(
-    goToProductListing: (Int,String) -> Unit,
-    getCategoryProduct:(String)->Unit,
+    goToProductListing: (Int, String) -> Unit,
+    getCategoryProduct: (String) -> Unit,
     category: CategoryProduct,
     modifier: Modifier = Modifier
 ) {
@@ -324,7 +391,10 @@ fun ProductGrid(
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(category.products.size) { index ->
-                ProdItem(getCategoryProduct = getCategoryProduct,product = category.products[index])
+                ProdItem(
+                    getCategoryProduct = getCategoryProduct,
+                    product = category.products[index]
+                )
             }
         }
     }
@@ -332,7 +402,7 @@ fun ProductGrid(
 
 @Composable
 fun ProdItem(
-    getCategoryProduct:(String)->Unit,
+    getCategoryProduct: (String) -> Unit,
     product: ProductItem,
     modifier: Modifier = Modifier
 ) {
@@ -341,14 +411,14 @@ fun ProdItem(
             .width(169.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Color(0xFFFEF9F2))
-            .clickable{
-                getCategoryProduct( NavigationUtils.encodeObject(product))
+            .clickable {
+                getCategoryProduct(NavigationUtils.encodeObject(product))
             }
     ) {
         // Product Image
         AsyncImage(
             model = product.images.firstOrNull() ?: "",
-            contentDescription = product.product?.name?:"",
+            contentDescription = product.product?.name ?: "",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
@@ -363,7 +433,7 @@ fun ProdItem(
                 .padding(horizontal = 12.dp, vertical = 12.dp)
         ) {
             Text(
-                text = product.product?.name?:"",
+                text = product.product?.name ?: "",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF716F6D),
@@ -405,10 +475,4 @@ private fun ServicesGrid(
             MenuItem(services[index])
         }
     }
-}
-
-@Preview
-@Composable
-fun Display() {
-    HomeScreen({},{ _,_ -> })
 }

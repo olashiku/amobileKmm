@@ -32,9 +32,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
-            implementation(libs.compose.uiToolingPreview)
-            implementation(libs.compose.uiTooling)
-            implementation(libs.compose.uiToolingPreview)
+            implementation(compose.uiTooling)
             implementation(libs.ktor.android)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
@@ -45,8 +43,9 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+
             implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.androidx.navigation.compose)
             implementation(libs.peekaboo.ui)
             implementation(libs.peekaboo.image.picker)
             implementation(libs.kotlin.date.time)

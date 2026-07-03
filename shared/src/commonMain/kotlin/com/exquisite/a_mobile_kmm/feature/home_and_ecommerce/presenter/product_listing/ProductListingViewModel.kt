@@ -18,11 +18,13 @@ class ProductListingViewModel(private val getProductsByCategoryUseCase: GetProdu
             _productListingState.value = ProductListingState.Loading
             getProductsByCategoryUseCase.invoke(categoryId).collect { response ->
                 when (response) {
-                    is UseCaseResult.Success ->
+                    is UseCaseResult.Success -> {
                         _productListingState.value = ProductListingState.Success(response.data)
+                    }
 
-                    is UseCaseResult.Error ->
+                    is UseCaseResult.Error -> {
                         _productListingState.value = ProductListingState.Error(response.message)
+                    }
                 }
             }
         }

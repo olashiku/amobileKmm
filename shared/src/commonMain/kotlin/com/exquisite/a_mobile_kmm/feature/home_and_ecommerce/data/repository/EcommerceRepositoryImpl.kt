@@ -30,7 +30,7 @@ class EcommerceRepositoryImpl(private val httpClient: HttpClient) : EcommerceRep
 
     override suspend fun getProductsByCategory(categoryId: Int): Flow<Result<GetProductsByCategoryResponseDto>> {
         return safeApiCall {
-            httpClient.get("api/v1/product/get_products_by_category") {
+            httpClient.get("api/v1/product/get_products_by_category_with_images") {
                 parameter("categoryId", categoryId)
             }
         }
@@ -39,13 +39,15 @@ class EcommerceRepositoryImpl(private val httpClient: HttpClient) : EcommerceRep
     override suspend fun getAllProducts(
         pageNumber: Int,
         pageSize: Int,
-        searchTerm: String
+        searchTerm: String?
     ): Flow<Result<GetProductsByCategoryResponseDto>> {
         return safeApiCall {
             httpClient.get("api/v1/product/get_all_products") {
                 parameter("pageNumber", pageNumber)
                 parameter("pageSize", pageSize)
-                parameter("searchTerm", searchTerm)
+                if(searchTerm != null){
+                    parameter("searchTerm", searchTerm)
+                }
             }
         }
     }

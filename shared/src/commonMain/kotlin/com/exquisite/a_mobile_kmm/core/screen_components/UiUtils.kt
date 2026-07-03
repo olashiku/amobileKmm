@@ -75,7 +75,6 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.DashboardModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -742,9 +741,3 @@ fun AvatarIcon(
     }
 }
 
-@Preview
-@Composable
-fun Display() {
-
-
-}

@@ -10,6 +10,9 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.home.Home
 @Composable
 fun HomeScreenPreview() {
     MaterialTheme {
-        HomeScreen({})
+        HomeScreen(
+            getCategoryProduct = {},
+            goToProductListing = { _, _ -> }
+        )
     }
 }

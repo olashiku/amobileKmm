@@ -1,6 +1,11 @@
 package com.exquisite.a_mobile_kmm.core.di
 
 import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
+import com.exquisite.a_mobile_kmm.core.database.room.AppDatabase
+import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import com.exquisite.a_mobile_kmm.core.network.ApiConfig
 import com.exquisite.a_mobile_kmm.core.network.HttpClientFactory
 import com.exquisite.a_mobile_kmm.feature.auth.data.repository.AuthRepositoryImpl
@@ -112,6 +117,9 @@ import com.exquisite.a_mobile_kmm.feature.address.domain.usecase.GetAddressesUse
 import com.exquisite.a_mobile_kmm.feature.address.domain.usecase.UpdateAddressUseCase
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_form.AddressFormViewModel
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_list.AddressListViewModel
+import com.exquisite.a_mobile_kmm.feature.cart.data.local.data_source.CartDataSource
+import com.exquisite.a_mobile_kmm.feature.cart.domain.usecase.CartUseCase
+import com.exquisite.a_mobile_kmm.feature.cart.presenter.CartViewModel
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.repository.ProfileRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.repository.ProfileRepository
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.ChangePasswordUseCase
@@ -126,6 +134,7 @@ import com.exquisite.a_mobile_kmm.feature.wallet.domain.usecase.InitTopUpAccount
 import com.exquisite.a_mobile_kmm.feature.wallet.presenter.wallet.WalletViewModel
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
@@ -142,6 +151,23 @@ val sharedModule :Module = module {
 
     single { HttpClientFactory.createHttpClient(get(), ApiConfig.BASE_URL,get()) }
     single { AMobileDataStore(get()) }
+
+    // data source
+    single { CartDataSource(get()) }
+
+    //dao
+    single { get<AppDatabase>().cartDao() }
+
+    // database
+    single<AppDatabase> {
+        get<RoomDatabase.Builder<AppDatabase>>()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
+            .fallbackToDestructiveMigration(true)
+            .build()
+    }
+
 
     //repository
     single<AuthRepository>{ AuthRepositoryImpl(get()) }
@@ -227,42 +253,43 @@ val sharedModule :Module = module {
     single{ GetCustomerTransactionsUseCase(get()) }
     single{ InitTopUpAccountUseCase(get()) }
     single{ CompleteTopUpAccountUseCase(get()) }
+    single{ CartUseCase(get()) }
 
     //viewModel
-    single{ SignupViewModel(get()) }
-    single{ LoginViewModel(get()) }
-    single{ OtpViewModel(get(),get())}
-    single{ UploadImageViewModel(get(),get()) }
+    viewModel{ SignupViewModel(get()) }
+    viewModel{ LoginViewModel(get()) }
+    viewModel{ OtpViewModel(get(),get())}
+    viewModel{ UploadImageViewModel(get(),get()) }
     single{ForgotPasswordViewModel(get())}
-    single{ CreatePasswordViewModel(get())}
-    single{ HomeViewModel(get()) }
-    single{ ProductListingViewModel(get()) }
-    single{ ProductSearchViewModel(get()) }
-    single{ ProductDetailsViewModel() }
-    single{ CheckoutListViewModel(get()) }
-    single{ DeliverOptionViewModel(get(), get(), get()) }
-    single{ OrderListingViewModel(get()) }
-    single{ BookingViewModel(get()) }
-    single{ BookingDetailsViewModel(get(), get(), get(), get(), get()) }
-    single{ TrainingViewModel(get()) }
-    single{ TrainingRegistrationViewModel(get(), get(), get()) }
-    single{ CleanersRegistrationViewModel(get()) }
-    single{ DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get()) }
-    single{ DeepCleaningCheckoutViewModel(get(), get()) }
-    single{ BasicCleaningFormViewModel(get()) }
-    single{ ConstructionMobileToiletViewModel(get()) }
-    single{ EventToiletCheckoutViewModel(get(), get(), get(), get(), get()) }
-    single{ EventToiletFormViewModel(get(), get()) }
-    single{ JanitorialViewModel(get()) }
-    single{ PestControlCommercialViewModel(get()) }
-    single{ PestControlResidentialFormViewModel(get(), get()) }
-    single{ PestControlResidentialCheckoutViewModel(get(), get(), get()) }
-    single{ SepticResidentialFormViewModel(get()) }
-    single{ SepticResidentialCheckoutViewModel(get(), get(), get()) }
-    single{ SepticCommercialFormViewModel(get()) }
-    single{ AddressListViewModel(get(), get()) }
-    single{ AddressFormViewModel(get(), get()) }
-    single{ ProfileFormViewModel(get(), get()) }
-    single{ WalletViewModel(get(), get(), get(), get()) }
-
+    viewModel{ CreatePasswordViewModel(get())}
+    viewModel{ HomeViewModel(get(),get(),get()) }
+    viewModel{ ProductListingViewModel(get()) }
+    viewModel{ ProductSearchViewModel(get()) }
+    viewModel{ ProductDetailsViewModel(get()) }
+    viewModel{ CheckoutListViewModel(get(),get()) }
+    viewModel{ DeliverOptionViewModel(get(), get(), get()) }
+    viewModel{ OrderListingViewModel(get()) }
+    viewModel{ BookingViewModel(get()) }
+    viewModel{ BookingDetailsViewModel(get(), get(), get(), get(), get()) }
+    viewModel{ TrainingViewModel(get()) }
+    viewModel{ TrainingRegistrationViewModel(get(), get(), get()) }
+    viewModel{ CleanersRegistrationViewModel(get()) }
+    viewModel{ DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel{ DeepCleaningCheckoutViewModel(get(), get()) }
+    viewModel{ BasicCleaningFormViewModel(get()) }
+    viewModel{ ConstructionMobileToiletViewModel(get()) }
+    viewModel{ EventToiletCheckoutViewModel(get(), get(), get(), get(), get()) }
+    viewModel{ EventToiletFormViewModel(get(), get()) }
+    viewModel{ JanitorialViewModel(get()) }
+    viewModel{ PestControlCommercialViewModel(get()) }
+    viewModel{ PestControlResidentialFormViewModel(get(), get()) }
+    viewModel{ PestControlResidentialCheckoutViewModel(get(), get(), get()) }
+    viewModel{ SepticResidentialFormViewModel(get()) }
+    viewModel{ SepticResidentialCheckoutViewModel(get(), get(), get()) }
+    viewModel{ SepticCommercialFormViewModel(get()) }
+    viewModel{ AddressListViewModel(get(), get(), get()) }
+    viewModel{ AddressFormViewModel(get(), get()) }
+    viewModel{ ProfileFormViewModel(get(), get()) }
+    viewModel{ WalletViewModel(get(), get(), get(), get()) }
+    viewModel{ CartViewModel(get()) }
 }

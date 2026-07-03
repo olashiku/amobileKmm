@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
 interface EcommerceRepository {
     suspend fun getAppProducts(): Flow<Result<GetAppProductsResponseDto>>
     suspend fun getProductsByCategory(categoryId: Int): Flow<Result<GetProductsByCategoryResponseDto>>
-    suspend fun getAllProducts(pageNumber: Int, pageSize: Int, searchTerm: String): Flow<Result<GetProductsByCategoryResponseDto>>
+    suspend fun getAllProducts(pageNumber: Int, pageSize: Int, searchTerm: String?): Flow<Result<GetProductsByCategoryResponseDto>>
     suspend fun createOrder(request: CreateOrderRequestDto): Flow<Result<CreateOrderResponseDto>>
     suspend fun initPayment(request: InitPaymentRequestDto): Flow<Result<InitPaymentResponseDto>>
     suspend fun debitFromWallet(request: DebitFromWalletRequestDto): Flow<Result<DebitFromWalletResponseDto>>
