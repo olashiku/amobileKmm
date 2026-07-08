@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class DeleteAddressUseCase(private val repository: AddressRepository) {
-    suspend operator fun invoke(request: DeleteAddressRequestDto): Flow<UseCaseResult<AddressResponseModel>> {
+    suspend operator fun invoke(addressId:Int, customerId:Int ): Flow<UseCaseResult<AddressResponseModel>> {
+        val request = DeleteAddressRequestDto(addressId,customerId)
         return repository.deleteAddress(request).map { result ->
             when (result) {
                 is Result.Success -> {

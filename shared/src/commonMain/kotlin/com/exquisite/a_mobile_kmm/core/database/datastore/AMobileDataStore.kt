@@ -34,6 +34,7 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
         val PROFILE_PICTURE = stringPreferencesKey("profile_picture")
         val HAS_LOGGED_IN = booleanPreferencesKey("has_logged_in")
         val REMEMBER_ME = booleanPreferencesKey("remember_me")
+        val SELECTED_ADDRESS = stringPreferencesKey("selected_address")
 
     }
 
@@ -96,7 +97,23 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
         preferences[HAS_LOGGED_IN]
     }
 
-       suspend fun clearAllData() {
+    suspend fun saveSelectedAddress(addressJson: String) {
+        dataStore.edit { preferences ->
+            preferences[SELECTED_ADDRESS] = addressJson
+        }
+    }
+
+    fun getSelectedAddress() = dataStore.data.map { preferences ->
+        preferences[SELECTED_ADDRESS] ?: ""
+    }
+
+    suspend fun clearSelectedAddress() {
+        dataStore.edit { preferences ->
+            preferences.remove(SELECTED_ADDRESS)
+        }
+    }
+
+    suspend fun clearAllData() {
         dataStore.edit { preferences ->
             preferences.clear()
         }

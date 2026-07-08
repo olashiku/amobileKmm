@@ -30,9 +30,9 @@ class CartDataSource(val cartDao: CartDao) {
         cartDao.removeItem(id)
     }
 
-    suspend  fun updateItem(item: CartEntity){
-        cartDao.updateItem(item)
-    }
+   suspend fun clearCart(){
+       cartDao.clearCart()
+   }
 
     fun getTotalQuantity(): Flow<Int>{
         return cartDao.getTotalQuantity()

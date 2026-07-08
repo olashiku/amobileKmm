@@ -28,7 +28,7 @@ import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SuccessScreen(from:String,modifier: Modifier = Modifier,popToLogin:() ->Unit) {
+fun SuccessScreen(title:String,message:String,modifier: Modifier = Modifier,popToLogin:() ->Unit) {
     Box(
         modifier = Modifier.fillMaxSize().background(color = Color.White)
             .windowInsetsPadding(WindowInsets.safeDrawing)
@@ -44,17 +44,15 @@ fun SuccessScreen(from:String,modifier: Modifier = Modifier,popToLogin:() ->Unit
                 modifier = Modifier.size(150.dp)
             )
             Spacer(modifier = modifier.height(8.dp))
-            val title =  if(from.equals("UploadImage")) "You're all set!" else "Password changed successfully!"
 
             Text(
                 text = title, style = MaterialTheme.typography.displaySmall,
                 color = Color(0xFF1A1A1A), textAlign = TextAlign.Center
             )
             Spacer(modifier = modifier.height(16.dp))
-            val body =  if(from.equals("UploadImage")) "Congratulations! Your account has\n been created successfully. Welcome to\n the community! \uD83E\uDD73" else "Congratulations! Your password has\n been changed successfully. Login to\n continue on  A-hygiene! \uD83E\uDD73"
 
             Text(
-                text = body,
+                text = message,
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF666666),
                 textAlign = TextAlign.Center

@@ -266,8 +266,8 @@ val sharedModule :Module = module {
     viewModel{ ProductListingViewModel(get()) }
     viewModel{ ProductSearchViewModel(get()) }
     viewModel{ ProductDetailsViewModel(get()) }
-    viewModel{ CheckoutListViewModel(get(),get()) }
-    viewModel{ DeliverOptionViewModel(get(), get(), get()) }
+    viewModel{ CheckoutListViewModel(get(),get(),get()) }
+    viewModel{ DeliverOptionViewModel(get(), get(), get(),get(),get()) }
     viewModel{ OrderListingViewModel(get()) }
     viewModel{ BookingViewModel(get()) }
     viewModel{ BookingDetailsViewModel(get(), get(), get(), get(), get()) }
@@ -288,7 +288,7 @@ val sharedModule :Module = module {
     viewModel{ SepticResidentialCheckoutViewModel(get(), get(), get()) }
     viewModel{ SepticCommercialFormViewModel(get()) }
     viewModel{ AddressListViewModel(get(), get(), get()) }
-    viewModel{ AddressFormViewModel(get(), get()) }
+    viewModel{ AddressFormViewModel(get(), get(),get()) }
     viewModel{ ProfileFormViewModel(get(), get()) }
     viewModel{ WalletViewModel(get(), get(), get(), get()) }
     viewModel{ CartViewModel(get()) }

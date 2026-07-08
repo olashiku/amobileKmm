@@ -18,13 +18,10 @@ class GetAddressesUseCase(private val repository: AddressRepository) {
         return repository.getAddresses(customerId).map { result ->
             when (result) {
                 is Result.Success -> {
-                    if (result.data.responseCode == "00" && result.data.data != null) {
+                    if (result.data.responseCode == "00") {
                         val addresses = result.data.toAddressModelList()
-                        if (addresses != null) {
                             UseCaseResult.Success(addresses)
-                        } else {
-                            UseCaseResult.Error("No addresses found")
-                        }
+
                     } else {
                         UseCaseResult.Error(result.data.responseMessage)
                     }

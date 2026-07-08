@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class UpdateAddressUseCase(private val repository: AddressRepository) {
-    suspend operator fun invoke(request: UpdateAddressRequestDto): Flow<UseCaseResult<AddressResponseModel>> {
+    suspend operator fun invoke(id:Int,address:String,addressId:Int ): Flow<UseCaseResult<AddressResponseModel>> {
+       val request = UpdateAddressRequestDto(address,id,addressId)
         return repository.updateAddress(request).map { result ->
             when (result) {
                 is Result.Success -> {

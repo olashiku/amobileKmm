@@ -36,7 +36,7 @@ data class  UploadImage(val uniqueRef:String,val otp:String,val password:String)
 
 
 @Serializable
-data class Success(val from:String)
+data class Success(val message:String, val title:String, val isAuth:Boolean)
 
 @Serializable
 object Home
@@ -79,7 +79,18 @@ object CheckoutList
  object AddressList
 
 @Serializable
- object AddressForm
+data class AddressForm
+    (val id:Int?,val address:String?,val phone:String?)
+
+@Serializable
+data class DeliverOption(
+    val createOrderModelJson : String,
+    val paymentOption: String
+)
+
+@Serializable
+data class WebViewUrl(val url:String)
+
 
 
 

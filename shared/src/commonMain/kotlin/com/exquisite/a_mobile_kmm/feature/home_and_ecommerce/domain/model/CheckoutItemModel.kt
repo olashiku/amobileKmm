@@ -8,11 +8,17 @@ data class CheckoutItemModel(
     val balance: Double
 )
 
-fun getCheckoutBalances(cartList : List<CartModel>): List<CheckoutItemModel> {
-      val totalAmount = cartList.sumOf { it.productPrice * it.quantity }
+fun getCheckoutBalances(cartList : List<CartModel>, shippingDetails:ShippingDetail): List<CheckoutItemModel> {
+
+    val totalAmount = cartList.sumOf { it.productPrice * it.quantity }
+    val numberOfItems = cartList.sumOf {  it.quantity }
     val  taxAmount = totalAmount * 0.075
 
     return listOf(
+        CheckoutItemModel(
+            title = "Number of Items",
+            balance = numberOfItems.toDouble()
+        ),
         CheckoutItemModel(
             title = "Sub-Total",
             balance = totalAmount
@@ -20,6 +26,10 @@ fun getCheckoutBalances(cartList : List<CartModel>): List<CheckoutItemModel> {
         CheckoutItemModel(
             title = "Tax (7.5%)",
             balance = taxAmount
+        ),
+        CheckoutItemModel(
+            title = "Delivery Fee",
+            balance = shippingDetails.total
         )
     )
 }

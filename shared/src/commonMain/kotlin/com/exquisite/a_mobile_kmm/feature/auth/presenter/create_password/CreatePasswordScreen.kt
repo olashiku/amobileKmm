@@ -45,7 +45,7 @@ fun CreatePasswordScreen(
     createPassword:CreatePassword,
     goBack: () -> Unit,
     goToUploadImage: (String) -> Unit,
-    goToSuccessScreen: (String) -> Unit,
+    goToSuccessScreen: (String,String) -> Unit,
     modifier: Modifier = Modifier,
     createPasswordViewModel: CreatePasswordViewModel = koinViewModel<CreatePasswordViewModel>()
 ) {
@@ -62,7 +62,7 @@ fun CreatePasswordScreen(
 
         }
         is ConfirmPasswordState.Success ->{
-            goToSuccessScreen.invoke("ConfirmPassword")
+            goToSuccessScreen.invoke("Congratulations! Your password has\n been changed successfully. Login to\n continue on  A-hygiene! \uD83E\uDD73","Password changed successfully!")
         }
         is ConfirmPasswordState.Error ->{
             snackBar.showError("Error: ${result.message}")

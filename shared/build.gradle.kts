@@ -67,6 +67,8 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.datastore.preferences)
             implementation(libs.datastore)
+
+            implementation(libs.compose.webview.multiplatform)
         }
 
         iosMain.dependencies {

@@ -63,7 +63,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun UploadImageScreen(
     uploadImage: UploadImage,
     goBack: () -> Unit,
-    goToTheSuccessScreen: () -> Unit,
+    goToTheSuccessScreen: (String,String) -> Unit,
     modifier: Modifier = Modifier,
     uploadImageViewModel: UploadImageViewModel = koinViewModel<UploadImageViewModel>()
 ) {
@@ -96,7 +96,7 @@ fun UploadImageScreen(
 
     when (val result = completeProfileState.value) {
         is CompleteProfileState.Success -> {
-            goToTheSuccessScreen()
+            goToTheSuccessScreen("Congratulations! Your account has\n been created successfully. Welcome to\n the community! \uD83E\uDD73","You're all set!")
         }
         is CompleteProfileState.Loading -> {
             LoadingDialog(true)

@@ -32,18 +32,22 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,10 +73,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.DashboardModel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -740,4 +746,152 @@ fun AvatarIcon(
 
     }
 }
+
+
+sealed class ModalType {
+    data class Success(val iconRes: org.jetbrains.compose.resources.DrawableResource) : ModalType()
+    data class Error(val iconRes: org.jetbrains.compose.resources.DrawableResource) : ModalType()
+    data class Warning(val iconRes: org.jetbrains.compose.resources.DrawableResource) : ModalType()
+    data class Confirmation(val iconRes: org.jetbrains.compose.resources.DrawableResource) : ModalType()
+}
+
+data class ModalButton(
+    val text: String,
+    val backgroundColor: Color,
+    val textColor: Color = Color.White,
+    val borderColor: Color? = null,
+    val action: () -> Unit
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GenericAlertModal(
+    modalType: ModalType,
+    title: String,
+    message: String,
+    primaryButton: ModalButton,
+    secondaryButton: ModalButton? = null,
+    onDismiss: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
+    val iconRes = when (modalType) {
+        is ModalType.Success -> modalType.iconRes
+        is ModalType.Error -> modalType.iconRes
+        is ModalType.Warning -> modalType.iconRes
+        is ModalType.Confirmation -> modalType.iconRes
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            scope.launch {
+                sheetState.hide()
+                onDismiss()
+            }
+        },
+        sheetState = sheetState,
+        containerColor = Color(0xFF1A1A1A),
+        contentColor = Color.White
+    ) {
+        Column(
+            modifier = modifier.fillMaxWidth().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Icon
+            Image(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                modifier = Modifier.size(48.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Title
+            Text(
+                text = title,
+                style = getPoppinsBold18(),
+                color = Color.White
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Message
+            Text(
+                text = message,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFF525252),
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Primary Button
+            Button(
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                        primaryButton.action()
+                    }
+                },
+                shape = RoundedCornerShape(25.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = primaryButton.backgroundColor
+                ),
+                modifier = Modifier.fillMaxWidth().height(56.dp).let {
+                    if (primaryButton.borderColor != null) {
+                        it.border(
+                            width = 1.5.dp,
+                            color = primaryButton.borderColor,
+                            shape = RoundedCornerShape(25.dp)
+                        )
+                    } else it
+                }
+            ) {
+                Text(
+                    text = primaryButton.text,
+                    color = primaryButton.textColor,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            // Secondary Button (optional)
+            secondaryButton?.let { button ->
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            button.action()
+                        }
+                    },
+                    shape = RoundedCornerShape(25.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = button.backgroundColor
+                    ),
+                    modifier = Modifier.fillMaxWidth().height(56.dp).let {
+                        if (button.borderColor != null) {
+                            it.border(
+                                width = 1.5.dp,
+                                color = button.borderColor,
+                                shape = RoundedCornerShape(25.dp)
+                            )
+                        } else it
+                    }
+                ) {
+                    Text(
+                        text = button.text,
+                        color = button.textColor,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}
+
 

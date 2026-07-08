@@ -7,6 +7,5 @@ sealed class AddressListState {
     data object Idle : AddressListState()
     data object Loading : AddressListState()
     data class GetAddressesSuccess(val data: List<AddressModel>) : AddressListState()
-    data class DeleteAddressSuccess(val data: AddressResponseModel) : AddressListState()
     data class Error(val message: String) : AddressListState()
 }

@@ -88,8 +88,8 @@ fun AuthenticationNavigation( goToDashboard: () -> Unit,
             }, { password ->
                 navController.navigate(UploadImage(createPassword.uniqueRef,createPassword.realOtp, password))
             },
-                { from ->
-                    navController.navigate(Success("CreatePassword"))
+                { message,title ->
+                    navController.navigate(Success(message,title,true))
                 })
         }
 
@@ -97,14 +97,16 @@ fun AuthenticationNavigation( goToDashboard: () -> Unit,
             val uploadImage = backStack.toRoute<UploadImage>()
             UploadImageScreen(uploadImage,{
                 navController.popBackStack()
-            }, {
-                navController.navigate(Success("UploadImage"))
+            }, { message,title ->
+                navController.navigate(Success(message,title,true))
+
             })
         }
         composable<Success> { backTrack->
             val successData = backTrack.toRoute<Success>()
-
-            SuccessScreen(successData.from) { navController.popBackStack(Login, false) }
+            SuccessScreen(successData.title,successData.message) {
+                navController.popBackStack(Login, false)
+            }
         }
     }
 }

@@ -3,8 +3,9 @@ package com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.usecase
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.mapper.toDto
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.mapper.toPaymentSuccessModel
-import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.remote.request.DebitFromWalletRequestDto
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.DebitFromWalletRequest
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.PaymentSuccessModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.repository.EcommerceRepository
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +17,8 @@ import kotlinx.coroutines.flow.map
 
 class DebitFromWalletUseCase(private val ecommerceRepository: EcommerceRepository) {
 
-    suspend operator fun invoke(request: DebitFromWalletRequestDto): Flow<UseCaseResult<PaymentSuccessModel>> {
-        return ecommerceRepository.debitFromWallet(request).map { result ->
+    suspend operator fun invoke(request: DebitFromWalletRequest): Flow<UseCaseResult<PaymentSuccessModel>> {
+        return ecommerceRepository.debitFromWallet(request.toDto()).map { result ->
             when (result) {
                 is Result.Success -> {
                     if (result.data.responseCode == "00") {

@@ -83,7 +83,6 @@ fun LoginScreen(
         }
 
         is LoginState.Success -> {
-            snackBar.showSuccess("welcome")
             goToDashboard.invoke()
         }
 

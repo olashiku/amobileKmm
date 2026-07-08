@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class CreateAddressUseCase(private val repository: AddressRepository) {
-    suspend operator fun invoke(request: CreateAddressRequestDto): Flow<UseCaseResult<AddressResponseModel>> {
+    suspend operator fun invoke(address:String,phone:String,customerId:String ): Flow<UseCaseResult<AddressResponseModel>> {
+      val request = CreateAddressRequestDto(address,phone,customerId)
         return repository.createAddress(request).map { result ->
             when (result) {
                 is Result.Success -> {

@@ -32,8 +32,10 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.screen_components.RadioOptionGroup
@@ -42,34 +44,55 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CheckoutItemModel
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CreateOrderModel
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ShippingDetail
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.getCheckoutBalances
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.paymentOptions
 import com.exquisite.dripp.core.components.CustomSnackbarHost
+import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CheckoutListScreen(
-    goBack:()->Unit,
-    addNewAddress:()->Unit,
-    continueButton:()->Unit,
+    goBack: () -> Unit,
+    addNewAddress: () -> Unit,
+    continueButton: (String,String) -> Unit,
     viewModel: CheckoutListViewModel = koinViewModel<CheckoutListViewModel>(),
     modifier: Modifier = Modifier
 ) {
 
     val (snackBar, snackBarHostState) = rememberSnackBar()
 
+    val selectedAddress by viewModel.selectedAddress.collectAsStateWithLifecycle()
 
-    // State for payment option selection
     var selectedPaymentOption by remember { mutableStateOf<String?>("standard") }
     val checkoutListState = viewModel.checkoutListState.collectAsStateWithLifecycle()
     val cartState = viewModel.cartState.collectAsStateWithLifecycle().value
+
+    when (val result = checkoutListState.value) {
+        is CheckoutListState.Loading -> {
+            LoadingDialog(true)
+        }
+
+        is CheckoutListState.Success -> {
+        val createOrderModelString =  NavigationUtils.encodeObject(result.data)
+            viewModel.clearState()
+         continueButton.invoke(createOrderModelString,selectedPaymentOption?:"")
+        }
+
+        is CheckoutListState.Error -> {
+            snackBar.showError(result.message)
+        }
+
+        is CheckoutListState.Idle -> {}
+
+    }
 
 
     Box(
@@ -77,14 +100,14 @@ fun CheckoutListScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
-        Column{
+        Column {
             Column(modifier = modifier.padding(20.dp)) {
 
                 Box(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     IconButton(
-                        onClick = {goBack.invoke()},
+                        onClick = { goBack.invoke() },
                         modifier = Modifier.align(Alignment.CenterStart)
                     ) {
                         Image(
@@ -100,7 +123,7 @@ fun CheckoutListScreen(
                     )
                 }
             }
-            Column(modifier = modifier.padding(start = 18.dp, end = 18.dp) ) {
+            Column(modifier = modifier.padding(start = 18.dp, end = 18.dp)) {
                 Spacer(modifier = modifier.height(20.dp))
                 Text(
                     text = "Billing Address",
@@ -109,29 +132,76 @@ fun CheckoutListScreen(
                 )
                 Spacer(modifier = modifier.height(20.dp))
 
-
+                // Display selected address or empty state
+                if (selectedAddress != null) {
+                    // Show selected address
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFF6F6F6), RoundedCornerShape(12.dp))
+                            .padding(16.dp)
+                    ) {
+                        Column {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = selectedAddress!!.address,
+                                        style = getPoppinsMedium14(),
+                                        color = Color(0xFF252525)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = selectedAddress!!.phone,
+                                        style = getPoppinsRegular12(),
+                                        color = Color(0xFF918F8B)
+                                    )
+                                }
+                                Text(
+                                    text = "Change",
+                                    style = getPoppinsMedium14(),
+                                    color = Color(0xFFF09103),
+                                    modifier = Modifier.clickable {
+                                        addNewAddress.invoke()
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(Res.drawable.no_address_icon),
-                    contentDescription = "no address icon",
-                )
-                Text(
-                    text = "No Address Found",
-                    style = getPoppinsRegular14(),
-                    color = Color(0xFF252525)
-                )
-                Text(
-                    text = "Please Add New Address",
-                    style = getPoppinsRegular14(),
-                    color = Color(0xFF252525)
-                )
-                Text(
-                    text = "Add New Address", style = getPoppinsMedium16(), color = Color(0xFFF09103),
-                    modifier = modifier.padding(20.dp).clickable {
-                        addNewAddress.invoke()
-                    })
-                Spacer(modifier = modifier.height(40.dp))
+
+            if (selectedAddress == null) {
+                // Show empty state
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = modifier.fillMaxWidth()
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.no_address_icon),
+                        contentDescription = "no address icon",
+                    )
+                    Text(
+                        text = "No Address Found",
+                        style = getPoppinsRegular14(),
+                        color = Color(0xFF252525)
+                    )
+                    Text(
+                        text = "Please Add New Address",
+                        style = getPoppinsRegular14(),
+                        color = Color(0xFF252525)
+                    )
+                    Text(
+                        text = "Add New Address",
+                        style = getPoppinsMedium16(),
+                        color = Color(0xFFF09103),
+                        modifier = modifier.padding(20.dp).clickable {
+                            addNewAddress.invoke()
+                        })
+                    Spacer(modifier = modifier.height(40.dp))
+                }
             }
             Column(modifier = modifier.padding(start = 18.dp, end = 18.dp)) {
                 Text(
@@ -155,6 +225,13 @@ fun CheckoutListScreen(
                     titleStyle = getPoppinsMedium14(),
                     subtitleStyle = getPoppinsRegular12()
                 )
+
+                Spacer(modifier = Modifier.height(25.dp))
+                if (selectedAddress != null) {
+                    NoCancelPolicyNote()
+                }
+
+
             }
         }
 
@@ -171,14 +248,14 @@ fun CheckoutListScreen(
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                getCheckoutBalances(cartState).forEach {
+                getCheckoutBalances(cartState,ShippingDetail()).forEach {
                     Item(checkoutItemModel = it)
                 }
             }
             Spacer(modifier = modifier.height(10.dp))
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
-            val balance = getCheckoutBalances(cartState).sumOf { it.balance }
+            val balance = getCheckoutBalances(cartState,ShippingDetail()).filter{!it.title.equals("Number of Items")}.sumOf { it.balance}
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Total Cost", style = getPoppinsBold14(), color = Color(0xFF252525))
                 Spacer(modifier = modifier.weight(1F))
@@ -190,7 +267,11 @@ fun CheckoutListScreen(
             }
             Spacer(modifier = modifier.height(40.dp))
             PrimaryButton("Continue", {
-                continueButton()
+                if (selectedAddress != null) {
+                    viewModel.createOrder()
+                } else {
+                    snackBar.showError("You need to select an address before you proceed")
+                }
             })
             Spacer(modifier = modifier.height(20.dp))
         }
@@ -198,25 +279,49 @@ fun CheckoutListScreen(
         // Snackbar at bottom
         CustomSnackbarHost(
             snackbarHostState = snackBarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(20.dp)
+            modifier = Modifier.align(BottomCenter).padding(20.dp)
         )
     }
 }
 
 @Composable
-fun Item(checkoutItemModel: CheckoutItemModel, modifier: Modifier = Modifier) {
+fun NoCancelPolicyNote(modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically, modifier =
+            modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Color(0XFFFAEE6D))
+    ) {
+        Text(
+            text = "Please note!! There is no return or cancellation " +
+                    "policy on items bought via the app. ",
+            textAlign = TextAlign.Center,
+            style = getPoppinsRegular12(), modifier = modifier.padding(20.dp), color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun Item(checkoutItemModel: CheckoutItemModel?, modifier: Modifier = Modifier) {
+
     Row(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = checkoutItemModel.title,
+            text = checkoutItemModel?.title?:"",
             style = getPoppinsMedium14(),
             color = Color(0xFF918F8B)
         )
         Spacer(modifier = modifier.weight(1F))
-        Text(
-            text = "₦${checkoutItemModel.balance.formatBalance()}",
-            style = getPoppinsMedium14(),
-            color = Color(0xFF252525)
-        )
+         if(!checkoutItemModel?.title.equals("Number of Items")){
+             Text(
+                 text = "₦${checkoutItemModel?.balance?.formatBalance()}",
+                 style = getPoppinsMedium14(),
+                 color = Color(0xFF252525)
+             )
+         }else {
+             Text(
+                 text = "${checkoutItemModel?.balance?.formatBalance()}",
+                 style = getPoppinsMedium14(),
+                 color = Color(0xFF252525)
+             )
+         }
     }
 }
 

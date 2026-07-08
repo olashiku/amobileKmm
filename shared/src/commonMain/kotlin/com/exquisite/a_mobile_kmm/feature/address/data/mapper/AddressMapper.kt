@@ -3,8 +3,8 @@ package com.exquisite.a_mobile_kmm.feature.address.data.mapper
 import com.exquisite.a_mobile_kmm.feature.address.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.address.domain.model.*
 
-fun GetAddressesResponseDto.toAddressModelList(): List<AddressModel>? {
-    return data?.map { it.toAddressModel() }
+fun GetAddressesResponseDto.toAddressModelList(): List<AddressModel> {
+    return data?.map { it.toAddressModel()}?:emptyList()
 }
 
 fun AddressDto.toAddressModel(): AddressModel {

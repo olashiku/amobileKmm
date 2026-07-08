@@ -108,11 +108,6 @@ object ValidationHelper {
                 false,
                 "Address must be at least 2 characters"
             )
-            !address.all { it.isLetter() || it.isWhitespace() } ->
-                ValidationResult(
-                    false,
-                    "Last name can only contain letters"
-                )
             else -> ValidationResult(
                 true
             )

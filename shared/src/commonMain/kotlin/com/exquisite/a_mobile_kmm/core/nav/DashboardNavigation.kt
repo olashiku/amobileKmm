@@ -27,12 +27,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.exquisite.a_mobile_kmm.core.screen_components.WebViewUrlScreen
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_form.AddressFormScreen
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_list.AddressListScreen
+import com.exquisite.a_mobile_kmm.feature.auth.presenter.success.SuccessScreen
 import com.exquisite.a_mobile_kmm.feature.booking.presenter.booking.BookingScreen
 import com.exquisite.a_mobile_kmm.feature.cart.presenter.CartScreen
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CreateOrderModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.checkout_list.CheckoutListScreen
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.deliver_option.DeliveryOptionScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.home.HomeScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_details.ProductDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_listing.ProductListingScreen
@@ -141,28 +145,66 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<CheckoutList> {
-                CheckoutListScreen({
+                CheckoutListScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    addNewAddress = {
+                        navController.navigate(AddressList)
+                    },
+                    continueButton = { createOrderModelJson, paymentOption ->
+                        navController.navigate(DeliverOption(createOrderModelJson, paymentOption))
+                    }
+                )
+            }
+            composable<DeliverOption> { backStack ->
+                val createOrderModel =
+                    NavigationUtils.decodeObject<CreateOrderModel>(backStack.toRoute<DeliverOption>().createOrderModelJson)
+                DeliveryOptionScreen(
+                    createOrderModel = createOrderModel,
+                    paymentOption = backStack.toRoute<DeliverOption>().paymentOption,
+                    savedStateHandle = backStack.savedStateHandle,
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    goToSuccessScreen = { title , message ->
+                        navController.navigate(Success(message,title,false))
+
+                    }
+
+                )
+            }
+
+            composable<WebViewUrl> { backStackEntry ->
+                WebViewUrlScreen(backStackEntry.toRoute<WebViewUrl>().url) { transaction_id ->
+
+                    navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("transaction_id", transaction_id)
                     navController.popBackStack()
-                }, {
-                    navController.navigate(AddressList)
-                }, {
-                    // continue button
-                })
+                }
             }
 
             composable<AddressList> {
-                AddressListScreen({
-                    navController.popBackStack()
-                },{
-                    navController.navigate(AddressForm)
-                })
+                AddressListScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    }, goBackToCheckout = {
+                        navController.popBackStack()
+                    }, { id, address, phone ->
+                        navController.navigate(AddressForm(id, address, phone))
+                    })
             }
 
-             composable<AddressForm>{
-                 AddressFormScreen({
-                     navController.popBackStack()
-                 })
-             }
+            composable<AddressForm> {
+                val addressData = it.toRoute<AddressForm>()
+                AddressFormScreen(addressData.id, addressData.address, addressData.phone, {
+                    navController.popBackStack()
+                })
+            }
 
             composable<ProductListing> { backStackEntry ->
                 val data = backStackEntry.toRoute<ProductListing>()
@@ -193,6 +235,13 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                         navController.navigate(ProductDetails(NavigationUtils.encodeObject(product)))
                     }
                 )
+            }
+
+            composable<Success> { backTrack ->
+                val successData = backTrack.toRoute<Success>()
+                SuccessScreen(successData.title, successData.message) {
+                    navController.popBackStack(Home, false)
+                }
             }
         }
     }

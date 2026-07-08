@@ -47,14 +47,15 @@ class CartUseCase(private val cartDataSource: CartDataSource) {
     }
 
 
+
     suspend fun removeItemById(id: Int) {
         cartDataSource.removeItem(id)
     }
 
-    suspend fun updateItem(cartModel: CartModel) {
-        val item = cartModel.cartModelToCartEntity()
-        cartDataSource.updateItem(item)
+    suspend fun clearCart() {
+        cartDataSource.clearCart()
     }
+
 
     fun getTotalQuantity(): Flow<Int> {
         return cartDataSource.getTotalQuantity()
