@@ -69,6 +69,7 @@ import com.exquisite.a_mobile_kmm.feature.cleaning_service.data.repository.Clean
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.repository.CleaningServiceRepository
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.usecase.*
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_form.BasicCleaningFormViewModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.cleaning_service.CleaningServiceViewModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.DeepCleaningCheckoutViewModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form.DeepCleaningFormViewModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.repository.MobileToiletRepositoryImpl
@@ -154,9 +155,17 @@ val sharedModule :Module = module {
 
     // data source
     single { CartDataSource(get()) }
+    single { com.exquisite.a_mobile_kmm.feature.cleaning_service.data.local.data_source.CleaningServiceDataSource(get(), get(), get(), get()) }
+    single { com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.local.data_source.ProductDataSource(get(), get()) }
 
     //dao
     single { get<AppDatabase>().cartDao() }
+    single { get<AppDatabase>().apartmentTypeDao() }
+    single { get<AppDatabase>().cleaningTypeDao() }
+    single { get<AppDatabase>().regionDao() }
+    single { get<AppDatabase>().numberOfRoomsDao() }
+    single { get<AppDatabase>().categoryProductDao() }
+    single { get<AppDatabase>().productDao() }
 
     // database
     single<AppDatabase> {
@@ -171,12 +180,12 @@ val sharedModule :Module = module {
 
     //repository
     single<AuthRepository>{ AuthRepositoryImpl(get()) }
-    single<EcommerceRepository>{ EcommerceRepositoryImpl(get()) }
+    single<EcommerceRepository>{ EcommerceRepositoryImpl(get(), get()) }
     single<OrderRepository>{ OrderRepositoryImpl(get()) }
     single<BookingRepository>{ BookingRepositoryImpl(get()) }
     single<TrainingRepository>{ TrainingRepositoryImpl(get()) }
     single<CleanersRegistrationRepository>{ CleanersRegistrationRepositoryImpl(get()) }
-    single<CleaningServiceRepository>{ CleaningServiceRepositoryImpl(get()) }
+    single<CleaningServiceRepository>{ CleaningServiceRepositoryImpl(get(), get()) }
     single<MobileToiletRepository>{ MobileToiletRepositoryImpl(get()) }
     single<JanitorialRepository>{ JanitorialRepositoryImpl(get()) }
     single<PestControlRepository>{ PestControlRepositoryImpl(get()) }
@@ -223,6 +232,7 @@ val sharedModule :Module = module {
     single{ InitDeepCleaningPaymentUseCase(get()) }
     single{ CompleteDeepCleaningPaymentUseCase(get()) }
     single{ GetBasicCleaningLocationsUseCase(get()) }
+    single{ CheckBasicCleaningEligibilityUseCase(get()) }
     single{ RequestForConstructionUseCase(get()) }
     single{ InitToiletPaymentUseCase(get()) }
     single{ GetToiletPriceUseCase(get()) }
@@ -273,8 +283,9 @@ val sharedModule :Module = module {
     viewModel{ BookingDetailsViewModel(get(), get(), get(), get(), get()) }
     viewModel{ TrainingViewModel(get()) }
     viewModel{ TrainingRegistrationViewModel(get(), get(), get()) }
-    viewModel{ CleanersRegistrationViewModel(get()) }
-    viewModel{ DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel{ CleanersRegistrationViewModel(get(), get(), get()) }
+    viewModel{ CleaningServiceViewModel(get(),get()) }
+    viewModel{ DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
     viewModel{ DeepCleaningCheckoutViewModel(get(), get()) }
     viewModel{ BasicCleaningFormViewModel(get()) }
     viewModel{ ConstructionMobileToiletViewModel(get()) }

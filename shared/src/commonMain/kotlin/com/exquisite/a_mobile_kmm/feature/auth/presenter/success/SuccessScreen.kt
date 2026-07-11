@@ -28,7 +28,7 @@ import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SuccessScreen(title:String,message:String,modifier: Modifier = Modifier,popToLogin:() ->Unit) {
+fun SuccessScreen(title:String,message:String,buttonText:String,modifier: Modifier = Modifier,popToLogin:() ->Unit) {
     Box(
         modifier = Modifier.fillMaxSize().background(color = Color.White)
             .windowInsetsPadding(WindowInsets.safeDrawing)
@@ -63,7 +63,7 @@ fun SuccessScreen(title:String,message:String,modifier: Modifier = Modifier,popT
             modifier = modifier.align(Alignment.BottomCenter)
                 .padding(20.dp)
         ) {
-            PrimaryButton("Get Started", {
+            PrimaryButton(buttonText, {
                 popToLogin.invoke()
             })
         }

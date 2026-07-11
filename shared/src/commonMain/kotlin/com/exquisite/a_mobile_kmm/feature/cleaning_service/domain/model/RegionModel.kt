@@ -1,5 +1,8 @@
 package com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RegionModel(
     val id: Int,
     val name: String

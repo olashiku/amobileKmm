@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,7 +56,7 @@ fun SignupScreen(
     modifier: Modifier = Modifier,
     viewModel: SignupViewModel = koinViewModel<SignupViewModel>()
 ) {
-
+    val persistedFormData by viewModel.persistedFormData.collectAsStateWithLifecycle()
     val isTermsClicked = remember { mutableStateOf(false) }
 
     val firstNameValidator = remember {
@@ -119,85 +120,100 @@ fun SignupScreen(
 
         Column(
             horizontalAlignment = Alignment.Start,
-            modifier = modifier.align(Alignment.TopStart)
-                .padding(20.dp).clickable {
+            modifier = Modifier.align(Alignment.TopStart)
+                .padding(24.dp).clickable {
                     goBack()
                 }
         ) {
             Image(
                 painter = painterResource(Res.drawable.back_arrow),
-                contentDescription = "logo"
+                contentDescription = "Back arrow"
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(20.dp),
+            modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = modifier.height(19.dp))
+            Spacer(modifier = Modifier.height(48.dp))
             Text(
-                text = "Create New Account", style = MaterialTheme.typography.displaySmall,
-                color = Color(0xFF232323), textAlign = TextAlign.Center
+                text = "Create New Account",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color(0xFF232323),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Set up your email and password\n or register with your social network account",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Form Section
             ValidatedTextField(
                 labelText = "First Name",
                 placeHolder = "Enter first name",
                 fieldValidator = firstNameValidator,
+                defaultText = persistedFormData.firstName,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
                 leadingIconRes = Res.drawable.email_icon
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             ValidatedTextField(
                 labelText = "Last Name",
                 placeHolder = "Enter last name",
                 fieldValidator = lastNameValidator,
+                defaultText = persistedFormData.lastName,
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next,
                 leadingIconRes = Res.drawable.email_icon
             )
-            Spacer(modifier = Modifier.height(15.dp))
-
+            Spacer(modifier = Modifier.height(20.dp))
             ValidatedTextField(
                 labelText = "Email",
-                placeHolder = "Enter email ",
+                placeHolder = "Enter email",
                 fieldValidator = emailValidator,
+                defaultText = persistedFormData.email,
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next,
                 leadingIconRes = Res.drawable.email_icon
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             ValidatedTextField(
                 labelText = "Mobile number",
-                placeHolder = "Enter mobile number ",
+                placeHolder = "Enter mobile number",
                 fieldValidator = phoneValidator,
+                defaultText = persistedFormData.phone,
                 keyboardType = KeyboardType.Phone,
                 imeAction = ImeAction.Done,
                 leadingIconRes = Res.drawable.email_icon
             )
-            Spacer(modifier = Modifier.height(15.dp))
+
+            // Terms Section
+            Spacer(modifier = Modifier.height(24.dp))
             TermsAndConditions({
                 goToTerms()
             }, { value ->
                 isTermsClicked.value = value
             })
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             PrimaryButton("Signup", {
-
                 val isFirstNameValid = firstNameValidator.forceValidation()
                 val isLastNAmeValid = lastNameValidator.forceValidation()
                 val isEmailValid = emailValidator.forceValidation()
                 val isPhoneValid = phoneValidator.forceValidation()
 
-
                 if (isFirstNameValid && isLastNAmeValid && isEmailValid && isPhoneValid && isTermsClicked.value) {
+                    // Save form data before navigating
+                    viewModel.saveFormData(
+                        firstName = firstNameValidator.value.value,
+                        lastName = lastNameValidator.value.value,
+                        email = emailValidator.value.value,
+                        phone = phoneValidator.value.value
+                    )
+
                     viewModel.register(
                         emailValidator.value.value,
                         firstNameValidator.value.value,
@@ -208,7 +224,7 @@ fun SignupScreen(
                     snackBar.showError("Kindly accept the terms and conditions and complete the form")
                 }
             })
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
 

@@ -16,4 +16,5 @@ interface CleaningServiceRepository {
     suspend fun initDeepCleaningPayment(request: InitDeepCleaningPaymentRequestDto): Flow<Result<InitDeepCleaningPaymentResponseDto>>
     suspend fun completeDeepCleaningPayment(request: CompleteDeepCleaningPaymentRequestDto): Flow<Result<CompleteDeepCleaningPaymentResponseDto>>
     suspend fun getBasicCleaningLocations(): Flow<Result<GetBasicCleaningLocationsResponseDto>>
+    suspend fun checkBasicCleaningEligibility(customerId: Int): Flow<Result<CheckBasicCleaningEligibilityResponseDto>>
 }

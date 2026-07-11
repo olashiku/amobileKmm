@@ -106,27 +106,31 @@ fun LoginScreen(
     ) {
 
         Column(
-            Modifier.fillMaxSize().padding(20.dp),
+            Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = modifier.height(5.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             Image(
                 painter = painterResource(Res.drawable.auth_logo),
                 contentDescription = "logo"
             )
-            Spacer(modifier = modifier.height(29.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             Text(
-                text = "Welcome back", style = MaterialTheme.typography.displaySmall,
-                color = Color(0xFF232323), textAlign = TextAlign.Center
+                text = "Welcome back",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color(0xFF232323),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Login to your account\n using email or social networks",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Form Section
             ValidatedTextField(
                 labelText = Strings.Auth.EMAIL,
                 placeHolder = Strings.Auth.ENTER_EMAIL,
@@ -135,13 +139,13 @@ fun LoginScreen(
                 imeAction = ImeAction.Next,
                 leadingIconRes = Res.drawable.email_icon
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             ValidatedPasswordTextField(
                 labelText = Strings.Auth.PASSWORD,
                 placeHolder = Strings.Auth.ENTER_PASSWORD,
                 fieldValidator = passwordValidator
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton("Login", {
                 val isEmailValid = emailValidator.forceValidation()
                 val isPasswordValid = passwordValidator.forceValidation()
@@ -155,7 +159,7 @@ fun LoginScreen(
                     snackBar.showError("Please fill in all fields correctly")
                 }
             })
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             RememberMeAndForgotPassword(
                 rememberMe = rememberMeState.value,
                 onRememberMeChanged = { isChecked ->
@@ -163,9 +167,11 @@ fun LoginScreen(
                 },
                 goToForgotPassword = goToForgotPassword
             )
-            Spacer(modifier = Modifier.height(40.dp))
+
+            // Section Break
+            Spacer(modifier = Modifier.height(48.dp))
             orSignup()
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Color(0xFF252525))) {
@@ -174,14 +180,14 @@ fun LoginScreen(
                     withStyle(style = SpanStyle(color = Color(0xFFF09103))) {
                         append(Strings.Auth.SIGNUP)
                     }
-                }, textAlign = TextAlign.Center,
-
+                },
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally).clickable {
                     goToSignUp()
                 }
             )
-
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
         // Snackbar at bottom

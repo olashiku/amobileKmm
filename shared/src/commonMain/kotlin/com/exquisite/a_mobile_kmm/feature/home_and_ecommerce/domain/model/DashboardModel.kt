@@ -12,16 +12,17 @@ import org.jetbrains.compose.resources.DrawableResource
 data class DashboardModel(
     val title:String,
     val image: DrawableResource,
+    val label:String = ""
 )
 
 fun getDashboardModel():List<DashboardModel>{
     return listOf(
-        DashboardModel("Cleaning", Res.drawable.cleaning_icon),
-        DashboardModel("Mobile\nToilet", Res.drawable.mobile_toilet),
-        DashboardModel("Pests\nControl", Res.drawable.pest_control),
-        DashboardModel("Academy", Res.drawable.academy),
-        DashboardModel("Janitorial\nService", Res.drawable.janitorial_service),
-        DashboardModel("Septic\nRequest", Res.drawable.septic),
+        DashboardModel("Cleaning", Res.drawable.cleaning_icon,"cleaning"),
+        DashboardModel("Mobile\nToilet", Res.drawable.mobile_toilet,"mobile_toilet"),
+        DashboardModel("Pests\nControl", Res.drawable.pest_control,"pest_control"),
+        DashboardModel("Academy", Res.drawable.academy,"academy"),
+        DashboardModel("Janitorial\nService", Res.drawable.janitorial_service,"janitorial_service"),
+        DashboardModel("Septic\nRequest", Res.drawable.septic,"septic"),
 
         )
 }

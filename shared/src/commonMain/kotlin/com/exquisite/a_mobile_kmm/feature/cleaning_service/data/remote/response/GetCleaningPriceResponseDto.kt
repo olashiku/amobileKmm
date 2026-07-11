@@ -16,6 +16,35 @@ object CleaningPriceDataSerializer :
 
 @Serializable
 data class CleaningPriceDto(
-    val price: Double,
-    val currency: String = "NGN"
+    val amount: Double,
+    val apartmentType: CleaningPriceApartmentTypeDto,
+    val cleaningType: CleaningPriceCleaningTypeDto,
+    val id: Int,
+    val numberOfRooms: CleaningPriceNumberOfRoomsDto,
+    val region: CleaningPriceRegionDto
 )
+
+@Serializable
+data class CleaningPriceApartmentTypeDto(
+    val id: Int,
+    val name: String
+)
+
+@Serializable
+data class CleaningPriceCleaningTypeDto(
+    val id: Int,
+    val name: String
+)
+
+@Serializable
+data class CleaningPriceNumberOfRoomsDto(
+    val id: Int,
+    val name: String
+)
+
+@Serializable
+data class CleaningPriceRegionDto(
+    val id: Int,
+    val name: String
+)
+

@@ -109,35 +109,37 @@ fun OtpScreen(
 
         Column(
             horizontalAlignment = Alignment.Start,
-            modifier = modifier.align(Alignment.TopStart)
-                .padding(20.dp).clickable {
+            modifier = Modifier.align(Alignment.TopStart)
+                .padding(24.dp).clickable {
                     goBack()
                 }
         ) {
             Image(
                 painter = painterResource(Res.drawable.back_arrow),
-                contentDescription = "back button"
+                contentDescription = "Back arrow"
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(20.dp),
+            modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
-            Spacer(modifier = modifier.height(19.dp))
+            Spacer(modifier = Modifier.height(48.dp))
             Text(
-                text = "OTP", style = MaterialTheme.typography.displaySmall,
-                color = Color(0xFF232323), textAlign = TextAlign.Center
+                text = "OTP",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color(0xFF232323),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "An Otp was sent to your email,\n kindly check your mail box to complete this step",
+                text = "An OTP was sent to your email,\n kindly check your mail box to complete this step",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // OTP Input Section
             OtpTextField(
                 {
                     otpText = it
@@ -145,29 +147,30 @@ fun OtpScreen(
                         viewModel.validateOtp(otp.uniqueRef, otpText)
                     }
                 })
+            Spacer(modifier = Modifier.height(32.dp))
 
-            Spacer(modifier = modifier.height(24.dp))
+            // Resend Section
             Text(
                 text = "Didn’t receive OTP?",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Resend Code",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFFF09103),
                 textAlign = TextAlign.Center,
-                modifier = modifier.padding(30.dp)
-                    .clickable {
-                        viewModel.resendOtp(otp.uniqueRef)
-                    }
+                modifier = Modifier.clickable {
+                    viewModel.resendOtp(otp.uniqueRef)
+                }
             )
-            Spacer(modifier = modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(40.dp))
             PrimaryButton("Confirm", {
                 viewModel.validateOtp(otp.uniqueRef, otpText)
             })
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
 

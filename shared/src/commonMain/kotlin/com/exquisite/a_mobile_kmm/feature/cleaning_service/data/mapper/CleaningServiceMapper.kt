@@ -16,7 +16,7 @@ fun FindLocationByRegionResponseDto.toLocationModelList(): List<LocationModel>? 
 }
 
 fun LocationDto.toLocationModel(): LocationModel {
-    return LocationModel(id = id, name = name, regionId = regionId)
+    return LocationModel(id = id, name = name)
 }
 
 fun FindApartmentTypeResponseDto.toApartmentTypeModelList(): List<ApartmentTypeModel>? {
@@ -45,7 +45,26 @@ fun NumberOfRoomsDto.toNumberOfRoomsModel(): NumberOfRoomsModel {
 
 fun GetCleaningPriceResponseDto.toCleaningPriceModel(): CleaningPriceModel? {
     val priceData = data ?: return null
-    return CleaningPriceModel(price = priceData.price, currency = priceData.currency)
+    return CleaningPriceModel(
+        id = priceData.id,
+        amount = priceData.amount,
+        apartmentType = ApartmentTypeModel(
+            id = priceData.apartmentType.id,
+            name = priceData.apartmentType.name
+        ),
+        cleaningType = CleaningTypeModel(
+            id = priceData.cleaningType.id,
+            name = priceData.cleaningType.name
+        ),
+        numberOfRooms = NumberOfRoomsModel(
+            id = priceData.numberOfRooms.id,
+            name = priceData.numberOfRooms.name
+        ),
+        region = RegionModel(
+            id = priceData.region.id,
+            name = priceData.region.name
+        )
+    )
 }
 
 fun DebitFromWalletDeepCleaningPaymentResponseDto.toPaymentResponseModel(): PaymentResponseModel {

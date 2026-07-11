@@ -18,6 +18,4 @@ object LocationListSerializer :
 @Serializable
 data class LocationDto(
     val id: Int,
-    val name: String,
-    val regionId: Int
-)
+    val name: String)

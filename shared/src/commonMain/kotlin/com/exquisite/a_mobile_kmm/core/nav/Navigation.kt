@@ -36,7 +36,7 @@ data class  UploadImage(val uniqueRef:String,val otp:String,val password:String)
 
 
 @Serializable
-data class Success(val message:String, val title:String, val isAuth:Boolean)
+data class Success(val message:String, val title:String,val buttonText:String, val isAuth:Boolean)
 
 @Serializable
 object Home
@@ -90,6 +90,29 @@ data class DeliverOption(
 
 @Serializable
 data class WebViewUrl(val url:String)
+
+@Serializable
+object CleanersRegistration
+
+@Serializable
+data class CleanersDocumentUpload(val data:String)
+
+@Serializable
+object CleaningService
+
+@Serializable
+object DeepCleaningForm
+
+@Serializable
+data class DeepCleaningPriceDetails(val response:String,val data:String)
+
+@Serializable
+object BasicCleaningForm
+
+@Serializable
+data class DeepCleaningFormTwo(
+    val response:String,val data:String
+)
 
 
 

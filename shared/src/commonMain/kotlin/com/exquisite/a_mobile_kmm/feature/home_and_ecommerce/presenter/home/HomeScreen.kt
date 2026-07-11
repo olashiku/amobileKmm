@@ -82,6 +82,8 @@ fun HomeScreen(
     goToCartScreen: () -> Unit = {},
     getCategoryProduct: (String) -> Unit,
     goToProductListing: (Int, String) -> Unit,
+    goToCleanersRegistration: () -> Unit = {},
+    goToMenuItem: (String) -> Unit = {},
     viewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
     modifier : Modifier = Modifier
 ) {
@@ -153,7 +155,6 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
                 ) {
-                    println("profile_image___"+profilePictureState.value)
                     if(profilePictureState.value.isEmpty()){
                         AvatarIcon(50.dp, vectorResource(Res.drawable.avatar_line))
                     }else {
@@ -282,7 +283,8 @@ fun HomeScreen(
 
             ServicesGrid(
                 services = dashboardMenu,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                goToMenuItem
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -294,7 +296,9 @@ fun HomeScreen(
                 style = getPoppinsSemiBold20().copy(
                     textDecoration = TextDecoration.Underline
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().clickable{
+                    goToCleanersRegistration()
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -463,7 +467,7 @@ fun ProdItem(
 @Composable
 private fun ServicesGrid(
     services: List<DashboardModel>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,goToMenuItem: (String) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -472,7 +476,7 @@ private fun ServicesGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(services.size) { index ->
-            MenuItem(services[index])
+            MenuItem(services[index],goToMenuItem)
         }
     }
 }

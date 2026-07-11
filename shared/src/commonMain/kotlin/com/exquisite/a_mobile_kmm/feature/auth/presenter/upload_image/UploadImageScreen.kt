@@ -63,7 +63,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun UploadImageScreen(
     uploadImage: UploadImage,
     goBack: () -> Unit,
-    goToTheSuccessScreen: (String,String) -> Unit,
+    goToTheSuccessScreen: (String,String,String) -> Unit,
     modifier: Modifier = Modifier,
     uploadImageViewModel: UploadImageViewModel = koinViewModel<UploadImageViewModel>()
 ) {
@@ -96,7 +96,7 @@ fun UploadImageScreen(
 
     when (val result = completeProfileState.value) {
         is CompleteProfileState.Success -> {
-            goToTheSuccessScreen("Congratulations! Your account has\n been created successfully. Welcome to\n the community! \uD83E\uDD73","You're all set!")
+            goToTheSuccessScreen("Congratulations! Your account has\n been created successfully. Welcome to\n the community! \uD83E\uDD73","You're all set!","Continue to login")
         }
         is CompleteProfileState.Loading -> {
             LoadingDialog(true)
@@ -139,43 +139,46 @@ fun UploadImageScreen(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier.align(Alignment.TopStart)
-                .padding(20.dp)
+            modifier = Modifier.align(Alignment.TopStart)
+                .padding(24.dp)
         ) {
             Image(
-                painter = painterResource(Res.drawable.back_arrow), contentDescription = "back",
-                modifier = modifier.clickable {
+                painter = painterResource(Res.drawable.back_arrow),
+                contentDescription = "Back arrow",
+                modifier = Modifier.clickable {
                     goBack()
                 })
-            Spacer(modifier = modifier.weight(1F))
+            Spacer(modifier = Modifier.weight(1F))
             Text(
-                text = "Skip", style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFFF09103), textAlign = TextAlign.Center,
-                modifier = modifier.clickable {
-               uploadImageViewModel.completeProfile(uploadImage.password,uploadImage.uniqueRef,uploadImage.otp,imageUrl)
+                text = "Skip",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xFFF09103),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.clickable {
+                    uploadImageViewModel.completeProfile(uploadImage.password,uploadImage.uniqueRef,uploadImage.otp,imageUrl)
                 }
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(20.dp)
+            modifier = Modifier.fillMaxSize().padding(24.dp)
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Spacer(modifier = modifier.height(50.dp))
-
+            Spacer(modifier = Modifier.height(64.dp))
             Text(
-                text = "Add a photo", style = MaterialTheme.typography.displaySmall,
-                color = Color(0xFF232323), textAlign = TextAlign.Center
+                text = "Add a photo",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color(0xFF232323),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Add a profile picture so that\n we can recognise you",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(80.dp))
 
                 Box(modifier = Modifier.size(130.dp).clickable{
                     showImageSourceDialog = true
@@ -222,14 +225,15 @@ fun UploadImageScreen(
         }
 
         Column(
-            modifier = modifier.align(Alignment.BottomCenter)
-                .padding(20.dp)
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(24.dp)
         ) {
             LineButtonBlackText(
                 "Upload Image",
                 {
                     uploadImageViewModel.completeProfile(uploadImage.password,uploadImage.uniqueRef,uploadImage.otp,imageUrl)
                 })
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // Image Source Selection Dialog

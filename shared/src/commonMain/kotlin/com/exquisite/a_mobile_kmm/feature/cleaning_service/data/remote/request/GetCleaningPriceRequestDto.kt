@@ -7,7 +7,7 @@ data class GetCleaningPriceRequestDto(
     val customerId: Int,
     val regionId: Int,
     val locationId: Int,
-    val apartmentId: Int,
+    val apartmentTypeId: Int,
     val cleaningTypeId: Int,
     val numberOfRoomsId: Int
 )

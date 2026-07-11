@@ -46,10 +46,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
+import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular10
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CreateOrderModel
@@ -71,7 +73,7 @@ fun DeliveryOptionScreen(
     savedStateHandle: SavedStateHandle,
     goBack: () -> Unit,
     goToWebView: (String) -> Unit,
-    goToSuccessScreen:(String,String) -> Unit,
+    goToSuccessScreen:(String,String,String) -> Unit,
     viewModel: DeliverOptionViewModel = koinViewModel<DeliverOptionViewModel>(),
     modifier: Modifier = Modifier
 ) {
@@ -109,13 +111,12 @@ fun DeliveryOptionScreen(
             LaunchedEffect(result) {
                 viewModel.clearState()
                 viewModel.clearCart()
-                goToSuccessScreen.invoke("Payment Successful!✅","Thank you for placing your order. A confirmation email has been send to your mailbox.")
+                goToSuccessScreen.invoke("Payment Successful!✅","Thank you for placing your order. A confirmation email has been send to your mailbox.","Done")
             }
         }
 
         is DeliverOptionState.Error -> {
             snackBar.showError(result.message)
-
         }
     }
 
@@ -125,37 +126,34 @@ fun DeliveryOptionScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Column {
-            Column(modifier = modifier.padding(20.dp)) {
+            // Fixed Header
+            FixedHeaderWithBackButton(
+                title = "Delivery Options",
+                onBackClick = goBack
+            )
 
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    IconButton(
-                        onClick = { goBack.invoke() },
-                        modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
-                        Image(
-                            painter = painterResource(Res.drawable.back_arrow),
-                            contentDescription = "Back",
-                        )
-                    }
-                    Text(
-                        text = "Delivery Options",
-                        style = getPoppinsSemiBold18(),
-                        color = Color(0xFF252525),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+            Column(modifier = modifier.padding(start = 20.dp, end = 20.dp)) {
+                Spacer(modifier = modifier.height(25.dp))
+                Text(
+                    text = "Payment Options",
+                    style = getPoppinsSemiBold14(),
+                    color = Color(0xFF252525)
+                )
+                Spacer(modifier = modifier.height(5.dp))
+                HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+                Spacer(modifier = modifier.height(20.dp))
+
             }
-        }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(top = 80.dp, bottom = 380.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+
+            // Scrollable Content
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 360.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
             items(createOrderModel.shippingDetails) { shippingDetail ->
                 DeliveryOptionItem(
                     shippingDetail = shippingDetail,
@@ -166,10 +164,11 @@ fun DeliveryOptionScreen(
                 )
             }
         }
+        }
 
-
+        // Bottom cart total (in Box scope)
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .align(BottomCenter)
                 .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
                 .background(Color(0xFFFEF9F2))

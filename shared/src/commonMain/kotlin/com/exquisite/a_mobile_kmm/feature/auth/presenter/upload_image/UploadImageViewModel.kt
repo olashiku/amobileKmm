@@ -14,8 +14,7 @@ class UploadImageViewModel(
     private val completeRegisterUseCase: CompleteRegisterUseCase
 ) : ViewModel() {
 
-    private val _completeProfileState =
-        MutableStateFlow<CompleteProfileState>(CompleteProfileState.Idle)
+    private val _completeProfileState = MutableStateFlow<CompleteProfileState>(CompleteProfileState.Idle)
     private val _imageUploadState = MutableStateFlow<ImageUploadState>(ImageUploadState.Idle)
 
     val completeProfileState = _completeProfileState.asStateFlow()

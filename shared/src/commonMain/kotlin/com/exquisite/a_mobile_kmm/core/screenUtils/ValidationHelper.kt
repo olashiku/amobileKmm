@@ -76,6 +76,28 @@ object ValidationHelper {
             )
         }
     }
+
+
+    fun validateFullName(name: String): ValidationResult {
+        return when {
+            name.isEmpty() -> ValidationResult(
+                false,
+                "Full name is required"
+            )
+            name.length < 2 -> ValidationResult(
+                false,
+                "Full name must be at least 2 characters"
+            )
+            !name.all { it.isLetter() || it.isWhitespace() } ->
+                ValidationResult(
+                    false,
+                    "Full name can only contain letters"
+                )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
     
     fun validateLastName(name: String): ValidationResult {
         return when {
@@ -130,6 +152,18 @@ object ValidationHelper {
                     false,
                     "Please enter a valid phone number"
                 )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
+
+    fun validateSelection(selection: String, fieldName: String = "Selection"): ValidationResult {
+        return when {
+            selection.isEmpty() -> ValidationResult(
+                false,
+                "$fieldName is required"
+            )
             else -> ValidationResult(
                 true
             )

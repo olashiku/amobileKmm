@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium16
@@ -96,129 +97,126 @@ fun AddressListScreen(
 
     Box(
         modifier = modifier.fillMaxSize().windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState())
     ) {
         Column {
-            Column(modifier = modifier.padding(20.dp)) {
+            // Fixed Header
+            FixedHeaderWithBackButton(
+                title = "Address Book",
+                onBackClick = goBack
+            )
 
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    IconButton(
-                        onClick = { goBack.invoke() },
-                        modifier = Modifier.align(Alignment.CenterStart)
+            // Scrollable Content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = if (isAddressSelected) 100.dp else 0.dp)
+            ) {
+                if (addressList.isEmpty()) {
+                    // empty address
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier.fillMaxWidth()
                     ) {
                         Image(
-                            painter = painterResource(Res.drawable.back_arrow),
-                            contentDescription = "Back",
+                            painter = painterResource(Res.drawable.no_address_icon),
+                            contentDescription = "no address icon",
                         )
+                        Text(
+                            text = "No Address Found",
+                            style = getPoppinsRegular14(),
+                            color = Color(0xFF252525)
+                        )
+                        Text(
+                            text = "Please Add New Address",
+                            style = getPoppinsRegular14(),
+                            color = Color(0xFF252525)
+                        )
+                        Text(
+                            text = "Add New Address",
+                            style = getPoppinsMedium16(),
+                            color = Color(0xFFF09103),
+                            modifier = modifier.padding(20.dp).clickable {
+                                addNewAddress.invoke(null, null, null)
+                            })
+                        Spacer(modifier = modifier.height(40.dp))
                     }
-                    Text(
-                        text = "Address Book",
-                        style = getPoppinsSemiBold18(),
-                        color = Color(0xFF252525),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    ) {
+                        addressList.forEach { address ->
+                            var showDeleteModal by remember { mutableStateOf(false) }
 
-
-            if (addressList.isEmpty()) {
-                // empty address
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.no_address_icon),
-                        contentDescription = "no address icon",
-                    )
-                    Text(
-                        text = "No Address Found",
-                        style = getPoppinsRegular14(),
-                        color = Color(0xFF252525)
-                    )
-                    Text(
-                        text = "Please Add New Address",
-                        style = getPoppinsRegular14(),
-                        color = Color(0xFF252525)
-                    )
-                    Text(
-                        text = "Add New Address",
-                        style = getPoppinsMedium16(),
-                        color = Color(0xFFF09103),
-                        modifier = modifier.padding(20.dp).clickable {
-                            addNewAddress.invoke(null,null,null)
-                        })
-                    Spacer(modifier = modifier.height(40.dp))
-                }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                    addressList.forEach { address ->
-                        var showDeleteModal by remember { mutableStateOf(false) }
-
-                        AddressItem(
-                            address = address,
-                            onAddressSelected = { address ->
-                                viewModel.selectAddress(address.id)
-                                viewModel.saveSelectedAddress(address)
-                                isAddressSelected = true
-                            },
-
-                            editAddress = {
-                                addNewAddress(address.id, address.address, address.phone)
-                            },
-                            onDeleteClick = {
-                                showDeleteModal = true
-                            }
-                        )
-
-                        if (showDeleteModal) {
-                            ShowModal(
-                                address = address.address,
-                                yesAction = {
-                                    viewModel.deleteAddress(address.id)
-                                    showDeleteModal = false
+                            AddressItem(
+                                address = address,
+                                onAddressSelected = { address ->
+                                    viewModel.selectAddress(address.id)
+                                    viewModel.saveSelectedAddress(address)
+                                    isAddressSelected = true
                                 },
-                                noAction = {
-                                    showDeleteModal = false
+
+                                editAddress = {
+                                    addNewAddress(address.id, address.address, address.phone)
+                                },
+                                onDeleteClick = {
+                                    showDeleteModal = true
                                 }
                             )
+
+                            if (showDeleteModal) {
+                                ShowModal(
+                                    address = address.address,
+                                    yesAction = {
+                                        viewModel.deleteAddress(address.id)
+                                        showDeleteModal = false
+                                    },
+                                    noAction = {
+                                        showDeleteModal = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
         }
 
-        if(isAddressSelected){
-            Column(modifier = modifier.padding(20.dp).align(Alignment.BottomCenter)) {
+        // Button at bottom (in Box scope)
+        if (isAddressSelected) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(20.dp)
+            ) {
                 PrimaryButton("Continue", {
                     goBackToCheckout()
                 })
-                Spacer(modifier = modifier.height(22.dp))
+                Spacer(modifier = Modifier.height(22.dp))
             }
         }
 
-
-        // Snackbar at bottom
+        // Snackbar at bottom (in Box scope)
         CustomSnackbarHost(
             snackbarHostState = snackBarHostState,
-            modifier = Modifier.align(Alignment.BottomCenter).padding(20.dp)
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(20.dp)
         )
     }
 }
 
-
 @Composable
-fun AddressItem(
+private fun AddressItem(
     address: AddressModel,
-    onAddressSelected:(AddressModel)->Unit,
+    onAddressSelected: (AddressModel) -> Unit,
     editAddress: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column {
-        Row(modifier = modifier.padding(horizontal = 26.dp).clickable{
+        Row(modifier = modifier.padding(horizontal = 26.dp).clickable {
             onAddressSelected.invoke(address)
         }) {
             Image(
@@ -237,7 +235,7 @@ fun AddressItem(
                 Text(text = address.phone, color = Color(0xFF2525252))
             }
         }
-        Row( modifier = modifier.padding(horizontal = 20.dp)) {
+        Row(modifier = modifier.padding(horizontal = 20.dp)) {
             Spacer(modifier = modifier.weight(1f))
             Image(
                 painter = painterResource(Res.drawable.trash_bin_icon),
@@ -257,7 +255,7 @@ fun AddressItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowModal(address: String, yesAction: () -> Unit, noAction: () -> Unit) {
+private fun ShowModal(address: String, yesAction: () -> Unit, noAction: () -> Unit) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
@@ -265,7 +263,10 @@ fun ShowModal(address: String, yesAction: () -> Unit, noAction: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = {
             //   showLogoutBottomSheet = false
-        }, sheetState = sheetState, containerColor = Color(0xFFF6F6F6), contentColor = Color.White
+        },
+        sheetState = sheetState,
+        containerColor = Color(0xFFF6F6F6),
+        contentColor = Color.White
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(24.dp),

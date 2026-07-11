@@ -45,7 +45,7 @@ fun CreatePasswordScreen(
     createPassword:CreatePassword,
     goBack: () -> Unit,
     goToUploadImage: (String) -> Unit,
-    goToSuccessScreen: (String,String) -> Unit,
+    goToSuccessScreen: (String,String,String) -> Unit,
     modifier: Modifier = Modifier,
     createPasswordViewModel: CreatePasswordViewModel = koinViewModel<CreatePasswordViewModel>()
 ) {
@@ -62,7 +62,7 @@ fun CreatePasswordScreen(
 
         }
         is ConfirmPasswordState.Success ->{
-            goToSuccessScreen.invoke("Congratulations! Your password has\n been changed successfully. Login to\n continue on  A-hygiene! \uD83E\uDD73","Password changed successfully!")
+            goToSuccessScreen.invoke("Congratulations! Your password has\n been changed successfully. Login to\n continue on  A-hygiene! \uD83E\uDD73","Password changed successfully!","Continue to Login")
         }
         is ConfirmPasswordState.Error ->{
             snackBar.showError("Error: ${result.message}")
@@ -99,29 +99,29 @@ fun CreatePasswordScreen(
 
         Column(
             horizontalAlignment = Alignment.Start,
-            modifier = modifier.align(Alignment.TopStart)
-                .padding(20.dp).clickable {
+            modifier = Modifier.align(Alignment.TopStart)
+                .padding(24.dp).clickable {
                     goBack()
                 }
         ) {
             Image(
                 painter = painterResource(Res.drawable.back_arrow),
-                contentDescription = "logo"
+                contentDescription = "Back arrow"
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(20.dp),
+            modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
-            Spacer(modifier = modifier.height(19.dp))
+            Spacer(modifier = Modifier.height(48.dp))
             val title = if(createPassword.from.equals("Signup")) "Create New Password" else "Reset your password"
             Text(
-                text = title, style = MaterialTheme.typography.displaySmall,
-                color = Color(0xFF232323), textAlign = TextAlign.Center
+                text = title,
+                style = MaterialTheme.typography.displaySmall,
+                color = Color(0xFF232323),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             val body = if(createPassword.from.equals("Signup")) "Kindly ensure that you\n validate your password before proceeding" else "Your new password must be different\n from previously used passwords."
             Text(
                 text = body,
@@ -129,21 +129,23 @@ fun CreatePasswordScreen(
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Form Section
             ValidatedPasswordTextField(
                 labelText = Strings.Auth.PASSWORD,
                 placeHolder = Strings.Auth.ENTER_PASSWORD,
                 fieldValidator = passwordValidator
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             ValidatedPasswordTextField(
                 labelText = Strings.Auth.CONFIRM_PASSWORD,
                 placeHolder = Strings.Auth.RE_CONFIRM_PASSWORD,
                 fieldValidator = revalidatePasswordValidator
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton("Create New Password", {
-                if(passwordValidator.value.value  == revalidatePasswordValidator.value.value){
+                if(passwordValidator.value.value == revalidatePasswordValidator.value.value){
                     if(!createPassword.from.equals("Signup")){
                         createPasswordViewModel.confirmPassword(createPassword.uniqueRef,passwordValidator.value.value,createPassword.realOtp)
                     }else {
@@ -153,7 +155,7 @@ fun CreatePasswordScreen(
                     snackBar.showError("Password mismatch pls try again later")
                 }
             })
-
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
         // Snackbar at bottom

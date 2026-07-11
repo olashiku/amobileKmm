@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
+import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.screen_components.RadioOptionGroup
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold14
@@ -101,29 +104,19 @@ fun CheckoutListScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Column {
-            Column(modifier = modifier.padding(20.dp)) {
+            // Fixed Header
+            FixedHeaderWithBackButton(
+                title = "Checkout List",
+                onBackClick = goBack
+            )
 
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    IconButton(
-                        onClick = { goBack.invoke() },
-                        modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
-                        Image(
-                            painter = painterResource(Res.drawable.back_arrow),
-                            contentDescription = "Back",
-                        )
-                    }
-                    Text(
-                        text = "Checkout List",
-                        style = getPoppinsSemiBold18(),
-                        color = Color(0xFF252525),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-            Column(modifier = modifier.padding(start = 18.dp, end = 18.dp)) {
+            // Scrollable Content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 18.dp, end = 18.dp, bottom = 100.dp)
+            ) {
                 Spacer(modifier = modifier.height(20.dp))
                 Text(
                     text = "Billing Address",
@@ -132,9 +125,9 @@ fun CheckoutListScreen(
                 )
                 Spacer(modifier = modifier.height(20.dp))
 
+                println("selected_Address $selectedAddress")
                 // Display selected address or empty state
                 if (selectedAddress != null) {
-                    // Show selected address
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -170,69 +163,76 @@ fun CheckoutListScreen(
                             }
                         }
                     }
+                } else {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.no_address_icon),
+                            contentDescription = "no address icon",
+                        )
+                        Text(
+                            text = "No Address Found",
+                            style = getPoppinsRegular14(),
+                            color = Color(0xFF252525)
+                        )
+                        Text(
+                            text = "Please Add New Address",
+                            style = getPoppinsRegular14(),
+                            color = Color(0xFF252525)
+                        )
+                        Text(
+                            text = "Add New Address",
+                            style = getPoppinsMedium16(),
+                            color = Color(0xFFF09103),
+                            modifier = modifier.padding(20.dp).clickable {
+                                addNewAddress.invoke()
+                            })
+                        Spacer(modifier = modifier.height(40.dp))
+                    }
                 }
-            }
 
-            if (selectedAddress == null) {
-                // Show empty state
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(Res.drawable.no_address_icon),
-                        contentDescription = "no address icon",
-                    )
-                    Text(
-                        text = "No Address Found",
-                        style = getPoppinsRegular14(),
-                        color = Color(0xFF252525)
-                    )
-                    Text(
-                        text = "Please Add New Address",
-                        style = getPoppinsRegular14(),
-                        color = Color(0xFF252525)
-                    )
-                    Text(
-                        text = "Add New Address",
-                        style = getPoppinsMedium16(),
-                        color = Color(0xFFF09103),
-                        modifier = modifier.padding(20.dp).clickable {
-                            addNewAddress.invoke()
-                        })
+
+                Column(modifier = modifier.padding(start = 18.dp, end = 18.dp)) {
                     Spacer(modifier = modifier.height(40.dp))
+
+                    Text(
+                        text = "Payment Options",
+                        style = getPoppinsSemiBold14(),
+                        color = Color(0xFF252525)
+                    )
+                    Spacer(modifier = modifier.height(5.dp))
+                    HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Radio option group for payment selection
+                    RadioOptionGroup(
+                        options = paymentOptions,
+                        selectedOptionId = selectedPaymentOption,
+                        onOptionSelected = { option ->
+                            selectedPaymentOption = option.id
+
+                            // Handle payment option selection
+                        },
+                        titleStyle = getPoppinsMedium14(),
+                        subtitleStyle = getPoppinsRegular12()
+                    )
+
+                    Spacer(modifier = Modifier.height(25.dp))
+                    if (selectedAddress != null) {
+                        NoCancelPolicyNote()
+                    }
+
+
                 }
-            }
-            Column(modifier = modifier.padding(start = 18.dp, end = 18.dp)) {
-                Text(
-                    text = "Payment Options",
-                    style = getPoppinsSemiBold14(),
-                    color = Color(0xFF252525)
-                )
-                Spacer(modifier = modifier.height(5.dp))
-                HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Radio option group for payment selection
-                RadioOptionGroup(
-                    options = paymentOptions,
-                    selectedOptionId = selectedPaymentOption,
-                    onOptionSelected = { option ->
-                        selectedPaymentOption = option.id
-                        // Handle payment option selection
-                    },
-                    titleStyle = getPoppinsMedium14(),
-                    subtitleStyle = getPoppinsRegular12()
-                )
-
-                Spacer(modifier = Modifier.height(25.dp))
-                if (selectedAddress != null) {
-                    NoCancelPolicyNote()
-                }
-
 
             }
+
+
+
+
         }
 
 

@@ -185,12 +185,10 @@ fun getTimeBasedGreeting(): String {
         .hour
 
     return when (currentHour) {
-        in 0..3 -> "Hello 👋🏼"           // Midnight to 3:59 AM
-        in 4..6 -> "Good Morning 😃"         // Early Morning 4:00 AM - 6:59 AM
-        in 7..11 -> "Good Morning 😃"        // Morning 7:00 AM - 11:59 AM
+        in 0..11 -> "Good Morning 😃"        // Morning 7:00 AM - 11:59 AM
         in 12..16 -> "Good Afternoon 😃"     // Afternoon 12:00 PM - 4:59 PM
         in 17..20 -> "Good Evening 😃"       // Evening 5:00 PM - 8:59 PM
-        else -> "Hello 👋🏼"              // Night 9:00 PM - 11:59 PM
+        else -> "Hello there 👋🏼"              // Night 9:00 PM - 11:59 PM
     }
 }
 

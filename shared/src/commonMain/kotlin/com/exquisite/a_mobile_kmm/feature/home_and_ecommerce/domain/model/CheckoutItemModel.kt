@@ -39,7 +39,7 @@ val paymentOptions = listOf(
     RadioOption(
         id = "wallet",
         title = "Pay with Wallet",
-        subtitle = "(Your Wallet Balance is $100)"
+        subtitle = "Debit from your wallet"
     ),
     RadioOption(
         id = "standard",

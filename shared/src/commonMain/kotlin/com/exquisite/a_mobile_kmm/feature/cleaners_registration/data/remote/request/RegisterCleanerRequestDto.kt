@@ -12,5 +12,6 @@ data class RegisterCleanerRequestDto(
     val resumeUrl: String,
     val pictureUrl: List<String>,
     val gender: String,
-    val employmentStatus: String
+    val employmentStatus: String,
+    val experienceLevel:String
 )

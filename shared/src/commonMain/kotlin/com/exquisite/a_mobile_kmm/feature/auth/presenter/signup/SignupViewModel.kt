@@ -3,6 +3,7 @@ package com.exquisite.a_mobile_kmm.feature.auth.presenter.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.auth.domain.model.SignupFormData
 import com.exquisite.a_mobile_kmm.feature.auth.domain.usecase.InitRegisterUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -17,6 +18,10 @@ class SignupViewModel(private val registerUseCase: InitRegisterUseCase) : ViewMo
 
     private var _rememberMeState = MutableStateFlow<Boolean>(false)
     val rememberMeState = _rememberMeState.asStateFlow()
+
+    // Persisted form values
+    private val _persistedFormData = MutableStateFlow(SignupFormData())
+    val persistedFormData = _persistedFormData.asStateFlow()
 
 
     fun register(email: String, firstName: String, lastName: String, phone: String) {
@@ -50,5 +55,23 @@ class SignupViewModel(private val registerUseCase: InitRegisterUseCase) : ViewMo
 
     fun clearState() {
         registrationState.value = RegisterState.Idle
+    }
+
+    fun saveFormData(
+        firstName: String,
+        lastName: String,
+        email: String,
+        phone: String
+    ) {
+        _persistedFormData.value = SignupFormData(
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            phone = phone
+        )
+    }
+
+    fun clearFormData() {
+        _persistedFormData.value = SignupFormData()
     }
 }

@@ -200,6 +200,7 @@ fun poppinsTextStyle(
 // MARK: - Regular (400)
 
 @Composable fun getPoppinsRegular10() = poppinsTextStyle(FontWeight.Normal, 10, 14)
+@Composable fun getPoppinsRegular11() = poppinsTextStyle(FontWeight.Normal, 11, 16)
 @Composable fun getPoppinsRegular12() = poppinsTextStyle(FontWeight.Normal, 12, 16)
 @Composable fun getPoppinsRegular14() = poppinsTextStyle(FontWeight.Normal, 14, 20)
 @Composable fun getPoppinsRegular16() = poppinsTextStyle(FontWeight.Normal, 16, 22)
@@ -216,6 +217,7 @@ fun poppinsTextStyle(
 
 @Composable fun getPoppinsMedium10() = poppinsTextStyle(FontWeight.Medium, 10, 14)
 @Composable fun getPoppinsMedium12() = poppinsTextStyle(FontWeight.Medium, 12, 16)
+@Composable fun getPoppinsMedium13() = poppinsTextStyle(FontWeight.Medium, 13, 16)
 @Composable fun getPoppinsMedium14() = poppinsTextStyle(FontWeight.Medium, 14, 20)
 @Composable fun getPoppinsMedium16() = poppinsTextStyle(FontWeight.Medium, 16, 22)
 @Composable fun getPoppinsMedium18() = poppinsTextStyle(FontWeight.Medium, 18, 26)
@@ -231,6 +233,8 @@ fun poppinsTextStyle(
 
 @Composable fun getPoppinsSemiBold10() = poppinsTextStyle(FontWeight.SemiBold, 10, 14)
 @Composable fun getPoppinsSemiBold12() = poppinsTextStyle(FontWeight.SemiBold, 12, 16)
+@Composable fun getPoppinsSemiBold13() = poppinsTextStyle(FontWeight.SemiBold, 13, 16)
+
 @Composable fun getPoppinsSemiBold14() = poppinsTextStyle(FontWeight.SemiBold, 14, 20)
 @Composable fun getPoppinsSemiBold16() = poppinsTextStyle(FontWeight.SemiBold, 16, 22)
 @Composable fun getPoppinsSemiBold18() = poppinsTextStyle(FontWeight.SemiBold, 18, 26)
@@ -245,6 +249,7 @@ fun poppinsTextStyle(
 // MARK: - Bold (700)
 
 @Composable fun getPoppinsBold10() = poppinsTextStyle(FontWeight.Bold, 10, 14)
+@Composable fun getPoppinsBold11() = poppinsTextStyle(FontWeight.Bold, 11, 16)
 @Composable fun getPoppinsBold12() = poppinsTextStyle(FontWeight.Bold, 12, 16)
 @Composable fun getPoppinsBold14() = poppinsTextStyle(FontWeight.Bold, 14, 20)
 @Composable fun getPoppinsBold15() = poppinsTextStyle(FontWeight.Bold, 15, 22)

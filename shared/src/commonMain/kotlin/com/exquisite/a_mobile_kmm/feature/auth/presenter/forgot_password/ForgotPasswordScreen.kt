@@ -100,48 +100,51 @@ fun ForgotPasswordScreen(
 
         Column(
             horizontalAlignment = Alignment.Start,
-            modifier = modifier.align(Alignment.TopStart)
-                .padding(20.dp).clickable {
+            modifier = Modifier.align(Alignment.TopStart)
+                .padding(24.dp).clickable {
                     goBack()
                 }
         ) {
             Image(
                 painter = painterResource(Res.drawable.back_arrow),
-                contentDescription = "logo"
+                contentDescription = "Back arrow"
             )
         }
         Column(
-            modifier = Modifier.fillMaxSize().padding(20.dp),
+            modifier = Modifier.fillMaxSize().padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-
-            Spacer(modifier = modifier.height(19.dp))
+            Spacer(modifier = Modifier.height(48.dp))
             Text(
-                text = "Forgot password", style = MaterialTheme.typography.displaySmall,
-                color = Color(0xFF232323), textAlign = TextAlign.Center
+                text = "Forgot password",
+                style = MaterialTheme.typography.displaySmall,
+                color = Color(0xFF232323),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Please enter your email to reset the password",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color(0xFF232323),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Form Section
             ValidatedTextField(
                 labelText = Strings.Auth.EMAIL,
                 placeHolder = Strings.Auth.ENTER_EMAIL,
                 fieldValidator = emailValidator,
                 imeAction = ImeAction.Done
             )
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             PrimaryButton("Reset password", {
                 val isEmailValid = emailValidator.forceValidation()
                 if (isEmailValid) {
                     forgotPasswordViewModel.invoke(emailValidator.value.value)
                 }
             })
+            Spacer(modifier = Modifier.height(32.dp))
         }
 
         // Snackbar at bottom
