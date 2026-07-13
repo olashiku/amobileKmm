@@ -98,6 +98,7 @@ fun BasicCleaningFormScreen(
      when(val result = basicCleaningFormState){
          is BasicCleaningFormState.Success -> {
              LaunchedEffect(result) {
+                 viewModel.resetState()
                  goToPreview.invoke(NavigationUtils.encodeObject(persistedFormData),NavigationUtils.encodeObject(result.data))
              }
          }
@@ -151,8 +152,7 @@ fun BasicCleaningFormScreen(
                     defaultText = persistedFormData.numberOfRooms?.first?:"",
                     options = numberOfRoomsModelData.map { it.name },
                     onSelectionChange = { selectedRoomNo ->
-                        numberOfRoomsId =
-                            numberOfRoomsModelData.find { it.name == selectedRoomNo }?.id ?: 0
+                        numberOfRoomsId = numberOfRoomsModelData.find { it.name == selectedRoomNo }?.id ?: 0
 
                     },
                     isLoading = isNumberOfRoomsLoading,

@@ -147,16 +147,24 @@ fun DeepCleaningPriceDetailsScreen(
 
 @Composable
 fun CleaningSummaryItem(deepCleaningFormData: CleaningSummaryData) {
-    Row {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Text(
-            text = deepCleaningFormData.title, color = Color(0xFF64748B),
+            text = deepCleaningFormData.title,
+            color = Color(0xFF64748B),
             style = getPoppinsSemiBold13(),
-            fontSize = 13.sp
+            fontSize = 13.sp,
+            modifier = Modifier.weight(0.4f, fill = false)
         )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = deepCleaningFormData.description,
+        Text(
+            text = deepCleaningFormData.description,
             style = getPoppinsMedium13(),
-            color = Color(0xFF1A1A1A), fontSize = 13.sp)
+            color = Color(0xFF1A1A1A),
+            fontSize = 13.sp,
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(0.6f, fill = false)
+        )
     }
-
 }

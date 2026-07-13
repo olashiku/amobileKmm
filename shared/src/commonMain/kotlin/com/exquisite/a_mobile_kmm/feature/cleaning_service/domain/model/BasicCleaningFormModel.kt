@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BasicCleaningFormModel(
-    val numberOfRooms: Pair<String,String> = Pair("",""),
+    val numberOfRooms:Pair<String, String>? = null,
     val cleaningTime: String = "",
     val cleaningDate: List<String> = emptyList()
 

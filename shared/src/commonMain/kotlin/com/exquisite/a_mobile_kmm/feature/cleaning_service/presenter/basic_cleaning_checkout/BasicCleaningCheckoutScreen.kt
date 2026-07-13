@@ -1,4 +1,4 @@
-package com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout
+package com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_checkout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,29 +36,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
-import com.exquisite.a_mobile_kmm.core.screenUtils.formatTime
 import com.exquisite.a_mobile_kmm.core.screen_components.Badge
 import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.screen_components.RadioOptionGroup
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold14
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium13
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular12
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold13
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningPriceModel
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningSummaryData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormModel
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCheckoutSummaryData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getDeepCleaningCheckoutBalances
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningBreakdownModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningForm2Model
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningFormModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getBasicCleaningCheckoutBalances
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCleaningSummaryDataWithPrice
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.DeepCleaningCheckoutState
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.CleaningSummaryItem
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.paymentOptions
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.checkout_list.Item
 import com.exquisite.dripp.core.components.CustomSnackbarHost
@@ -67,61 +64,61 @@ import com.exquisite.dripp.core.components.rememberSnackBar
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun DeepCleaningCheckoutScreen(
-    deepCleaningFormData: DeepCleaningFormData,
-    cleaningPriceModel: CleaningPriceModel,
-    deepCleaningFormModel: DeepCleaningFormModel,
+fun BasicCleaningCheckoutScreen(
+    basicCleaningFormModel: BasicCleaningFormModel,
+    basicCleaningBreakdownModel: BasicCleaningBreakdownModel,
+    basicCleaningForm2Model: BasicCleaningForm2Model,
     savedStateHandle: SavedStateHandle,
-    viewModel: DeepCleaningCheckoutViewModel = koinViewModel<DeepCleaningCheckoutViewModel>(),
     goBack: () -> Unit,
     goToWebView: (String) -> Unit,
-    goToSuccess: (String, String, String) -> Unit,
-    modifier: Modifier = Modifier
+    gotoSuccessPage: (String, String, String) -> Unit,
+    viewModel: BasicCleaningCheckoutViewModel = koinViewModel<BasicCleaningCheckoutViewModel>(),
+    modifier: Modifier = Modifier,
 ) {
     val (snackBar, snackBarHostState) = rememberSnackBar()
     var selectedPaymentOption by remember { mutableStateOf<String?>("standard") }
 
-    val state = viewModel.deepCleaningCheckoutState.collectAsStateWithLifecycle()
-    when (val result = state.value) {
-        is DeepCleaningCheckoutState.Idle -> {}
+    val state = viewModel.basicCleaningState.collectAsStateWithLifecycle()
 
-        is DeepCleaningCheckoutState.CompletePaymentSuccess -> {
+
+
+    when (val result = state.value) {
+        is BasicCleaningState.Idle -> {
+            LoadingDialog(false)
+        }
+
+        is BasicCleaningState.Loading -> {
+            LoadingDialog(true)
+        }
+
+        is BasicCleaningState.InitBasicCleaningSuccess -> {
             LaunchedEffect(result) {
-                viewModel.clearError()
-                goToSuccess.invoke(
+                viewModel.saveReference(result.data.ref)
+                goToWebView(result.data.paymentLink)
+                viewModel.resetState()
+            }
+
+        }
+
+        is BasicCleaningState.CompleteBasicCleaningSuccess -> {
+            LaunchedEffect(result) {
+                viewModel.resetState()
+                gotoSuccessPage.invoke(
                     "Payment Successful!✅",
                     "Thank you for placing your order. A confirmation email has been send to your mailbox.",
                     "Done"
                 )
             }
         }
-
-        is DeepCleaningCheckoutState.Error -> {
+        is BasicCleaningState.Error -> {
             snackBar.showError(result.message)
-            viewModel.clearError()
-        }
-
-        is DeepCleaningCheckoutState.InitPaymentSuccess -> {
-            LaunchedEffect(result) {
-                viewModel.saveReference(result.payment.ref)
-                goToWebView(result.payment.paymentLink)
-                viewModel.clearError()
-            }
-        }
-
-        DeepCleaningCheckoutState.Loading -> {
-            LoadingDialog(true)
-        }
-
-        is DeepCleaningCheckoutState.PaymentSuccess -> {
-            viewModel.clearError()
+            viewModel.resetState()
         }
     }
-
     LaunchedEffect(Unit) {
         savedStateHandle.getStateFlow<String?>("transaction_id", null).collect { transactionId ->
             if (!transactionId.isNullOrEmpty()) {
-                viewModel.completePayment(
+                viewModel.completeBasicCleaningPayment(
                     txnRef = transactionId
                 )
             }
@@ -136,7 +133,7 @@ fun DeepCleaningCheckoutScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             // Fixed Header
             FixedHeaderWithBackButton(
-                title = "Deep Cleaning  Checkout",
+                title = "Basic Cleaning Checkout",
                 onBackClick = goBack
             )
 
@@ -160,25 +157,27 @@ fun DeepCleaningCheckoutScreen(
                             .background(Color(0XFFFFF9F0)).padding(20.dp)
                     ) {
                         Spacer(modifier = modifier.height(1.dp))
-                        Badge("DEEP CLEANING")
+                        Badge("BASIC CLEANING")
                         Spacer(modifier = modifier.height(8.dp))
                         Text(
-                            text = "${
-                                cleaningPriceModel.cleaningType.name.lowercase()
-                                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                            } service", style = getPoppinsSemiBold18(), color = Color(0XFF1A1A1A))
+                            text = "Basic cleaning service",
+                            style = getPoppinsSemiBold18(),
+                            color = Color(0XFF1A1A1A)
+                        )
                     }
                     Column(modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            getCheckoutSummaryData(
-                                deepCleaningFormData,
-                                deepCleaningFormModel
+                            getCleaningSummaryDataWithPrice(
+                                basicCleaningBreakdownModel,
+                                basicCleaningFormModel,
+                                basicCleaningForm2Model
                             ).forEach { item ->
                                 CleaningSummaryItem(item)
                             }
                         }
+                        Spacer(modifier = modifier.height(20.dp))
+
                     }
-                    Spacer(modifier = modifier.height(20.dp))
                 }
 
                 // Scroll indicator
@@ -201,7 +200,7 @@ fun DeepCleaningCheckoutScreen(
 
                 // TODO:  radio checkout here
                 Column {
-                    Spacer(modifier = modifier.height(40.dp))
+                    Spacer(modifier = modifier.height(8.dp))
 
                     Text(
                         text = "Payment Options",
@@ -219,7 +218,6 @@ fun DeepCleaningCheckoutScreen(
                         selectedOptionId = selectedPaymentOption,
                         onOptionSelected = { option ->
                             selectedPaymentOption = option.id
-
                         },
                         titleStyle = getPoppinsMedium14(),
                         subtitleStyle = getPoppinsRegular12()
@@ -230,6 +228,7 @@ fun DeepCleaningCheckoutScreen(
             }
         }
 
+        // checkout implementation
         Column(
             modifier = modifier
                 .align(BottomCenter)
@@ -242,20 +241,15 @@ fun DeepCleaningCheckoutScreen(
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                getDeepCleaningCheckoutBalances(
-                    cleaningPriceModel,
-                    deepCleaningFormModel
-                ).filter { it.balance != 0.0 }.forEach {
+                getBasicCleaningCheckoutBalances(basicCleaningBreakdownModel).forEach {
                     Item(checkoutItemModel = it)
                 }
             }
             Spacer(modifier = modifier.height(10.dp))
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
-            val balance = getDeepCleaningCheckoutBalances(
-                cleaningPriceModel,
-                deepCleaningFormModel
-            ).sumOf { it.balance }
+            val balance =
+                getBasicCleaningCheckoutBalances(basicCleaningBreakdownModel).sumOf { it.balance }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Total Cost", style = getPoppinsBold14(), color = Color(0xFF252525))
                 Spacer(modifier = modifier.weight(1F))
@@ -267,60 +261,27 @@ fun DeepCleaningCheckoutScreen(
             }
             Spacer(modifier = modifier.height(40.dp))
             PrimaryButton("Continue", {
-
                 if (selectedPaymentOption == "standard") {
-                    viewModel.initPayment(
-                        deepCleaningFormData.region?.second?.toInt() ?: 0,
-                        deepCleaningFormData.location?.second?.toInt() ?: 0,
-                        deepCleaningFormData.typeOfApartment?.second?.toInt() ?: 0,
-                        deepCleaningFormData.cleaningType?.second?.toInt() ?: 0,
-                        deepCleaningFormData.numberOfRooms?.second?.toInt() ?: 0,
-                        deepCleaningFormModel.postConstruction,
-                        deepCleaningFormModel.cleaningDate.fullDate,
-                        deepCleaningFormModel.cleaningTime.formatTime(),
-                        deepCleaningFormData.address?.first ?: "",
-                        deepCleaningFormModel.images
-                    )
+                    viewModel.initBasicCleaningPayment(basicCleaningBreakdownModel.reference,
+                        basicCleaningForm2Model.typeOfApartment?.second?.toInt()?:0
+                        ,basicCleaningForm2Model.images,basicCleaningForm2Model.region?.second?.toInt()?:0,
+                        basicCleaningForm2Model.location?.second?.toInt()?:0,basicCleaningForm2Model.address)
                 } else {
-                    viewModel.debitFromWallet(
-                        deepCleaningFormData.region?.second?.toInt() ?: 0,
-                        deepCleaningFormData.location?.second?.toInt() ?: 0,
-                        deepCleaningFormData.typeOfApartment?.second?.toInt() ?: 0,
-                        deepCleaningFormData.cleaningType?.second?.toInt() ?: 0,
-                        deepCleaningFormData.numberOfRooms?.second?.toInt() ?: 0,
-                        deepCleaningFormModel.postConstruction,
-                        deepCleaningFormModel.cleaningDate.fullDate,
-                        deepCleaningFormModel.cleaningTime.formatTime(),
-                        deepCleaningFormData.address?.first ?: "",
-                        deepCleaningFormModel.images
-                    )
-                }
+                    viewModel.debitFromWalletBasicCleaningPayment(basicCleaningBreakdownModel.reference,
+                        basicCleaningForm2Model.typeOfApartment?.second?.toInt()?:0
+                        ,basicCleaningForm2Model.images,basicCleaningForm2Model.region?.second?.toInt()?:0,
+                        basicCleaningForm2Model.location?.second?.toInt()?:0,basicCleaningForm2Model.address)
 
+                }
             })
             Spacer(modifier = modifier.height(20.dp))
         }
+
 
         // Snackbar at bottom
         CustomSnackbarHost(
             snackbarHostState = snackBarHostState,
             modifier = Modifier.align(BottomCenter).padding(20.dp)
-        )
-    }
-}
-
-@Composable
-fun CleaningSummaryItem(deepCleaningFormData: CleaningSummaryData) {
-    Row {
-        Text(
-            text = deepCleaningFormData.title, color = Color(0xFF64748B),
-            style = getPoppinsSemiBold13(),
-            fontSize = 13.sp
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = deepCleaningFormData.description,
-            style = getPoppinsMedium13(),
-            color = Color(0xFF1A1A1A), fontSize = 13.sp
         )
     }
 

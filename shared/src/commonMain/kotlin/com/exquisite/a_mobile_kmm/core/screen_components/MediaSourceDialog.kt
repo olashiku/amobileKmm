@@ -57,7 +57,7 @@ fun MediaSourceDialog(
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
-                color = Color.White
+                color = Color.Black
             )
         },
         text = {
@@ -97,7 +97,7 @@ fun MediaSourceDialog(
                 }
             }
         },
-        containerColor = Color(0xFF1A1A1A),
+        containerColor = Color(0xFFFFFFFF),
         modifier = modifier
     )
 }

@@ -5,6 +5,7 @@ package com.exquisite.a_mobile_kmm.core.screenUtils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
@@ -133,6 +134,46 @@ fun String.to12HourFormat(): String {
     } catch (e: Exception) {
         this
     }
+}
+
+fun String.toLocalDateSafe(): LocalDate? {
+    return try {
+        // Try parsing as ISO 8601 timestamp first (e.g., "2025-07-25T15:17:00")
+        if (this.contains("T")) {
+            val instant = Instant.parse(this)
+            instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        } else {
+            // Parse as date-only format (e.g., "2025-07-25")
+            LocalDate.parse(this)
+        }
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun String.toCompactDateFormat(): String {
+    return try {
+        val date = this.toLocalDateSafe() ?: return this
+        "${date.month.name.take(3)} ${date.dayOfMonth}, ${date.year}"
+    } catch (e: Exception) {
+        this
+    }
+}
+
+fun String.toFormattedDate(): String {
+    val dateTime = LocalDateTime.parse(this)
+
+    val formatter = LocalDateTime.Format {
+        monthName(MonthNames.ENGLISH_FULL)
+        char(' ')
+        dayOfMonth(padding = androidx.compose.ui.text.style.TextAlign.Start.let {
+            kotlinx.datetime.format.Padding.NONE
+        })
+        char(' ')
+        year()
+    }
+
+    return dateTime.format(formatter)
 }
 
 fun getTimeBasedGreeting(): String {

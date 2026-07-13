@@ -38,10 +38,12 @@ import com.exquisite.a_mobile_kmm.feature.cleaners_registration.domain.model.Reg
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.presenter.cleaners_document.CleanersDocumentUploadScreen
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.presenter.cleaners_registration.CleanersRegistrationScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningBreakdownModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningForm2Model
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningPriceModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormData
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_checkout.BasicCleaningCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_form.BasicCleaningFormScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_form_two.BasicCleaningFormTwoScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_price.BasicCleaningPriceDetailsScreen
@@ -386,14 +388,16 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<BasicCleaningPriceDetails> { backTrack ->
                 val data = backTrack.toRoute<BasicCleaningPriceDetails>()
-                val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
-                val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                val basicCleaningFormModel =
+                    NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                val basicCleaningBreakdownModel =
+                    NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
                 BasicCleaningPriceDetailsScreen(
                     basicCleaningFormModel, basicCleaningBreakdownModel,
                     goBack = {
                         navController.popBackStack()
                     }, goToNextPage = {
-                        BasicCleaningFormTwo(data.data,data.response)
+                        navController.navigate(BasicCleaningFormTwo(data.data, data.response))
                     })
             }
 
@@ -402,11 +406,33 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
                 val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
 
-                BasicCleaningFormTwoScreen(basicCleaningFormModel,basicCleaningBreakdownModel,  goBack = {
-                    navController.popBackStack()
-                }, goToCheckoutPage = { screenData ->
+                BasicCleaningFormTwoScreen(
+                    basicCleaningFormModel,
+                    basicCleaningBreakdownModel,
+                    goBack = {
+                        navController.popBackStack()
+                    },
 
-                })
+                    goToCheckoutPage = { basicCleaningFormModel,basicCleaningBreakdownModel, basicCleaningFormTwoData ->
+                        navController.navigate(BasicCleaningCheckout(basicCleaningFormModel, basicCleaningBreakdownModel, basicCleaningFormTwoData))
+                    })
+            }
+
+            composable<BasicCleaningCheckout> { backTrack ->
+                val data = backTrack.toRoute<BasicCleaningCheckout>()
+                val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                val basicCleaningForm2Model = NavigationUtils.decodeObject<BasicCleaningForm2Model>(data.inputData)
+
+
+                BasicCleaningCheckoutScreen(basicCleaningFormModel,basicCleaningBreakdownModel,basicCleaningForm2Model,
+                    savedStateHandle =backTrack.savedStateHandle,goBack ={
+                        navController.popBackStack()
+                    },
+                    goToWebView = { url -> navController.navigate(WebViewUrl(url))
+                    },gotoSuccessPage ={ title, message, buttonText ->
+                        navController.navigate(Success(message, title, buttonText, false))
+                    })
             }
         }
     }

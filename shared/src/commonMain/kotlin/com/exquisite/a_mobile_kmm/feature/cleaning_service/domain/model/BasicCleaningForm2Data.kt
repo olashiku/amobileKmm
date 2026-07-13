@@ -8,7 +8,7 @@ data class BasicCleaningForm2Model(
     val region: Pair<String, String>? = null,
     val location: Pair<String, String>? = null,
     val typeOfApartment: Pair<String, String>? = null,
-    val address: Pair<String, String?>? = null,
+    val address: String = "",
     val images:List<String> = emptyList()
 )
 

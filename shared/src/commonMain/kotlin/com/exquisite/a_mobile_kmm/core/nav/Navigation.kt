@@ -117,6 +117,9 @@ data class BasicCleaningPriceDetails(val data:String, val response:String)
 data class BasicCleaningFormTwo(val data:String, val response:String)
 
 @Serializable
+data class BasicCleaningCheckout(val data:String, val response:String, val inputData:String)
+
+@Serializable
 data class DeepCleaningFormTwo(
     val response:String,val data:String
 )

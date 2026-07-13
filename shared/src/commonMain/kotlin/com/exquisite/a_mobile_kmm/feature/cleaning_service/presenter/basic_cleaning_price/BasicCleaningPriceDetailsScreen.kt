@@ -59,7 +59,7 @@ fun BasicCleaningPriceDetailsScreen(
         Column {
             // Fixed Header
             FixedHeaderWithBackButton(
-                title = "Deep Cleaning Summary",
+                title = "Basic Cleaning Summary",
                 onBackClick = goBack
             )
 

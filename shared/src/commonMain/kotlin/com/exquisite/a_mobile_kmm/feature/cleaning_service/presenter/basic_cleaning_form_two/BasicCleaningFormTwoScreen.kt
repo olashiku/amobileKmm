@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.camera.rememberCameraLauncher
+import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper
 import com.exquisite.a_mobile_kmm.core.screenUtils.generateImageFileName
@@ -39,10 +40,13 @@ import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedDropdownField
 import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedTextField
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
+import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.ImageUploadState
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningBreakdownModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningForm2Model
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form_two.PhotoUploadSection
 import com.exquisite.dripp.core.components.CustomSnackbarHost
+import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
 import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
@@ -53,8 +57,9 @@ fun BasicCleaningFormTwoScreen(
     basicCleaningFormModel: BasicCleaningFormModel,
     basicCleaningBreakdownModel: BasicCleaningBreakdownModel,
     viewModel: BasicCleaningFormTwoViewModel = koinViewModel<BasicCleaningFormTwoViewModel>(),
-    goBack: () -> Unit, goToCheckoutPage: (String) -> Unit, modifier: Modifier = Modifier,
+    goBack: () -> Unit, goToCheckoutPage: (String,String,String) -> Unit, modifier: Modifier = Modifier,
 ) {
+
     val (snackBar, snackBarHostState) = rememberSnackBar()
 
     val isRegionLoading by viewModel.isRegionLoading.collectAsStateWithLifecycle()
@@ -84,6 +89,28 @@ fun BasicCleaningFormTwoScreen(
     val scope = rememberCoroutineScope()
     val imageUploadState = viewModel.imageUploadState.collectAsStateWithLifecycle()
 
+
+    LaunchedEffect(imageUploadState.value) {
+        when (val result = imageUploadState.value) {
+            is ImageUploadState.Success -> {
+                if (!imageUrl.contains(result.url)){
+                    viewModel.addImageUrl(result.url)
+                    viewModel.clearImageUploadState()
+                }
+            }
+            else -> {}
+        }
+    }
+
+    // Show loading dialog when uploading
+    when (imageUploadState.value) {
+        is ImageUploadState.Loading -> {
+            LoadingDialog(true)
+        }
+        else -> {
+            LoadingDialog(false)
+        }
+    }
 
     val cameraLauncher = rememberCameraLauncher { imageData ->
         imageData?.let {
@@ -208,7 +235,7 @@ fun BasicCleaningFormTwoScreen(
                     labelText = "Address",
                     placeHolder = "Enter you address ",
                     fieldValidator = addressValidator,
-                    defaultText = persistedFormData.address?.first ?: "",
+                    defaultText = persistedFormData.address,
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next,
                 )
@@ -221,7 +248,6 @@ fun BasicCleaningFormTwoScreen(
                     onTap = {
                         showImageSourceDialog = true
                     },
-                    modifier = Modifier.padding(horizontal = 20.dp)
                 )
                 Spacer(modifier = Modifier.height(15.dp))
 
@@ -242,7 +268,25 @@ fun BasicCleaningFormTwoScreen(
         }
 
         PrimaryButton("Proceed to Checkout", {
+            val isRegionValid = regionValidator.forceValidation()
+            val isLocationValida = locationValidator.forceValidation()
+            val isTypeOfApartmentValid = typeOfApartmentValidator.forceValidation()
+            val isAddressValid = addressValidator.forceValidation()
+            if (isRegionValid && isLocationValida && isTypeOfApartmentValid && isAddressValid && imageUrl.isNotEmpty()) {
 
+             val formData = BasicCleaningForm2Model(
+                 region = regionValidator.value.value to regionId.toString(),
+                 location = locationValidator.value.value to locationId.toString(),
+                 typeOfApartment = typeOfApartmentValidator.value.value to apartmentId.toString(),
+                 address = addressValidator.value.value,
+                 images = imageUrl
+             )
+                viewModel.saveFormData(formData)
+                goToCheckoutPage.invoke(NavigationUtils.encodeObject(basicCleaningFormModel),NavigationUtils.encodeObject(basicCleaningBreakdownModel),NavigationUtils.encodeObject(formData))
+
+            } else {
+                snackBar.showError("Please fill in the required fields")
+            }
 
 
 
@@ -272,6 +316,5 @@ fun BasicCleaningFormTwoScreen(
                 }
             )
         }
-
     }
 }

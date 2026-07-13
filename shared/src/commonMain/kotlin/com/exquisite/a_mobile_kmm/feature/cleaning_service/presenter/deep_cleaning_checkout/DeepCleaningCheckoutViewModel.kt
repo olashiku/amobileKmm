@@ -26,6 +26,12 @@ class DeepCleaningCheckoutViewModel(
     private var _deepCleaningCheckoutState = MutableStateFlow<DeepCleaningCheckoutState>(DeepCleaningCheckoutState.Idle)
     val deepCleaningCheckoutState = _deepCleaningCheckoutState.asStateFlow()
 
+    private val paymentRef = MutableStateFlow("")
+    val paymentRefState = paymentRef.asStateFlow()
+
+    fun saveReference(reference: String) {
+        paymentRef.value = reference
+    }
     fun initPayment(regionId: Int, locationId: Int, apartmentId: Int, cleaningTypeId: Int, numberOfRoomsId: Int, isPostConstruction: Boolean,cleaningDate:String,cleaningTime:String, address: String,images:List<String>) {
         viewModelScope.launch {
             val customerId = dataStore.getUserId().first()
@@ -41,11 +47,11 @@ class DeepCleaningCheckoutViewModel(
         }
     }
 
-    fun completePayment(ref: String, txnRef: String) {
+    fun completePayment( txnRef: String) {
         viewModelScope.launch {
             _deepCleaningCheckoutState.value = DeepCleaningCheckoutState.Loading
             val customerId = dataStore.getUserId().first()
-          val   request= CompleteDeepCleaningPaymentRequest(customerId.toInt(),ref,txnRef)
+          val   request= CompleteDeepCleaningPaymentRequest(customerId.toInt(),paymentRef.value,txnRef)
             completeDeepCleaningPaymentUseCase.invoke(request).collect { response ->
                 when (response) {
                     is UseCaseResult.Success -> _deepCleaningCheckoutState.value = DeepCleaningCheckoutState.CompletePaymentSuccess(response.data)

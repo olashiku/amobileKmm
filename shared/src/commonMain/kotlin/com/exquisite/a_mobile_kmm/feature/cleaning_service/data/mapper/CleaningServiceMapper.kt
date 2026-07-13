@@ -178,24 +178,24 @@ fun GetBasicCleaningBreakdownRequest.toDto(): GetBasicCleaningBreakdownRequestDt
 fun InitBasicCleaningPaymentRequest.toDto(): InitBasicCleaningPaymentRequestDto {
     return InitBasicCleaningPaymentRequestDto(
         reference = reference,
-        apartmentTypeId = apartmentTypeId,
+        apartmentTypeId = apartmentTypeId.toString(),
         images = images,
-        regionId = regionId,
-        locationId = locationId,
+        regionId = regionId.toString(),
+        locationId = locationId.toString(),
         address = address,
-        customerId = customerId
+        customerId = customerId.toString()
     )
 }
 
 fun DebitFromWalletBasicCleaningPaymentRequest.toDto(): DebitFromWalletBasicCleaningPaymentRequestDto {
     return DebitFromWalletBasicCleaningPaymentRequestDto(
         reference = reference,
-        apartmentTypeId = apartmentTypeId,
+        apartmentTypeId = apartmentTypeId.toString(),
         images = images,
-        regionId = regionId,
-        locationId = locationId,
+        regionId = regionId.toString(),
+        locationId = locationId.toString(),
         address = address,
-        customerId = customerId
+        customerId = customerId.toString()
     )
 }
 

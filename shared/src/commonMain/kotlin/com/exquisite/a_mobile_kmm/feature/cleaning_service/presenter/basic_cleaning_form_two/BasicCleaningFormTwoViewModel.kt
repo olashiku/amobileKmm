@@ -132,11 +132,26 @@ class BasicCleaningFormTwoViewModel(
         }
     }
 
+    fun saveFormData(basicCleaningForm2Model:BasicCleaningForm2Model
+
+    ) {
+        _persistedFormData.value = basicCleaningForm2Model
+    }
+
     fun clearError() {
         _errorMessage.value = null
     }
 
     fun removeImageUrl(url: String) {
         _uploadedImageUrls.value = _uploadedImageUrls.value.filter { it != url }
+    }
+
+    fun addImageUrl(url: String) {
+        if (!_uploadedImageUrls.value.contains(url)) {
+            _uploadedImageUrls.value = _uploadedImageUrls.value + url
+        }
+    }
+    fun clearImageUploadState() {
+        _imageUploadState.value = ImageUploadState.Idle
     }
 }
