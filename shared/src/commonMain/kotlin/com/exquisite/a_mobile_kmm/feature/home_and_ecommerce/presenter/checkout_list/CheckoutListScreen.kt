@@ -103,7 +103,7 @@ fun CheckoutListScreen(
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
-        Column {
+        Column(modifier = Modifier.fillMaxSize()) {
             // Fixed Header
             FixedHeaderWithBackButton(
                 title = "Checkout List",
