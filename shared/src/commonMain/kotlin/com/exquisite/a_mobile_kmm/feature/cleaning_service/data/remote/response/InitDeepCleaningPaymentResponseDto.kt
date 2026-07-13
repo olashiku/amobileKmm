@@ -16,7 +16,5 @@ object PaymentDataSerializer :
 
 @Serializable
 data class PaymentDataDto(
-    val authorization_url: String = "",
-    val access_code: String = "",
-    val reference: String = ""
-)
+    val paymentLink: String = "",
+    val ref: String = "")

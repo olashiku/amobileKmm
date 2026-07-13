@@ -18,11 +18,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -35,7 +37,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -66,11 +71,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -82,6 +89,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold11
@@ -90,17 +98,21 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold20
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium10
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium12
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium13
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular18
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold13
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.DashboardModel
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import kotlinx.datetime.*
-
+import kotlinx.serialization.Serializable
 
 
 @Composable
@@ -802,7 +814,7 @@ fun MenuItem(dashboardModal: DashboardModel,goToMenuItem: (String) -> Unit, modi
 }
 
 @Composable
-fun EmptyState(title: String, body: String, modifier: Modifier = Modifier) {
+fun EmptyState(title: String, body: String,imageDrawable: DrawableResource = Res.drawable.empty_state_list, modifier: Modifier = Modifier) {
     Box {
         Column(
             modifier = modifier.fillMaxWidth().height(300.dp).clip(RoundedCornerShape(20.dp))
@@ -816,7 +828,7 @@ fun EmptyState(title: String, body: String, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = painterResource(Res.drawable.empty_state_list),
+                painter = painterResource(imageDrawable),
                 contentDescription = "empty_state"
             )
             Text(
@@ -1060,6 +1072,7 @@ fun Badge(title:String) {
     )
 }
 
+@Serializable
 data class DateModel(
     val dayName: String,
     val dayNumber: String,
@@ -1270,5 +1283,799 @@ fun OptionCard(
     }
 }
 
+
+@Composable
+fun ImageGrid(
+    services: List<String>,
+    modifier: Modifier = Modifier,
+    deleteImage: (String) -> Unit
+) {
+    val columns = 3
+    val cardHeight = 88.dp
+    val horizontalSpacing = 8.dp
+    val verticalSpacing = 12.dp
+    val rows = (services.size + columns - 1) / columns
+    val totalHeight = (cardHeight * rows) + (verticalSpacing * (rows - 1).coerceAtLeast(0))
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(columns),
+        modifier = modifier.height(totalHeight),
+        horizontalArrangement = Arrangement.spacedBy(horizontalSpacing),
+        verticalArrangement = Arrangement.spacedBy(verticalSpacing),
+        userScrollEnabled = false
+    ) {
+        items(services.size) { index ->
+            ImageItem(
+                imageUrl = services[index],
+                deleteImage = deleteImage
+            )
+        }
+    }
+}
+
+@Composable
+fun ImageItem(
+    imageUrl: String,
+    deleteImage: (String) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .wrapContentWidth()
+            .height(88.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.White)
+            .border(
+                width = 1.dp,
+                color = Color(0xFFE8E8E8),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(6.dp)
+    ) {
+        // Image
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = "Captured image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(76.dp)
+                .clip(RoundedCornerShape(6.dp))
+        )
+
+        // Close button
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(4.dp)
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFFFF3E0))
+                .clickable { deleteImage(imageUrl) },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Close,
+                contentDescription = "Remove image",
+                tint = Color(0xFFF09103),
+                modifier = Modifier.size(14.dp)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun InfoBanner(
+    message: String,
+    modifier: Modifier = Modifier,
+    borderColor: Color = Color(0xFFE8A33D),
+    backgroundColor: Color = Color(0xFFFFF8EC),
+    iconBackgroundColor: Color = Color(0xFFE8A33D),
+    textColor: Color = Color(0xFF252525)
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(backgroundColor, RoundedCornerShape(16.dp))
+            .dashedBorder(
+                color = borderColor,
+                strokeWidth = 1.5.dp,
+                dashLength = 8.dp,
+                gapLength = 6.dp,
+                cornerRadius = 16.dp
+            )
+            .padding(horizontal = 16.dp, vertical = 14.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(CircleShape)
+                    .background(iconBackgroundColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "i",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+
+            Text(
+                text = message,
+                color = textColor,
+               style = getPoppinsMedium10(),
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+// Custom dashed border modifier
+fun Modifier.dashedBorder(
+    color: Color,
+    strokeWidth: Dp,
+    dashLength: Dp,
+    gapLength: Dp,
+    cornerRadius: Dp
+) = this.drawBehind {
+    val stroke = Stroke(
+        width = strokeWidth.toPx(),
+        pathEffect = PathEffect.dashPathEffect(
+            floatArrayOf(dashLength.toPx(), gapLength.toPx()), 0f
+        )
+    )
+    drawRoundRect(
+        color = color,
+        style = stroke,
+        cornerRadius = CornerRadius(cornerRadius.toPx())
+    )
+}
+
+@Composable
+fun MonthlyCalendarSelector(
+    selectedDates: Set<Int>,
+    onDatesChanged: (Set<Int>) -> Unit,
+    month: String,
+    year: Int,
+    daysInMonth: Int,
+    firstDayOfWeek: Int,
+    onMonthChange: ((Int, Int) -> Unit)? = null, // (year, month) callback for navigation
+    modifier: Modifier = Modifier,
+    minRequiredDays: Int = 6,
+    excludeSundays: Boolean = true
+) {
+    val dayHeaders = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    val isValidSelection = selectedDates.size >= minRequiredDays
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color(0xFFFFF8EC), RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        // Month and Year Header with optional navigation
+        if (onMonthChange != null) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Previous Month Button
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowLeft,
+                    contentDescription = "Previous Month",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable {
+                            val monthNum = kotlinx.datetime.Month.values()
+                                .indexOfFirst { it.name.lowercase() == month.lowercase() } + 1
+                            if (monthNum == 1) {
+                                onMonthChange(year - 1, 12)
+                            } else {
+                                onMonthChange(year, monthNum - 1)
+                            }
+                        },
+                    tint = Color(0xFF1A1A1A)
+                )
+
+                // Month and Year Text
+                Text(
+                    text = "$month $year",
+                    style = getPoppinsSemiBold18(),
+                    color = Color(0xFF1A1A1A),
+                    textAlign = TextAlign.Center
+                )
+
+                // Next Month Button
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = "Next Month",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clickable {
+                            val monthNum = kotlinx.datetime.Month.values()
+                                .indexOfFirst { it.name.lowercase() == month.lowercase() } + 1
+                            if (monthNum == 12) {
+                                onMonthChange(year + 1, 1)
+                            } else {
+                                onMonthChange(year, monthNum + 1)
+                            }
+                        },
+                    tint = Color(0xFF1A1A1A)
+                )
+            }
+        } else {
+            // Month and Year Header without navigation
+            Text(
+                text = "$month $year",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF1A1A1A),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
+
+        // Day headers (Mon, Tue, Wed, etc.)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            dayHeaders.forEach { dayHeader ->
+                Text(
+                    text = dayHeader,
+                    style = getPoppinsMedium14(),
+                    color = Color(0xFF1A1A1A),
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Calendar grid
+        val totalCells = daysInMonth + firstDayOfWeek
+        val rows = (totalCells + 6) / 7
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (week in 0 until rows) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    for (dayOfWeek in 0 until 7) {
+                        val cellIndex = week * 7 + dayOfWeek
+                        val dayNumber = cellIndex - firstDayOfWeek + 1
+
+                        if (cellIndex < firstDayOfWeek || dayNumber > daysInMonth) {
+                            // Empty cell
+                            Spacer(modifier = Modifier.weight(1f))
+                        } else {
+                            val isSunday = dayOfWeek == 6
+                            val isDisabled = excludeSundays && isSunday
+                            val isSelected = selectedDates.contains(dayNumber)
+
+                            CalendarDayCell(
+                                day = dayNumber,
+                                isSelected = isSelected,
+                                isDisabled = isDisabled,
+                                onClick = {
+                                    if (!isDisabled) {
+                                        val newSelection = if (selectedDates.contains(dayNumber)) {
+                                            selectedDates - dayNumber
+                                        } else {
+                                            selectedDates + dayNumber
+                                        }
+                                        onDatesChanged(newSelection)
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!isValidSelection) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = "Please select at least $minRequiredDays days",
+                style = getPoppinsRegular12(),
+                color = Color(0xFFD32F2F),
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun CalendarDayCell(
+    day: Int,
+    isSelected: Boolean,
+    isDisabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .aspectRatio(1f)
+            .then(
+                if (isSelected) {
+                    Modifier.dashedBorder(
+                        color = Color(0xFF2196F3),
+                        strokeWidth = 1.5.dp,
+                        dashLength = 6.dp,
+                        gapLength = 4.dp,
+                        cornerRadius = 8.dp
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .background(
+                color = when {
+                    isDisabled -> Color.Transparent
+                    isSelected -> Color(0xFFF5F5F5)
+                    else -> Color.White
+                },
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clickable(enabled = !isDisabled, onClick = onClick)
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = day.toString(),
+            style = if (isSelected) getPoppinsSemiBold14() else getPoppinsRegular14(),
+            color = when {
+                isDisabled -> Color(0xFFBDBDBD)
+                isSelected -> Color(0xFF2196F3)
+                else -> Color(0xFF1A1A1A)
+            }
+        )
+    }
+}
+
+@Composable
+fun MonthlyCalendarSelector(
+    selectedDates: Set<Int>,
+    onDatesChanged: (Set<Int>) -> Unit,
+    date: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    modifier: Modifier = Modifier,
+    minRequiredDays: Int = 6,
+    excludeSundays: Boolean = true
+) {
+    val month = date.month.name.lowercase().replaceFirstChar { it.uppercase() }
+    val year = date.year
+
+    // Calculate days in month
+    val daysInMonth = when (date.monthNumber) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
+        else -> 30
+    }
+
+    // Get first day of month (0 = Monday, 6 = Sunday)
+    val firstDayOfMonth = LocalDate(year, date.month, 1)
+    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal
+
+    MonthlyCalendarSelector(
+        selectedDates = selectedDates,
+        onDatesChanged = onDatesChanged,
+        month = month,
+        year = year,
+        daysInMonth = daysInMonth,
+        firstDayOfWeek = firstDayOfWeek,
+        modifier = modifier,
+        minRequiredDays = minRequiredDays,
+        excludeSundays = excludeSundays
+    )
+}
+
+// Date Range Selection Data Class
+data class DateRange(
+    val startDate: Int? = null,
+    val endDate: Int? = null,
+    val year: Int? = null,
+    val month: Int? = null
+) {
+    fun getSelectedDates(excludeSundays: Boolean = true, year: Int, month: Int): Set<Int> {
+        if (startDate == null || endDate == null) return emptySet()
+
+        val start = minOf(startDate, endDate)
+        val end = maxOf(startDate, endDate)
+
+        return (start..end).filter { day ->
+            if (!excludeSundays) true
+            else {
+                val date = LocalDate(year, month, day)
+                date.dayOfWeek.ordinal != 6 // Exclude Sunday (6 = Sunday)
+            }
+        }.toSet()
+    }
+
+    // Get actual LocalDate objects
+    fun getActualDates(excludeSundays: Boolean = true): List<LocalDate> {
+        if (startDate == null || endDate == null || year == null || month == null) return emptyList()
+
+        val start = minOf(startDate, endDate)
+        val end = maxOf(startDate, endDate)
+
+        return (start..end).mapNotNull { day ->
+            val date = LocalDate(year, month, day)
+            if (excludeSundays && date.dayOfWeek.ordinal == 6) {
+                null // Exclude Sunday
+            } else {
+                date
+            }
+        }
+    }
+
+    // Get start and end as LocalDate
+    fun getStartLocalDate(): LocalDate? {
+        return if (startDate != null && year != null && month != null) {
+            LocalDate(year, month, startDate)
+        } else null
+    }
+
+    fun getEndLocalDate(): LocalDate? {
+        return if (endDate != null && year != null && month != null) {
+            LocalDate(year, month, endDate)
+        } else null
+    }
+
+    // Get dates as formatted strings "yyyy-MM-dd"
+    fun getFormattedDates(excludeSundays: Boolean = true): Set<String> {
+        if (startDate == null || endDate == null || year == null || month == null) return emptySet()
+
+        val start = minOf(startDate, endDate)
+        val end = maxOf(startDate, endDate)
+
+        return (start..end).mapNotNull { day ->
+            val date = LocalDate(year, month, day)
+            if (excludeSundays && date.dayOfWeek.ordinal == 6) {
+                null // Exclude Sunday
+            } else {
+                // Format as yyyy-MM-dd
+                "${date.year}-${date.monthNumber.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
+            }
+        }.toSet()
+    }
+}
+
+@Composable
+fun MonthlyCalendarRangeSelector(
+    dateRange: DateRange,
+    onDateRangeChanged: (DateRange) -> Unit,
+    initialDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    modifier: Modifier = Modifier,
+    minRequiredDays: Int = 1,
+    maxAllowedDays: Int = 6,
+    excludeSundays: Boolean = true
+) {
+    var currentDate by remember { mutableStateOf(initialDate) }
+    val today = remember { Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date }
+
+    val month = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
+    val year = currentDate.year
+    val monthNumber = currentDate.monthNumber
+
+    // Calculate days in month
+    val daysInMonth = when (monthNumber) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) 29 else 28
+        else -> 30
+    }
+
+    val selectedDates = dateRange.getSelectedDates(excludeSundays, year, monthNumber)
+    val isValidSelection = selectedDates.size >= minRequiredDays && selectedDates.size <= maxAllowedDays
+
+    // Check if both dates are in the same calendar week (Monday-Sunday)
+    val isWithinWeek = if (dateRange.startDate != null && dateRange.endDate != null) {
+        val startDate = LocalDate(year, monthNumber, dateRange.startDate!!)
+        val endDate = LocalDate(year, monthNumber, dateRange.endDate!!)
+
+        // Get the Monday of the week for both dates
+        val startWeekMonday = startDate.minus(DatePeriod(days = startDate.dayOfWeek.ordinal))
+        val endWeekMonday = endDate.minus(DatePeriod(days = endDate.dayOfWeek.ordinal))
+
+        // Both dates must have the same week's Monday
+        startWeekMonday == endWeekMonday
+    } else true
+
+    // Get first day of month (0 = Monday, 6 = Sunday)
+    val firstDayOfMonth = LocalDate(year, currentDate.month, 1)
+    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.ordinal
+
+    val dayHeaders = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color(0xFFFFF8EC), RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        // Month and Year Header with Navigation
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Previous Month Button
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowLeft,
+                contentDescription = "Previous Month",
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        currentDate = if (monthNumber == 1) {
+                            LocalDate(year - 1, 12, 1)
+                        } else {
+                            LocalDate(year, monthNumber - 1, 1)
+                        }
+                    },
+                tint = Color(0xFF1A1A1A)
+            )
+
+            // Month and Year Text
+            Text(
+                text = "$month $year",
+                style = getPoppinsSemiBold18(),
+                color = Color(0xFF1A1A1A),
+                textAlign = TextAlign.Center
+            )
+
+            // Next Month Button
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "Next Month",
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        currentDate = if (monthNumber == 12) {
+                            LocalDate(year + 1, 1, 1)
+                        } else {
+                            LocalDate(year, monthNumber + 1, 1)
+                        }
+                    },
+                tint = Color(0xFF1A1A1A)
+            )
+        }
+
+        // Day headers
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            dayHeaders.forEach { dayHeader ->
+                Text(
+                    text = dayHeader,
+                    style = getPoppinsMedium14(),
+                    color = Color(0xFF1A1A1A),
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Calendar grid
+        val totalCells = daysInMonth + firstDayOfWeek
+        val rows = (totalCells + 6) / 7
+
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            for (week in 0 until rows) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    for (dayIndex in 0 until 7) {
+                        val cellIndex = week * 7 + dayIndex
+                        val dayNumber = cellIndex - firstDayOfWeek + 1
+
+                        if (cellIndex < firstDayOfWeek || dayNumber > daysInMonth) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        } else {
+                            val currentDayDate = LocalDate(year, monthNumber, dayNumber)
+                            val isSunday = dayIndex == 6
+                            val isPastDate = currentDayDate < today
+                            val isDisabled = (excludeSundays && isSunday) || isPastDate
+                            val isSelected = selectedDates.contains(dayNumber)
+                            val isStartDate = dateRange.startDate == dayNumber
+                            val isEndDate = dateRange.endDate == dayNumber
+
+                            CalendarRangeDayCell(
+                                day = dayNumber,
+                                isSelected = isSelected,
+                                isStartDate = isStartDate,
+                                isEndDate = isEndDate,
+                                isDisabled = isDisabled,
+                                onClick = {
+                                    if (!isDisabled) {
+                                        when {
+                                            dateRange.startDate == null -> {
+                                                onDateRangeChanged(DateRange(
+                                                    startDate = dayNumber,
+                                                    year = year,
+                                                    month = monthNumber
+                                                ))
+                                            }
+                                            dateRange.endDate == null -> {
+                                                val potentialRange = DateRange(dateRange.startDate, dayNumber, year, monthNumber)
+                                                val potentialDates = potentialRange.getSelectedDates(excludeSundays, year, monthNumber)
+
+                                                // Check if both dates are in the same calendar week
+                                                val startDateObj = LocalDate(year, monthNumber, dateRange.startDate!!)
+                                                val endDateObj = LocalDate(year, monthNumber, dayNumber)
+
+                                                val startWeekMonday = startDateObj.minus(DatePeriod(days = startDateObj.dayOfWeek.ordinal))
+                                                val endWeekMonday = endDateObj.minus(DatePeriod(days = endDateObj.dayOfWeek.ordinal))
+
+                                                // Validate range constraints
+                                                if (startWeekMonday != endWeekMonday) {
+                                                    // Dates are in different weeks - don't allow
+                                                    return@CalendarRangeDayCell
+                                                } else if (potentialDates.size > maxAllowedDays) {
+                                                    // Too many days selected - don't allow
+                                                    return@CalendarRangeDayCell
+                                                } else {
+                                                    onDateRangeChanged(dateRange.copy(
+                                                        endDate = dayNumber,
+                                                        year = year,
+                                                        month = monthNumber
+                                                    ))
+                                                }
+                                            }
+                                            else -> {
+                                                // Reset and start new selection
+                                                onDateRangeChanged(DateRange(
+                                                    startDate = dayNumber,
+                                                    year = year,
+                                                    month = monthNumber
+                                                ))
+                                            }
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // Range info
+        if (dateRange.startDate != null) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = if (dateRange.endDate != null) {
+                    "Range: ${dateRange.startDate} - ${dateRange.endDate} (${selectedDates.size} days)"
+                } else {
+                    "Start: ${dateRange.startDate} (Select end date)"
+                },
+                style = getPoppinsMedium13(),
+                color = Color(0xFF2196F3),
+                modifier = Modifier.padding(start = 4.dp)
+            )
+        }
+
+        // Validation messages
+        if (dateRange.endDate != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            when {
+                !isWithinWeek -> {
+                    Text(
+                        text = "Selection must be within the same week (Mon-Sun)",
+                        style = getPoppinsRegular12(),
+                        color = Color(0xFFD32F2F),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+                selectedDates.size > maxAllowedDays -> {
+                    Text(
+                        text = "Maximum $maxAllowedDays days allowed (excluding Sundays)",
+                        style = getPoppinsRegular12(),
+                        color = Color(0xFFD32F2F),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+                selectedDates.size < minRequiredDays -> {
+                    Text(
+                        text = "Please select at least $minRequiredDays day(s)",
+                        style = getPoppinsRegular12(),
+                        color = Color(0xFFD32F2F),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+                else -> {
+                    Text(
+                        text = "✓ Valid selection: ${selectedDates.size} day(s)",
+                        style = getPoppinsRegular12(),
+                        color = Color(0xFF4CAF50),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CalendarRangeDayCell(
+    day: Int,
+    isSelected: Boolean,
+    isStartDate: Boolean,
+    isEndDate: Boolean,
+    isDisabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .aspectRatio(1f)
+            .then(
+                when {
+                    isStartDate || isEndDate -> Modifier.border(
+                        width = 2.dp,
+                        color = Color(0xFF2196F3),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    isSelected -> Modifier.dashedBorder(
+                        color = Color(0xFF2196F3),
+                        strokeWidth = 1.5.dp,
+                        dashLength = 6.dp,
+                        gapLength = 4.dp,
+                        cornerRadius = 8.dp
+                    )
+                    else -> Modifier
+                }
+            )
+            .background(
+                color = when {
+                    isDisabled -> Color.Transparent
+                    isStartDate || isEndDate -> Color(0xFF2196F3)
+                    isSelected -> Color(0xFFE3F2FD)
+                    else -> Color.White
+                },
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clickable(enabled = !isDisabled, onClick = onClick)
+            .padding(4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = day.toString(),
+            style = when {
+                isStartDate || isEndDate -> getPoppinsBold14()
+                isSelected -> getPoppinsSemiBold14()
+                else -> getPoppinsRegular14()
+            },
+            color = when {
+                isDisabled -> Color(0xFFBDBDBD)
+                isStartDate || isEndDate -> Color.White
+                isSelected -> Color(0xFF2196F3)
+                else -> Color(0xFF1A1A1A)
+            }
+        )
+    }
+}
 
 

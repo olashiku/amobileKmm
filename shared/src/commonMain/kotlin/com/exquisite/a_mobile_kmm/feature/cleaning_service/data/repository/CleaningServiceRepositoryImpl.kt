@@ -194,4 +194,36 @@ class CleaningServiceRepositoryImpl(
             httpClient.get("api/v1/cleaning/check_basic_cleaning_eligibility?customerId=$customerId")
         }
     }
+
+    override suspend fun getBasicCleaningBreakdown(request: GetBasicCleaningBreakdownRequestDto): Flow<Result<GetBasicCleaningBreakdownResponseDto>> {
+        return safeApiCall {
+            httpClient.post("api/v1/cleaning/get_basic_cleaning_breakdown") {
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun initBasicCleaningPayment(request: InitBasicCleaningPaymentRequestDto): Flow<Result<InitBasicCleaningPaymentResponseDto>> {
+        return safeApiCall {
+            httpClient.post("api/v1/cleaning/init_basic_cleaning_payment") {
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun debitFromWalletBasicCleaningPayment(request: DebitFromWalletBasicCleaningPaymentRequestDto): Flow<Result<DebitFromWalletBasicCleaningPaymentResponseDto>> {
+        return safeApiCall {
+            httpClient.post("api/v1/cleaning/debit_from_wallet_basic_cleaning_payment") {
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun completeBasicCleaningPayment(request: CompleteBasicCleaningPaymentRequestDto): Flow<Result<CompleteBasicCleaningPaymentResponseDto>> {
+        return safeApiCall {
+            httpClient.post("api/v1/cleaning/complete_basic_cleaning_payment") {
+                setBody(request)
+            }
+        }
+    }
 }

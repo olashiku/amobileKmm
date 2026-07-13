@@ -5,12 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CompleteDeepCleaningPaymentRequestDto(
     val customerId: Int,
-    val regionId: Int,
-    val locationId: Int,
-    val apartmentId: Int,
-    val cleaningTypeId: Int,
-    val numberOfRoomsId: Int,
-    val amount: Double,
-    val address: String,
-    val reference: String
+    val ref: String,
+    val txnRef: String
 )

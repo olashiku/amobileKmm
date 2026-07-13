@@ -90,11 +90,17 @@ class AuthRepositoryImpl(    private val httpClient: HttpClient): AuthRepository
             httpClient.submitFormWithBinaryData(
                 url = "api/upload",
                 formData = formData {
+                    val contentType = when {
+                        fileName.endsWith(".png", ignoreCase = true) -> "image/png"
+                        fileName.endsWith(".jpg", ignoreCase = true) || fileName.endsWith(".jpeg", ignoreCase = true) -> "image/jpeg"
+                        else -> "image/jpeg"
+                    }
                     append(
                         "file",
                         fileBytes,
                         Headers.build {
                             append(HttpHeaders.ContentDisposition, "filename=\"$fileName\"")
+                            append(HttpHeaders.ContentType, contentType)
                         }
                     )
                 }

@@ -6,6 +6,5 @@ sealed class DeepCleaningFormState {
     data object Idle : DeepCleaningFormState()
     data object Loading : DeepCleaningFormState()
     data class PriceSuccess(val cleaningPriceModel: CleaningPriceModel) : DeepCleaningFormState()
-    data class PaymentSuccess(val paymentResponse: PaymentResponseModel) : DeepCleaningFormState()
     data class Error(val message: String) : DeepCleaningFormState()
 }

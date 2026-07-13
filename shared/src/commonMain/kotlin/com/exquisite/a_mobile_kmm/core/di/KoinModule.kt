@@ -121,6 +121,8 @@ import com.exquisite.a_mobile_kmm.feature.address.presenter.address_list.Address
 import com.exquisite.a_mobile_kmm.feature.cart.data.local.data_source.CartDataSource
 import com.exquisite.a_mobile_kmm.feature.cart.domain.usecase.CartUseCase
 import com.exquisite.a_mobile_kmm.feature.cart.presenter.CartViewModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_form_two.BasicCleaningFormTwoViewModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form_two.DeepCleaningFormTwoViewModel
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.repository.ProfileRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.repository.ProfileRepository
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.ChangePasswordUseCase
@@ -172,7 +174,7 @@ val sharedModule :Module = module {
         get<RoomDatabase.Builder<AppDatabase>>()
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
-            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
+            .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
             .fallbackToDestructiveMigration(true)
             .build()
     }
@@ -233,6 +235,10 @@ val sharedModule :Module = module {
     single{ CompleteDeepCleaningPaymentUseCase(get()) }
     single{ GetBasicCleaningLocationsUseCase(get()) }
     single{ CheckBasicCleaningEligibilityUseCase(get()) }
+    single{ GetBasicCleaningBreakdownUseCase(get()) }
+    single{ InitBasicCleaningPaymentUseCase(get()) }
+    single{ DebitFromWalletBasicCleaningPaymentUseCase(get()) }
+    single{ CompleteBasicCleaningPaymentUseCase(get()) }
     single{ RequestForConstructionUseCase(get()) }
     single{ InitToiletPaymentUseCase(get()) }
     single{ GetToiletPriceUseCase(get()) }
@@ -285,9 +291,10 @@ val sharedModule :Module = module {
     viewModel{ TrainingRegistrationViewModel(get(), get(), get()) }
     viewModel{ CleanersRegistrationViewModel(get(), get(), get()) }
     viewModel{ CleaningServiceViewModel(get(),get()) }
-    viewModel{ DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get(), get()) }
-    viewModel{ DeepCleaningCheckoutViewModel(get(), get()) }
-    viewModel{ BasicCleaningFormViewModel(get()) }
+    viewModel{ DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get()) }
+    viewModel{ DeepCleaningFormTwoViewModel( get()) }
+    viewModel{ DeepCleaningCheckoutViewModel(get(), get(), get(), get()) }
+    viewModel{ BasicCleaningFormViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel{ ConstructionMobileToiletViewModel(get()) }
     viewModel{ EventToiletCheckoutViewModel(get(), get(), get(), get(), get()) }
     viewModel{ EventToiletFormViewModel(get(), get()) }
@@ -303,4 +310,6 @@ val sharedModule :Module = module {
     viewModel{ ProfileFormViewModel(get(), get()) }
     viewModel{ WalletViewModel(get(), get(), get(), get()) }
     viewModel{ CartViewModel(get()) }
+    viewModel{ BasicCleaningFormTwoViewModel(get(), get(),get(),get()) }
+
 }

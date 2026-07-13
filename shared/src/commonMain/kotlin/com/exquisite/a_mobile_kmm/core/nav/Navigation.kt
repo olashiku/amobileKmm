@@ -110,8 +110,22 @@ data class DeepCleaningPriceDetails(val response:String,val data:String)
 object BasicCleaningForm
 
 @Serializable
+data class BasicCleaningPriceDetails(val data:String, val response:String)
+
+
+@Serializable
+data class BasicCleaningFormTwo(val data:String, val response:String)
+
+@Serializable
 data class DeepCleaningFormTwo(
     val response:String,val data:String
+)
+
+@Serializable
+data class DeepCleaningCheckout(
+    val response:String
+    ,val data:String,
+    val imageData:String
 )
 
 

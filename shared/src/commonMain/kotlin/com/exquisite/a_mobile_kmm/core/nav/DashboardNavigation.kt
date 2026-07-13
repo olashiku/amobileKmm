@@ -37,10 +37,16 @@ import com.exquisite.a_mobile_kmm.feature.cart.presenter.CartScreen
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.domain.model.RegisterCleanerRequest
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.presenter.cleaners_document.CleanersDocumentUploadScreen
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.presenter.cleaners_registration.CleanersRegistrationScreen
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningBreakdownModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningPriceModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormData
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_form.BasicCleaningFormScreen
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_form_two.BasicCleaningFormTwoScreen
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.basic_cleaning_price.BasicCleaningPriceDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.cleaning_service.CleaningServiceScreen
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.DeepCleaningCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form.DeepCleaningFormScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form_two.DeepCleaningFormTwoScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.DeepCleaningPriceDetailsScreen
@@ -330,15 +336,77 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 val data = backTrack.toRoute<DeepCleaningPriceDetails>()
                 DeepCleaningFormTwoScreen(
                     goBack = {
-                    navController.popBackStack()
-                }, goToCheckoutPage = {
+                        navController.popBackStack()
+                    }, goToCheckoutPage = { formData ->
+                        navController.navigate(
+                            DeepCleaningCheckout(
+                                data.response,
+                                data.data,
+                                formData
+                            )
+                        )
+                    }
+                )
+            }
 
+            composable<DeepCleaningCheckout> { backTrace ->
+                val data = backTrace.toRoute<DeepCleaningCheckout>()
+                val deepCleaningData = NavigationUtils.decodeObject<DeepCleaningFormData>(data.data)
+                val deepCleaningPriceModel =
+                    NavigationUtils.decodeObject<CleaningPriceModel>(data.response)
+                val deepCleaningFormModel =
+                    NavigationUtils.decodeObject<DeepCleaningFormModel>(data.imageData)
+                DeepCleaningCheckoutScreen(
+                    deepCleaningData,
+                    deepCleaningPriceModel,
+                    deepCleaningFormModel,
+                    savedStateHandle = backTrace.savedStateHandle,
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    goToSuccess = { title, message, buttonText ->
+                        navController.navigate(Success(message, title, buttonText, false))
                     }
                 )
             }
 
             composable<BasicCleaningForm> {
-                BasicCleaningFormScreen({})
+                BasicCleaningFormScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToPreview = { data, response ->
+                        navController.navigate(BasicCleaningPriceDetails(data, response))
+                    }
+                )
+            }
+
+            composable<BasicCleaningPriceDetails> { backTrack ->
+                val data = backTrack.toRoute<BasicCleaningPriceDetails>()
+                val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                BasicCleaningPriceDetailsScreen(
+                    basicCleaningFormModel, basicCleaningBreakdownModel,
+                    goBack = {
+                        navController.popBackStack()
+                    }, goToNextPage = {
+                        BasicCleaningFormTwo(data.data,data.response)
+                    })
+            }
+
+            composable<BasicCleaningFormTwo> { backTrack ->
+                val data = backTrack.toRoute<BasicCleaningPriceDetails>()
+                val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+
+                BasicCleaningFormTwoScreen(basicCleaningFormModel,basicCleaningBreakdownModel,  goBack = {
+                    navController.popBackStack()
+                }, goToCheckoutPage = { screenData ->
+
+                })
             }
         }
     }

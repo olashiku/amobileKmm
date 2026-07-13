@@ -43,6 +43,8 @@ val paymentOptions = listOf(
     ),
     RadioOption(
         id = "standard",
-        title = "Standard Payment"
+        title = "Standard Payment",
+        subtitle = "Other payment methods"
+
     )
 )

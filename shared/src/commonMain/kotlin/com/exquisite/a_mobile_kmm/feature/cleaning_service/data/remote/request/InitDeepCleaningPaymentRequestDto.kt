@@ -7,9 +7,12 @@ data class InitDeepCleaningPaymentRequestDto(
     val customerId: Int,
     val regionId: Int,
     val locationId: Int,
-    val apartmentId: Int,
+    val apartmentTypeId: Int,
     val cleaningTypeId: Int,
     val numberOfRoomsId: Int,
-    val amount: Double,
-    val address: String
+    val isPostConstruction:Boolean,
+    val cleaningDate:String,
+    val cleaningTime:String,
+    val address: String,
+    val images: List<String>
 )

@@ -73,7 +73,6 @@ fun DeepCleaningFormScreen(
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
     var cleaningPriceData by remember { mutableStateOf<CleaningPriceModel?>(null) }
-    var paymentResponseData by remember { mutableStateOf<PaymentResponseModel?>(null) }
     val (snackBar, snackBarHostState) = rememberSnackBar()
 
     var cleaningTypeOption by remember { mutableStateOf<String?>(persistedFormData.cleaningType?.first?:"") }
@@ -113,9 +112,6 @@ fun DeepCleaningFormScreen(
             }
         }
 
-        is DeepCleaningFormState.PaymentSuccess -> {
-            paymentResponseData = result.paymentResponse
-        }
 
         is DeepCleaningFormState.Error -> {
             showPriceLoadingDialog = false
@@ -262,18 +258,19 @@ fun DeepCleaningFormScreen(
         }
 
         PrimaryButton("Continue", {
+            println("cleaningTypeOption $cleaningTypeOption")
             val isRegionValid = regionValidator.forceValidation()
             val isLocationValida = locationValidator.forceValidation()
             val isTypeOfApartmentValid = typeOfApartmentValidator.forceValidation()
             val isNumberOfRoomsValid = numberOfRoomsValidator.forceValidation()
             val isAddressValid = addressValidator.forceValidation()
-            if (isRegionValid && isLocationValida && isTypeOfApartmentValid && isNumberOfRoomsValid && isAddressValid && cleaningTypeOption != null) {
+            if (isRegionValid && isLocationValida && isTypeOfApartmentValid && isNumberOfRoomsValid && isAddressValid && !cleaningTypeOption.isNullOrEmpty()) {
 
                 viewModel.saveFormData(
                     region = regionValidator.value.value to regionId.toString(),
                     location = locationValidator.value.value to locationId.toString(),
                     typeOfApartment = typeOfApartmentValidator.value.value to apartmentId.toString(),
-                    numberOfRooms = numberOfRoomsValidator.value.value to cleaningTypeId.toString(),
+                    numberOfRooms = numberOfRoomsValidator.value.value to numberOfRoomsId.toString(),
                     cleaningType = (cleaningTypeOption ?: "moving_in") to cleaningTypeId.toString(),
                     address = addressValidator.value.value to ""
                 )

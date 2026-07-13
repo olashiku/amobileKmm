@@ -1,5 +1,6 @@
 package com.exquisite.a_mobile_kmm.feature.cleaning_service.data.mapper
 
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.data.remote.request.*
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.*
 
@@ -74,10 +75,8 @@ fun DebitFromWalletDeepCleaningPaymentResponseDto.toPaymentResponseModel(): Paym
 fun InitDeepCleaningPaymentResponseDto.toPaymentModel(): PaymentModel? {
     val paymentData = data ?: return null
     return PaymentModel(
-        authorizationUrl = paymentData.authorization_url,
-        accessCode = paymentData.access_code,
-        reference = paymentData.reference
-    )
+        paymentLink = paymentData.paymentLink,
+        ref = paymentData.ref)
 }
 
 fun CompleteDeepCleaningPaymentResponseDto.toPaymentResponseModel(): PaymentResponseModel {
@@ -90,4 +89,120 @@ fun GetBasicCleaningLocationsResponseDto.toBasicCleaningLocationModelList(): Lis
 
 fun BasicCleaningLocationDto.toBasicCleaningLocationModel(): BasicCleaningLocationModel {
     return BasicCleaningLocationModel(id = id, name = name, price = price)
+}
+
+// Domain to DTO mappers for requests
+fun InitDeepCleaningPaymentRequest.toDto(): InitDeepCleaningPaymentRequestDto {
+    return InitDeepCleaningPaymentRequestDto(
+        customerId = customerId,
+        regionId = regionId,
+        locationId = locationId,
+        apartmentTypeId = apartmentTypeId,
+        cleaningTypeId = cleaningTypeId,
+        numberOfRoomsId = numberOfRoomsId,
+        isPostConstruction = isPostConstruction,
+        cleaningDate = cleaningDate,
+        cleaningTime = cleaningTime,
+        address = address,
+        images = images
+    )
+}
+
+fun CompleteDeepCleaningPaymentRequest.toDto(): CompleteDeepCleaningPaymentRequestDto {
+    return CompleteDeepCleaningPaymentRequestDto(
+        customerId = customerId,
+        ref = ref,
+        txnRef = txnRef
+    )
+}
+
+fun DebitFromWalletDeepCleaningPaymentRequest.toDto(): DebitFromWalletDeepCleaningPaymentRequestDto {
+    return DebitFromWalletDeepCleaningPaymentRequestDto(
+        customerId = customerId,
+        regionId = regionId,
+        locationId = locationId,
+        apartmentTypeId = apartmentTypeId,
+        cleaningTypeId = cleaningTypeId,
+        numberOfRoomsId = numberOfRoomsId,
+        isPostConstruction = isPostConstruction,
+        cleaningDate = cleaningDate,
+        cleaningTime = cleaningTime,
+        address = address,
+        images = images
+    )
+}
+
+// Basic Cleaning Response DTO to Model mappers
+fun GetBasicCleaningBreakdownResponseDto.toBasicCleaningBreakdownModel(): BasicCleaningBreakdownModel? {
+    val breakdownData = data ?: return null
+    return BasicCleaningBreakdownModel(
+        fee = breakdownData.fee,
+        result = BasicCleaningResultModel(
+            selectedDaysOfWeek = breakdownData.result.selectedDaysOfWeek,
+            timeOfDay = breakdownData.result.timeOfDay,
+            startDate = breakdownData.result.startDate,
+            endDate = breakdownData.result.endDate,
+            totalDays = breakdownData.result.totalDays,
+            allScheduledDates = breakdownData.result.allScheduledDates
+        ),
+        reference = breakdownData.reference
+    )
+}
+
+fun InitBasicCleaningPaymentResponseDto.toPaymentModel(): PaymentModel? {
+    val paymentData = data ?: return null
+    return PaymentModel(
+        paymentLink = paymentData.paymentLink,
+        ref = paymentData.ref
+    )
+}
+
+fun DebitFromWalletBasicCleaningPaymentResponseDto.toPaymentResponseModel(): PaymentResponseModel {
+    return PaymentResponseModel(message = responseMessage)
+}
+
+fun CompleteBasicCleaningPaymentResponseDto.toPaymentResponseModel(): PaymentResponseModel {
+    return PaymentResponseModel(message = responseMessage)
+}
+
+// Basic Cleaning Request Domain to DTO mappers
+fun GetBasicCleaningBreakdownRequest.toDto(): GetBasicCleaningBreakdownRequestDto {
+    return GetBasicCleaningBreakdownRequestDto(
+        numberOfRooms = numberOfRooms,
+        cleaningTime = cleaningTime,
+        customerId = customerId,
+        cleaningDate = cleaningDate
+    )
+}
+
+fun InitBasicCleaningPaymentRequest.toDto(): InitBasicCleaningPaymentRequestDto {
+    return InitBasicCleaningPaymentRequestDto(
+        reference = reference,
+        apartmentTypeId = apartmentTypeId,
+        images = images,
+        regionId = regionId,
+        locationId = locationId,
+        address = address,
+        customerId = customerId
+    )
+}
+
+fun DebitFromWalletBasicCleaningPaymentRequest.toDto(): DebitFromWalletBasicCleaningPaymentRequestDto {
+    return DebitFromWalletBasicCleaningPaymentRequestDto(
+        reference = reference,
+        apartmentTypeId = apartmentTypeId,
+        images = images,
+        regionId = regionId,
+        locationId = locationId,
+        address = address,
+        customerId = customerId
+    )
+}
+
+fun CompleteBasicCleaningPaymentRequest.toDto(): CompleteBasicCleaningPaymentRequestDto {
+    return CompleteBasicCleaningPaymentRequestDto(
+        customerId = customerId,
+        ref = ref,
+        txnRef = txnRef
+    )
 }

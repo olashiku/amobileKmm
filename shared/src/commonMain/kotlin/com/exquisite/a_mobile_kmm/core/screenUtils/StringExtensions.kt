@@ -48,63 +48,7 @@ fun String.formatToReadableDate(): String {
     }
 }
 
-fun String.toTimeAgoDetailed(): String {
-    return try {
-        val timestamp = Instant.parse(this)
-        val now = Clock.System.now()
 
-        val diffMillis = now.toEpochMilliseconds() - timestamp.toEpochMilliseconds()
-        val diffSeconds = diffMillis / 1000
-        val diffMinutes = diffSeconds / 60
-        val diffHours = diffMinutes / 60
-        val diffDays = diffHours / 24
-
-        when {
-            diffSeconds < 10 -> "Just now"
-            diffSeconds < 60 -> "${diffSeconds}s ago"
-            diffMinutes < 60 -> "${diffMinutes}m ago"
-            diffHours < 24 -> "${diffHours}h ago"
-            diffDays < 30 -> "${diffDays}d ago"
-            else -> {
-                // For older dates, show the actual date
-                val localDateTime = timestamp.toLocalDateTime(TimeZone.currentSystemDefault())
-                "${localDateTime.dayOfMonth}/${localDateTime.monthNumber}/${localDateTime.year}"
-            }
-        }
-    } catch (e: Exception) {
-        this
-    }
-}
-
-fun String.toTimeAgoFromMillis(): String {
-    return try {
-        // Parse the string as milliseconds timestamp
-        val timestampMillis = this.toLongOrNull() ?: return this
-        val timestamp = Instant.fromEpochMilliseconds(timestampMillis)
-        val now = Clock.System.now()
-
-        val diffMillis = now.toEpochMilliseconds() - timestamp.toEpochMilliseconds()
-        val diffSeconds = diffMillis / 1000
-        val diffMinutes = diffSeconds / 60
-        val diffHours = diffMinutes / 60
-        val diffDays = diffHours / 24
-
-        when {
-            diffSeconds < 10 -> "Just now"
-            diffSeconds < 60 -> "${diffSeconds}s ago"
-            diffMinutes < 60 -> "${diffMinutes}m ago"
-            diffHours < 24 -> "${diffHours}h ago"
-            diffDays < 30 -> "${diffDays}d ago"
-            else -> {
-                // For older dates, show the actual date
-                val localDateTime = timestamp.toLocalDateTime(TimeZone.currentSystemDefault())
-                "${localDateTime.dayOfMonth}/${localDateTime.monthNumber}/${localDateTime.year}"
-            }
-        }
-    } catch (e: Exception) {
-        this
-    }
-}
 
 
 fun String.capitalizeWords(): String {
@@ -113,37 +57,7 @@ fun String.capitalizeWords(): String {
     }
 }
 
-fun dateStatus(status: String, dueDate: String): String {
-    return try {
-        // Parse the due date string - try ISO format first, then readable format
-        val parsedDueDate = try {
-            // Try ISO format first (e.g., "2026-01-26")
-            LocalDate.parse(dueDate)
-        } catch (e: Exception) {
-            // If ISO fails, try parsing readable format (e.g., "Jan 25, 2026")
-            val readableFormat = LocalDate.Format {
-                monthName(MonthNames.ENGLISH_ABBREVIATED)
-                char(' ')
-                dayOfMonth()
-                chars(", ")
-                year()
-            }
-            LocalDate.parse(dueDate, readableFormat)
-        }
 
-        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-        // If the due date has passed and status is still "pending", it's overdue
-        if (parsedDueDate < today && status.equals("pending", ignoreCase = true)) {
-            "Overdue"
-        } else {
-            status
-        }
-    } catch (e: Exception) {
-        // If parsing fails, return the original status
-        status
-    }
-}
 
 fun Double.formatBalance(): String {
     // Round to 2 decimal places
@@ -177,6 +91,48 @@ fun Double.formatBalance(currencySymbol: String): String {
     val formattedDecimal = decimalPart.toString().padStart(2, '0')
 
     return "$currencySymbol$formattedInteger.$formattedDecimal"
+}
+
+fun String.formatTime():String{
+    return this.split(" ").first()
+}
+
+
+fun String.toFullDateFormat(): String {
+    return try {
+        val date = LocalDate.parse(this)
+        val format = LocalDate.Format {
+            monthName(MonthNames.ENGLISH_FULL)
+            char(' ')
+            dayOfMonth()
+            char(' ')
+            year()
+        }
+        date.format(format)
+    } catch (e: Exception) {
+        this
+    }
+}
+
+fun String.to12HourFormat(): String {
+    return try {
+        val parts = this.split(":")
+        if (parts.size < 2) return this
+
+        val hour = parts[0].toIntOrNull() ?: return this
+        val minute = parts[1]
+
+        val period = if (hour >= 12) "PM" else "AM"
+        val displayHour = when {
+            hour == 0 -> 12
+            hour > 12 -> hour - 12
+            else -> hour
+        }
+
+        "$displayHour:$minute $period"
+    } catch (e: Exception) {
+        this
+    }
 }
 
 fun getTimeBasedGreeting(): String {

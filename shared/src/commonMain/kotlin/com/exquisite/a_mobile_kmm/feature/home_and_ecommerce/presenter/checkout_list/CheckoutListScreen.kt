@@ -224,15 +224,9 @@ fun CheckoutListScreen(
                     if (selectedAddress != null) {
                         NoCancelPolicyNote()
                     }
-
-
                 }
 
             }
-
-
-
-
         }
 
 
@@ -255,7 +249,7 @@ fun CheckoutListScreen(
             Spacer(modifier = modifier.height(10.dp))
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
-            val balance = getCheckoutBalances(cartState,ShippingDetail()).filter{!it.title.equals("Number of Items")}.sumOf { it.balance}
+            val balance = getCheckoutBalances(cartState,ShippingDetail()).filter{!it.title.equals("Number of Items") && it.balance!=0.00}.sumOf { it.balance}
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Total Cost", style = getPoppinsBold14(), color = Color(0xFF252525))
                 Spacer(modifier = modifier.weight(1F))

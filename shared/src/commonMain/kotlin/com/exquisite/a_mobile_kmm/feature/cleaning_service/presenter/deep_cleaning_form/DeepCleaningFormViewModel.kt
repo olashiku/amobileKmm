@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.data.remote.request.DebitFromWalletDeepCleaningPaymentRequestDto
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.data.remote.request.GetCleaningPriceRequestDto
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormData
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.usecase.DebitFromWalletDeepCleaningPaymentUseCase
@@ -25,9 +24,7 @@ class DeepCleaningFormViewModel(
     private val findApartmentTypeUseCase: FindApartmentTypeUseCase,
     private val findNumberOfRoomsUseCase: FindNumberOfRoomsUseCase,
     private val findCleaningTypeUseCase: FindCleaningTypeUseCase,
-    private val getCleaningPriceUseCase: GetCleaningPriceUseCase,
-    private val debitFromWalletDeepCleaningPaymentUseCase: DebitFromWalletDeepCleaningPaymentUseCase,
-    private val dataStore: AMobileDataStore
+    private val getCleaningPriceUseCase: GetCleaningPriceUseCase, private val dataStore: AMobileDataStore
 ) : ViewModel() {
 
     private var _deepCleaningFormState = MutableStateFlow<DeepCleaningFormState>(DeepCleaningFormState.Idle)
@@ -195,21 +192,6 @@ class DeepCleaningFormViewModel(
                 when (response) {
                     is UseCaseResult.Success -> _deepCleaningFormState.value =
                         DeepCleaningFormState.PriceSuccess(response.data)
-
-                    is UseCaseResult.Error -> _deepCleaningFormState.value =
-                        DeepCleaningFormState.Error(response.message)
-                }
-            }
-        }
-    }
-
-    fun debitFromWallet(request: DebitFromWalletDeepCleaningPaymentRequestDto) {
-        viewModelScope.launch {
-            _deepCleaningFormState.value = DeepCleaningFormState.Loading
-            debitFromWalletDeepCleaningPaymentUseCase.invoke(request).collect { response ->
-                when (response) {
-                    is UseCaseResult.Success -> _deepCleaningFormState.value =
-                        DeepCleaningFormState.PaymentSuccess(response.data)
 
                     is UseCaseResult.Error -> _deepCleaningFormState.value =
                         DeepCleaningFormState.Error(response.message)
