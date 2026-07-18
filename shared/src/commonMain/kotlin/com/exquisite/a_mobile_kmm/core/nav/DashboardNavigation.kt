@@ -59,6 +59,14 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.home.Home
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_details.ProductDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_listing.ProductListingScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_search.ProductSearchScreen
+import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
+import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control.PestControlScreen
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_commercial.PestControlCommercialScreen
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_price.PestControlPriceScreen
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_checkout.PestControlResidentialCheckoutScreen
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form.PestControlResidentialFormScreen
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form_two.ResidentialPestControlFormTwoScreen
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile.ProfileScreen
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training.TrainingScreen
 import org.jetbrains.compose.resources.DrawableResource
@@ -83,30 +91,23 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
     Scaffold(
         bottomBar = {
             AnimatedVisibility(
-                visible = showBottomBar,
-                enter = slideInVertically(
+                visible = showBottomBar, enter = slideInVertically(
                     initialOffsetY = { it }, // Slide up from bottom
                     animationSpec = tween(
-                        durationMillis = 1000,
-                        easing = FastOutSlowInEasing
+                        durationMillis = 1000, easing = FastOutSlowInEasing
                     )
                 ) + fadeIn(
                     animationSpec = tween(durationMillis = 1000)
-                ),
-                exit =
-                    slideOutVertically(
-                        targetOffsetY = { it }, // Slide down to bottom
-                        animationSpec = tween(
-                            durationMillis = 1000,
-                            easing = FastOutSlowInEasing
-                        )
-                    ) + fadeOut(
-                        animationSpec = tween(durationMillis = 300)
-                    ),
-                content = { BottomBar(navController) })
+                ), exit = slideOutVertically(
+                    targetOffsetY = { it }, // Slide down to bottom
+                    animationSpec = tween(
+                        durationMillis = 1000, easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(
+                    animationSpec = tween(durationMillis = 300)
+                ), content = { BottomBar(navController) })
 
-        }, containerColor = Color(0xFFFFFFFF),
-        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        }, containerColor = Color(0xFFFFFFFF), contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { padding ->
         NavHost(
             navController = navController,
@@ -114,39 +115,40 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             modifier = Modifier.padding(padding)
         ) {
             composable<Home> {
-                HomeScreen(
-                    goToSearchDialog = {
-                        navController.navigate(Search)
-                    },
-                    goToCartScreen = {
-                        navController.popBackStack<Home>(inclusive = false)
-                        navController.navigate(Cart)
-                    },
-                    getCategoryProduct = { product ->
-                        navController.navigate(ProductDetails(product))
-                    },
-                    goToProductListing = { categoryId, categoryName ->
-                        navController.navigate(ProductListing(categoryId, categoryName))
-                    },
-                    goToCleanersRegistration = {
-                        navController.navigate(CleanersRegistration)
-                    },
-                    goToMenuItem = { label ->
-                        when (label) {
-                            "cleaning" -> {
-                                navController.navigate(CleaningService)
-                            }
-
-                            "mobile_toilet" -> {}
-                            "pest_control" -> {}
-                            "academy" -> {}
-                            "janitorial_service" -> {}
-                            "septic" -> {}
+                HomeScreen(goToSearchDialog = {
+                    navController.navigate(Search)
+                }, goToCartScreen = {
+                    navController.popBackStack<Home>(inclusive = false)
+                    navController.navigate(Cart)
+                }, getCategoryProduct = { product ->
+                    navController.navigate(ProductDetails(product))
+                }, goToProductListing = { categoryId, categoryName ->
+                    navController.navigate(ProductListing(categoryId, categoryName))
+                }, goToCleanersRegistration = {
+                    navController.navigate(CleanersRegistration)
+                }, goToMenuItem = { label ->
+                    when (label) {
+                        "cleaning" -> {
+                            navController.navigate(CleaningService)
                         }
-                    }
-                )
-            }
 
+                        "mobile_toilet" -> {
+
+                        }
+
+                        "pest_control" -> {
+                            navController.navigate(PestControl)
+                        }
+
+                        "academy" -> {
+                            navController.navigate(Academy)
+                        }
+
+                        "janitorial_service" -> {}
+                        "septic" -> {}
+                    }
+                })
+            }
 
             composable<Booking> {
                 BookingScreen()
@@ -180,17 +182,13 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<CheckoutList> {
-                CheckoutListScreen(
-                    goBack = {
-                        navController.popBackStack()
-                    },
-                    addNewAddress = {
-                        navController.navigate(AddressList)
-                    },
-                    continueButton = { createOrderModelJson, paymentOption ->
-                        navController.navigate(DeliverOption(createOrderModelJson, paymentOption))
-                    }
-                )
+                CheckoutListScreen(goBack = {
+                    navController.popBackStack()
+                }, addNewAddress = {
+                    navController.navigate(AddressList)
+                }, continueButton = { createOrderModelJson, paymentOption ->
+                    navController.navigate(DeliverOption(createOrderModelJson, paymentOption))
+                })
             }
             composable<DeliverOption> { backStack ->
                 val createOrderModel =
@@ -216,22 +214,22 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<WebViewUrl> { backStackEntry ->
                 WebViewUrlScreen(backStackEntry.toRoute<WebViewUrl>().url) { transaction_id ->
 
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("transaction_id", transaction_id)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "transaction_id",
+                        transaction_id
+                    )
                     navController.popBackStack()
                 }
             }
 
             composable<AddressList> {
-                AddressListScreen(
-                    goBack = {
-                        navController.popBackStack()
-                    }, goBackToCheckout = {
-                        navController.popBackStack()
-                    }, { id, address, phone ->
-                        navController.navigate(AddressForm(id, address, phone))
-                    })
+                AddressListScreen(goBack = {
+                    navController.popBackStack()
+                }, goBackToCheckout = {
+                    navController.popBackStack()
+                }, { id, address, phone ->
+                    navController.navigate(AddressForm(id, address, phone))
+                })
             }
 
             composable<AddressForm> {
@@ -243,33 +241,24 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<ProductListing> { backStackEntry ->
                 val data = backStackEntry.toRoute<ProductListing>()
-                ProductListingScreen(
-                    data.categoryId, data.categoryName,
-                    onBackClick = {
-                        navController.popBackStack()
-                    },
-                    onSearchClick = {
-                        navController.navigate(Search)
-                    },
-                    onCartClick = {
-                        navController.popBackStack<Home>(inclusive = false)
-                        navController.navigate(Cart)
-                    },
-                    onProductClick = { product ->
-                        navController.navigate(ProductDetails(product))
-                    }
-                )
+                ProductListingScreen(data.categoryId, data.categoryName, onBackClick = {
+                    navController.popBackStack()
+                }, onSearchClick = {
+                    navController.navigate(Search)
+                }, onCartClick = {
+                    navController.popBackStack<Home>(inclusive = false)
+                    navController.navigate(Cart)
+                }, onProductClick = { product ->
+                    navController.navigate(ProductDetails(product))
+                })
             }
             dialog<Search> {
-                ProductSearchScreen(
-                    onDismiss = {
-                        navController.popBackStack()
-                    },
-                    onProductSelected = { product ->
-                        navController.popBackStack()
-                        navController.navigate(ProductDetails(NavigationUtils.encodeObject(product)))
-                    }
-                )
+                ProductSearchScreen(onDismiss = {
+                    navController.popBackStack()
+                }, onProductSelected = { product ->
+                    navController.popBackStack()
+                    navController.navigate(ProductDetails(NavigationUtils.encodeObject(product)))
+                })
             }
 
             composable<Success> { backTrack ->
@@ -325,7 +314,8 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 val deepCleaningPriceModel =
                     NavigationUtils.decodeObject<CleaningPriceModel>(data.response)
                 DeepCleaningPriceDetailsScreen(
-                    deepCleaningFormData, deepCleaningPriceModel,
+                    deepCleaningFormData,
+                    deepCleaningPriceModel,
                     goBack = {
                         navController.popBackStack()
                     },
@@ -336,19 +326,15 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<DeepCleaningFormTwo> { backTrack ->
                 val data = backTrack.toRoute<DeepCleaningPriceDetails>()
-                DeepCleaningFormTwoScreen(
-                    goBack = {
-                        navController.popBackStack()
-                    }, goToCheckoutPage = { formData ->
-                        navController.navigate(
-                            DeepCleaningCheckout(
-                                data.response,
-                                data.data,
-                                formData
-                            )
+                DeepCleaningFormTwoScreen(goBack = {
+                    navController.popBackStack()
+                }, goToCheckoutPage = { formData ->
+                    navController.navigate(
+                        DeepCleaningCheckout(
+                            data.response, data.data, formData
                         )
-                    }
-                )
+                    )
+                })
             }
 
             composable<DeepCleaningCheckout> { backTrace ->
@@ -376,14 +362,11 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<BasicCleaningForm> {
-                BasicCleaningFormScreen(
-                    goBack = {
-                        navController.popBackStack()
-                    },
-                    goToPreview = { data, response ->
-                        navController.navigate(BasicCleaningPriceDetails(data, response))
-                    }
-                )
+                BasicCleaningFormScreen(goBack = {
+                    navController.popBackStack()
+                }, goToPreview = { data, response ->
+                    navController.navigate(BasicCleaningPriceDetails(data, response))
+                })
             }
 
             composable<BasicCleaningPriceDetails> { backTrack ->
@@ -393,50 +376,139 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 val basicCleaningBreakdownModel =
                     NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
                 BasicCleaningPriceDetailsScreen(
-                    basicCleaningFormModel, basicCleaningBreakdownModel,
+                    basicCleaningFormModel,
+                    basicCleaningBreakdownModel,
                     goBack = {
                         navController.popBackStack()
-                    }, goToNextPage = {
+                    },
+                    goToNextPage = {
                         navController.navigate(BasicCleaningFormTwo(data.data, data.response))
                     })
             }
 
             composable<BasicCleaningFormTwo> { backTrack ->
                 val data = backTrack.toRoute<BasicCleaningPriceDetails>()
-                val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
-                val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                val basicCleaningFormModel =
+                    NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                val basicCleaningBreakdownModel =
+                    NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
 
                 BasicCleaningFormTwoScreen(
-                    basicCleaningFormModel,
-                    basicCleaningBreakdownModel,
-                    goBack = {
+                    basicCleaningFormModel, basicCleaningBreakdownModel, goBack = {
                         navController.popBackStack()
                     },
 
-                    goToCheckoutPage = { basicCleaningFormModel,basicCleaningBreakdownModel, basicCleaningFormTwoData ->
-                        navController.navigate(BasicCleaningCheckout(basicCleaningFormModel, basicCleaningBreakdownModel, basicCleaningFormTwoData))
+                    goToCheckoutPage = { basicCleaningFormModel, basicCleaningBreakdownModel, basicCleaningFormTwoData ->
+                        navController.navigate(
+                            BasicCleaningCheckout(
+                                basicCleaningFormModel,
+                                basicCleaningBreakdownModel,
+                                basicCleaningFormTwoData
+                            )
+                        )
                     })
             }
 
             composable<BasicCleaningCheckout> { backTrack ->
                 val data = backTrack.toRoute<BasicCleaningCheckout>()
-                val basicCleaningFormModel = NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
-                val basicCleaningBreakdownModel = NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
-                val basicCleaningForm2Model = NavigationUtils.decodeObject<BasicCleaningForm2Model>(data.inputData)
+                val basicCleaningFormModel =
+                    NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                val basicCleaningBreakdownModel =
+                    NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                val basicCleaningForm2Model =
+                    NavigationUtils.decodeObject<BasicCleaningForm2Model>(data.inputData)
 
 
-                BasicCleaningCheckoutScreen(basicCleaningFormModel,basicCleaningBreakdownModel,basicCleaningForm2Model,
-                    savedStateHandle =backTrack.savedStateHandle,goBack ={
+                BasicCleaningCheckoutScreen(
+                    basicCleaningFormModel,
+                    basicCleaningBreakdownModel,
+                    basicCleaningForm2Model,
+                    savedStateHandle = backTrack.savedStateHandle,
+                    goBack = {
                         navController.popBackStack()
                     },
-                    goToWebView = { url -> navController.navigate(WebViewUrl(url))
-                    },gotoSuccessPage ={ title, message, buttonText ->
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    gotoSuccessPage = { title, message, buttonText ->
                         navController.navigate(Success(message, title, buttonText, false))
                     })
+            }
+
+            composable<PestControl> {
+                PestControlScreen(goBack = {
+                    navController.popBackStack()
+
+                }, goToNextPage = { selection ->
+                    if (selection.equals("residential")) {
+                        navController.navigate(ResidentialPestControl)
+                    } else {
+                        navController.navigate(CompanyPestControl)
+                    }
+                })
+            }
+
+            composable<ResidentialPestControl> {
+                PestControlResidentialFormScreen(goBack = {
+                    navController.popBackStack()
+                }, goToPricing = { amount, formData ->
+                    navController.navigate(ResidentialPestControlPricing(amount, formData))
+                })
+            }
+
+            composable<ResidentialPestControlPricing> { backStack ->
+                val data = backStack.toRoute<ResidentialPestControlPricing>()
+                val formData =
+                    NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                PestControlPriceScreen(data.amount, formData, goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = {
+                    navController.navigate(
+                        ResidentialPestControlFormTwo(
+                            data.amount,
+                            data.formData
+                        )
+                    )
+                })
+            }
+
+            composable<ResidentialPestControlFormTwo> { backStack ->
+                val data = backStack.toRoute<ResidentialPestControlPricing>()
+                ResidentialPestControlFormTwoScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    }, goToNextPage = {  formData2 ->
+                        navController.navigate(
+                            ResidentialPestControlCheckout(
+                                data.amount,
+                                data.formData,
+                                formData2
+                            )
+                        )
+                    })
+            }
+
+             composable<ResidentialPestControlCheckout> { backStack ->
+                 val data = backStack.toRoute<ResidentialPestControlCheckout>()
+                 val amount = NavigationUtils.decodeObject<String>(data.amount)
+                 val formData = NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                 val formData2 = NavigationUtils.decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
+
+                 PestControlResidentialCheckoutScreen(amount,formData,formData2)
+             }
+
+            composable<CompanyPestControl> {
+                PestControlCommercialScreen(goBack = {
+                    navController.popBackStack()
+                }, goToSuccess = { title, message, buttonText ->
+                    navController.navigate(Success(message, title, buttonText, false))
+                })
+
             }
         }
     }
 }
+
 
 @Composable
 fun BottomBar(navController: NavHostController) {
@@ -453,26 +525,22 @@ fun BottomBar(navController: NavHostController) {
             DashboardBottomNav.Home.selectedIcon,
             DashboardBottomNav.Home.unselectedIcon,
             DashboardBottomNav.Home.label
-        ),
-        BottomNavItem(
+        ), BottomNavItem(
             Booking,
             DashboardBottomNav.Booking.selectedIcon,
             DashboardBottomNav.Booking.unselectedIcon,
             DashboardBottomNav.Booking.label
-        ),
-        BottomNavItem(
+        ), BottomNavItem(
             Cart,
             DashboardBottomNav.Cart.selectedIcon,
             DashboardBottomNav.Cart.unselectedIcon,
             DashboardBottomNav.Cart.label
-        ),
-        BottomNavItem(
+        ), BottomNavItem(
             Academy,
             DashboardBottomNav.Training.selectedIcon,
             DashboardBottomNav.Training.unselectedIcon,
             DashboardBottomNav.Training.label
-        ),
-        BottomNavItem(
+        ), BottomNavItem(
             Profile,
             DashboardBottomNav.Profile.selectedIcon,
             DashboardBottomNav.Profile.unselectedIcon,
@@ -494,8 +562,7 @@ fun BottomBar(navController: NavHostController) {
                     Icon(
                         painter = painterResource(
                             if (isSelected) item.selectedIcon else item.unselectedIcon
-                        ),
-                        contentDescription = item.label
+                        ), contentDescription = item.label
                     )
                 },
                 label = { Text(item.label, style = MaterialTheme.typography.bodySmall) },

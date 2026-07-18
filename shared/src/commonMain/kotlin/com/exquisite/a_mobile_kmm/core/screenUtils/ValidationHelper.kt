@@ -78,6 +78,28 @@ object ValidationHelper {
     }
 
 
+    fun validateName(name: String): ValidationResult {
+        return when {
+            name.isEmpty() -> ValidationResult(
+                false,
+                "Name is required"
+            )
+            name.length < 2 -> ValidationResult(
+                false,
+                "Name must be at least 2 characters"
+            )
+            !name.all { it.isLetter() || it.isWhitespace() } ->
+                ValidationResult(
+                    false,
+                    "name can only contain letters"
+                )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
+
+
     fun validateFullName(name: String): ValidationResult {
         return when {
             name.isEmpty() -> ValidationResult(
@@ -93,6 +115,22 @@ object ValidationHelper {
                     false,
                     "Full name can only contain letters"
                 )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
+
+    fun validateCompanyName(name: String): ValidationResult {
+        return when {
+            name.isEmpty() -> ValidationResult(
+                false,
+                "Company name is required"
+            )
+            name.length < 5 -> ValidationResult(
+                false,
+                "Company name must be at least 2 characters"
+            )
             else -> ValidationResult(
                 true
             )

@@ -6,7 +6,14 @@ import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ServiceModel
 sealed class PestControlResidentialFormState {
     data object Idle : PestControlResidentialFormState()
     data object Loading : PestControlResidentialFormState()
-    data class ServiceListSuccess(val services: List<ServiceModel>) : PestControlResidentialFormState()
     data class PriceSuccess(val price: PestControlPriceModel) : PestControlResidentialFormState()
     data class Error(val message: String) : PestControlResidentialFormState()
+}
+
+
+sealed class PestControlServiceListState {
+     object Idle : PestControlServiceListState()
+     object Loading : PestControlServiceListState()
+    data class ServiceListSuccess(val services: List<ServiceModel>) : PestControlServiceListState()
+    data class Error(val message: String) : PestControlServiceListState()
 }

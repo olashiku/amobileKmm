@@ -122,9 +122,7 @@ fun CleaningServiceScreen(
 
         PrimaryButton("Continue", {
             if (selectedCleaningOption == "basic") {
-              //  viewModel.checkBasicCleaningEligibility()
-                goToCleaning.invoke(selectedCleaningOption ?: "deep")
-
+               viewModel.checkBasicCleaningEligibility()
             } else {
                 goToCleaning.invoke(selectedCleaningOption ?: "deep")
             }

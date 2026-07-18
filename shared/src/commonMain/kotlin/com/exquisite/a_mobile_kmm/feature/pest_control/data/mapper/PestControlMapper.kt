@@ -1,10 +1,27 @@
 package com.exquisite.a_mobile_kmm.feature.pest_control.data.mapper
 
+import com.exquisite.a_mobile_kmm.feature.pest_control.data.remote.request.*
 import com.exquisite.a_mobile_kmm.feature.pest_control.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.*
 
+// Response DTO to Domain Model mappers
 fun RequestCommercialPestControlResponseDto.toPestControlResponseModel(): PestControlResponseModel {
     return PestControlResponseModel(message = responseMessage)
+}
+
+// Domain to DTO mappers for requests
+fun RequestCommercialPestControlModel.toDto(): RequestCommercialPestControlRequestDto {
+    return RequestCommercialPestControlRequestDto(
+        customerId = customerId,
+        companyName = companyName,
+        companyEmail = companyEmail,
+        companyAddress = companyAddress,
+        availabilityDate = availabilityDate,
+        availabilityTime = availabilityTime,
+        recipientName = recipientName,
+        recipientEmail = recipientEmail,
+        recipientPhone = recipientPhone
+    )
 }
 
 fun GetServiceListResponseDto.toServiceModelList(): List<ServiceModel>? {
@@ -38,4 +55,12 @@ fun InitPestControlPaymentResponseDto.toPestControlPaymentModel(): PestControlPa
 
 fun CompletePestControlPaymentResponseDto.toPestControlResponseModel(): PestControlResponseModel {
     return PestControlResponseModel(message = responseMessage)
+}
+
+fun GetPestControlPriceModel.toDto(): GetPestControlPriceRequestDto {
+    return GetPestControlPriceRequestDto(
+        numberOfRooms = numberOfRooms,
+        serviceId = serviceId,
+        customerId = customerId
+    )
 }

@@ -52,6 +52,7 @@ import com.preat.peekaboo.image.picker.SelectionMode
 import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
+@Suppress("SuspiciousIndentation")
 @Composable
 fun BasicCleaningFormTwoScreen(
     basicCleaningFormModel: BasicCleaningFormModel,
@@ -272,7 +273,7 @@ fun BasicCleaningFormTwoScreen(
             val isLocationValida = locationValidator.forceValidation()
             val isTypeOfApartmentValid = typeOfApartmentValidator.forceValidation()
             val isAddressValid = addressValidator.forceValidation()
-            if (isRegionValid && isLocationValida && isTypeOfApartmentValid && isAddressValid && imageUrl.isNotEmpty()) {
+            if (isRegionValid && isLocationValida && isTypeOfApartmentValid && isAddressValid && imageUrl.size >= 5) {
 
              val formData = BasicCleaningForm2Model(
                  region = regionValidator.value.value to regionId.toString(),

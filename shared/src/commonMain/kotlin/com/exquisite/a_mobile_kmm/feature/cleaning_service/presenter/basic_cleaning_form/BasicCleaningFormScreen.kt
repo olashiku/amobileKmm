@@ -89,7 +89,6 @@ fun BasicCleaningFormScreen(
     LaunchedEffect(Unit){
         viewModel.findNumberOfRooms()
         if (selectedTime == null) {
-            // Restore from persisted data or use default
             val timeToSet = persistedFormData.cleaningTime.ifEmpty { times[1] }
             viewModel.setSelectedTime(timeToSet)
         }

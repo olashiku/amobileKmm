@@ -131,6 +131,38 @@ data class DeepCleaningCheckout(
     val imageData:String
 )
 
+ @Serializable
+object PestControl
+
+@Serializable
+object ResidentialPestControl
+
+@Serializable
+data class ResidentialPestControlPricing(
+    val amount:String,
+    val formData:String
+)
+
+@Serializable
+data class ResidentialPestControlFormTwo(
+    val amount:String,
+    val formData:String
+)
+
+@Serializable
+data class ResidentialPestControlCheckout(
+    val amount:String,
+    val formData:String,
+    val formData2:String
+)
+
+
+@Serializable
+object CompanyPestControl
+
+
+
+
 
 
 

@@ -120,6 +120,7 @@ import com.exquisite.a_mobile_kmm.feature.pest_control.domain.usecase.RequestCom
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_commercial.PestControlCommercialViewModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_checkout.PestControlResidentialCheckoutViewModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form.PestControlResidentialFormViewModel
+import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form_two.ResidentialPestControlForm2ViewModel
 import com.exquisite.a_mobile_kmm.feature.septic.data.repository.SepticRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.septic.domain.repository.SepticRepository
 import com.exquisite.a_mobile_kmm.feature.septic.domain.usecase.CompleteSepticPaymentUseCase
@@ -315,8 +316,8 @@ val sharedModule: Module = module {
     viewModel { EventToiletCheckoutViewModel(get(), get(), get(), get(), get()) }
     viewModel { EventToiletFormViewModel(get(), get()) }
     viewModel { JanitorialViewModel(get()) }
-    viewModel { PestControlCommercialViewModel(get()) }
-    viewModel { PestControlResidentialFormViewModel(get(), get()) }
+    viewModel { PestControlCommercialViewModel(get(),get()) }
+    viewModel { PestControlResidentialFormViewModel(get(), get(), get(), get()) }
     viewModel { PestControlResidentialCheckoutViewModel(get(), get(), get()) }
     viewModel { SepticResidentialFormViewModel(get()) }
     viewModel { SepticResidentialCheckoutViewModel(get(), get(), get()) }
@@ -328,5 +329,5 @@ val sharedModule: Module = module {
     viewModel { CartViewModel(get()) }
     viewModel { BasicCleaningFormTwoViewModel(get(), get(), get(), get()) }
     viewModel { BasicCleaningCheckoutViewModel(get(), get(), get(), get()) }
-
+    viewModel { ResidentialPestControlForm2ViewModel(get()) }
 }

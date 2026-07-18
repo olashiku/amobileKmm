@@ -59,6 +59,7 @@ import com.exquisite.a_mobile_kmm.core.screen_components.MediaSourceDialog
 import com.exquisite.a_mobile_kmm.core.screen_components.OptionCard
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.screen_components.TimeSlotGrid
+import com.exquisite.a_mobile_kmm.core.screen_components.generateAvailableDates
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular11
@@ -90,9 +91,7 @@ fun DeepCleaningFormTwoScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val availableQuickDates = remember {
-        com.exquisite.a_mobile_kmm.core.screen_components.generateAvailableDates(11)
-    }
+    val availableQuickDates = remember {generateAvailableDates(11) }
 
     val times = listOf("9:00 AM", "10:00 AM", "11:30 AM","12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
 

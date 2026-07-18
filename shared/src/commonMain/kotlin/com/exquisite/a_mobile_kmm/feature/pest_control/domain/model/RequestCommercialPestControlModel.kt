@@ -1,9 +1,6 @@
-package com.exquisite.a_mobile_kmm.feature.pest_control.data.remote.request
+package com.exquisite.a_mobile_kmm.feature.pest_control.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class RequestCommercialPestControlRequestDto(
+data class RequestCommercialPestControlModel(
     val customerId: Int,
     val companyName: String,
     val companyEmail: String,
@@ -12,5 +9,5 @@ data class RequestCommercialPestControlRequestDto(
     val availabilityTime: String,
     val recipientName: String,
     val recipientEmail: String,
-    val recipientPhone: String,
-    )
+    val recipientPhone: String
+)
