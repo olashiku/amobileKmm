@@ -323,5 +323,4 @@ fun CleaningSummaryItem(deepCleaningFormData: CleaningSummaryData) {
             color = Color(0xFF1A1A1A), fontSize = 13.sp
         )
     }
-
 }

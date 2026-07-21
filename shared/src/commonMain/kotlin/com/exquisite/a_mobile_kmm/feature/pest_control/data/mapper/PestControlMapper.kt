@@ -64,3 +64,47 @@ fun GetPestControlPriceModel.toDto(): GetPestControlPriceRequestDto {
         customerId = customerId
     )
 }
+
+fun InitPestControlPaymentRequest.toDto(): InitPestControlPaymentRequestDto {
+    return InitPestControlPaymentRequestDto(
+        uniqueRef = uniqueRef,
+        customerId = customerId,
+        address = address,
+        images = images,
+        apartmentTypeId = apartmentTypeId,
+        isHotFogging = isHotFogging,
+        serviceDate = serviceDate,
+        inspectionDate = inspectionDate,
+        serviceTime = serviceTime,
+        inspectionTime = inspectionTime,
+        extraNote = extraNote,
+        customerOwnVehicle = customerOwnVehicle,
+        numberOfVehicles = numberOfVehicles
+    )
+}
+
+fun DebitFromWalletPestControlRequest.toDto(): DebitFromWalletPestControlRequestDto {
+    return DebitFromWalletPestControlRequestDto(
+        uniqueRef = uniqueRef,
+        customerId = customerId,
+        address = address,
+        images = images,
+        apartmentTypeId = apartmentTypeId,
+        isHotFogging = isHotFogging,
+        serviceDate = serviceDate,
+        inspectionDate = inspectionDate,
+        serviceTime = serviceTime,
+        inspectionTime = inspectionTime,
+        extraNote = extraNote,
+        customerOwnVehicle = customerOwnVehicle,
+        numberOfVehicles = numberOfVehicles
+    )
+}
+
+fun CompletePestControlPaymentRequest.toDto(): CompletePestControlPaymentRequestDto {
+    return CompletePestControlPaymentRequestDto(
+        customerId = customerId,
+        ref = ref,
+        txnRef = txnRef
+    )
+}

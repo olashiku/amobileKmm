@@ -2,11 +2,8 @@ package com.exquisite.a_mobile_kmm.feature.pest_control.data.repository
 
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.safeApiCall
-import com.exquisite.a_mobile_kmm.feature.pest_control.data.mapper.toDto
 import com.exquisite.a_mobile_kmm.feature.pest_control.data.remote.request.*
 import com.exquisite.a_mobile_kmm.feature.pest_control.data.remote.response.*
-import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.GetPestControlPriceModel
-import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.RequestCommercialPestControlModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.repository.PestControlRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -16,10 +13,10 @@ import kotlinx.coroutines.flow.Flow
 
 class PestControlRepositoryImpl(private val httpClient: HttpClient) : PestControlRepository {
 
-    override suspend fun requestCommercialPestControl(request: RequestCommercialPestControlModel): Flow<Result<RequestCommercialPestControlResponseDto>> {
+    override suspend fun requestCommercialPestControl(request: RequestCommercialPestControlRequestDto): Flow<Result<RequestCommercialPestControlResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/pest_control/request_commercial_pest_control") {
-                setBody(request.toDto())
+                setBody(request)
             }
         }
     }
@@ -30,10 +27,10 @@ class PestControlRepositoryImpl(private val httpClient: HttpClient) : PestContro
         }
     }
 
-    override suspend fun getPestControlPrice(request: GetPestControlPriceModel): Flow<Result<GetPestControlPriceResponseDto>> {
+    override suspend fun getPestControlPrice(request: GetPestControlPriceRequestDto): Flow<Result<GetPestControlPriceResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/pest_control/get_price") {
-                setBody(request.toDto())
+                setBody(request)
             }
         }
     }

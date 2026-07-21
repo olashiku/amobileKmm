@@ -400,9 +400,9 @@ fun ResidentialPestControlFormTwoScreen(
                     if(isValidatedAddress &&  formState.images.size >= 5){
                    
                         goToNextPage.invoke(NavigationUtils.encodeObject(formState))
+                    }else{
+                        snackBar.showError("Kindly upload at least five images before you proceed")
                     }
-
-
                 }, modifier = Modifier.padding(horizontal = 0.dp))
             }
         }

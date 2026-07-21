@@ -488,13 +488,23 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                     })
             }
 
-             composable<ResidentialPestControlCheckout> { backStack ->
-                 val data = backStack.toRoute<ResidentialPestControlCheckout>()
+             composable<ResidentialPestControlCheckout> { backTrack ->
+                 val data = backTrack.toRoute<ResidentialPestControlCheckout>()
                  val amount = NavigationUtils.decodeObject<String>(data.amount)
                  val formData = NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
                  val formData2 = NavigationUtils.decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
 
-                 PestControlResidentialCheckoutScreen(amount,formData,formData2)
+                 PestControlResidentialCheckoutScreen(amount,formData,formData2,
+                     savedStateHandle = backTrack.savedStateHandle,
+                     goBack = {
+                         navController.popBackStack()
+                     },
+                     goToWebView = { url ->
+                         navController.navigate(WebViewUrl(url))
+                     },
+                     goToSuccess = { title, message, buttonText ->
+                         navController.navigate(Success(message, title, buttonText, false))
+                     })
              }
 
             composable<CompanyPestControl> {

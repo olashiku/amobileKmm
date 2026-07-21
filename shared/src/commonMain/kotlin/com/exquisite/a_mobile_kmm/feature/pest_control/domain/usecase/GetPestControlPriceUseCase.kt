@@ -3,6 +3,7 @@ package com.exquisite.a_mobile_kmm.feature.pest_control.domain.usecase
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.pest_control.data.mapper.toDto
 import com.exquisite.a_mobile_kmm.feature.pest_control.data.mapper.toPestControlPriceModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.GetPestControlPriceModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlPriceModel
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.map
 
 class GetPestControlPriceUseCase(private val repository: PestControlRepository) {
     suspend operator fun invoke(request: GetPestControlPriceModel): Flow<UseCaseResult<PestControlPriceModel>> {
-        return repository.getPestControlPrice(request).map { result ->
+        return repository.getPestControlPrice(request.toDto()).map { result ->
             when (result) {
                 is Result.Success -> {
                     if (result.data.responseCode == "00" && result.data.data != null) {
