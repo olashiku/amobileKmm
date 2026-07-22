@@ -63,6 +63,7 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
 import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.ImageUploadState
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.domain.model.DocumentType
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form_two.PhotoUploadSection
+import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
@@ -78,9 +79,12 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResidentialPestControlFormTwoScreen(
+    pestControlResidentialFormModel:PestControlResidentialFormModel,
     viewModel: ResidentialPestControlForm2ViewModel = koinViewModel<ResidentialPestControlForm2ViewModel>(),
     goBack: () -> Unit, goToNextPage: (String) -> Unit, modifier: Modifier = Modifier
 ) {
+
+    val (snackBar, snackBarHostState) = rememberSnackBar()
 
     var imageByte by remember { mutableStateOf<ByteArray?>(null) }
     val scope = rememberCoroutineScope()
@@ -98,6 +102,27 @@ fun ResidentialPestControlFormTwoScreen(
 
     val times = listOf("9:00 AM", "10:00 AM", "11:30 AM", "12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
     val vehicleList = listOf("1", "2", "3", "4", "5")
+
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+
+    val isApartmentTypeLoading by viewModel.isApartmentTypeLoading.collectAsStateWithLifecycle()
+    val apartmentTypeData by viewModel.apartmentTypes.collectAsStateWithLifecycle()
+    var apartmentId by remember { mutableStateOf(formState.typeOfApartment?.second?.toInt()?:0) }
+
+
+    val typeOfApartmentValidator = remember {
+        FieldValidator { value ->
+            ValidationHelper.validateSelection(value, "Type of apartment Validator")
+        }
+    }
+
+    // Handle error messages
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { message ->
+            snackBar.showError(message)
+            viewModel.clearError()
+        }
+    }
 
     val addressValidator = remember {
         FieldValidator(ValidationHelper::validateAddress).apply {
@@ -140,6 +165,10 @@ fun ResidentialPestControlFormTwoScreen(
             viewModel.setServiceTime(times[2])
         }
         if (formState.serviceDate == null) {
+            viewModel.setServiceDate(availableQuickDates.firstOrNull())
+        }
+
+        if (formState.typeOfApartment == null) {
             viewModel.setServiceDate(availableQuickDates.firstOrNull())
         }
     }
@@ -185,7 +214,6 @@ fun ResidentialPestControlFormTwoScreen(
         }
     )
 
-    val (snackBar, snackBarHostState) = rememberSnackBar()
     var showImageSourceDialog by remember { mutableStateOf(false) }
 
     when (val result = imageUploadState.value) {
@@ -238,6 +266,23 @@ fun ResidentialPestControlFormTwoScreen(
                     leadingIconRes = Res.drawable.email_icon
                 )
                 Spacer(modifier = modifier.height(15.dp))
+
+                ValidatedDropdownField(
+                    labelText = "Select apartment type",
+                    placeHolder = "Select your type of apartment",
+                    fieldValidator = typeOfApartmentValidator,
+                    defaultText = formState.typeOfApartment?.first?:"",
+                    options = apartmentTypeData.map { it.name },
+                    onSelectionChange = { selectedApartment ->
+                        apartmentId = apartmentTypeData.find { it.name == selectedApartment }?.id ?: 0
+                        viewModel.setApartmentType(selectedApartment to apartmentId.toString())
+
+                    },
+                    isLoading = isApartmentTypeLoading,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = modifier.height(15.dp))
+
 
                 PhotoUploadSection(
                     title = "Photos of space to be serviced",
@@ -370,26 +415,31 @@ fun ResidentialPestControlFormTwoScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done,
                 )
-                Spacer(modifier = modifier.height(10.dp))
-                RadioButton("Do you have pest in your vehicle?", formState.hasPestInVehicle, { result ->
-                    viewModel.setHasPestInVehicle(result)
-                })
-                Spacer(modifier = modifier.height(15.dp))
-                if (formState.hasPestInVehicle) {
-                    ValidatedDropdownField(
-                        labelText = "Number of vehicles",
-                        placeHolder = "Select number of vehicles",
-                        fieldValidator = numberOfVehiclesValidator,
-                        defaultText = formState.numberOfVehicles,
-                        options = vehicleList.map { it },
-                        onSelectionChange = { selectedNumberOfVehicles ->
-                            viewModel.setNumberOfVehicles(selectedNumberOfVehicles)
-                        },
-                        isLoading = false,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                if(pestControlResidentialFormModel.selectedServiceName.equals("Bed Bug Control") || pestControlResidentialFormModel.selectedServiceName.equals("Tick Control")){
+
+                    Spacer(modifier = modifier.height(10.dp))
+                    RadioButton("Do you have pest in your vehicle?", formState.hasPestInVehicle, { result ->
+                        viewModel.setHasPestInVehicle(result)
+                    })
+                    Spacer(modifier = modifier.height(15.dp))
+                    if (formState.hasPestInVehicle) {
+                        ValidatedDropdownField(
+                            labelText = "Number of vehicles",
+                            placeHolder = "Select number of vehicles",
+                            fieldValidator = numberOfVehiclesValidator,
+                            defaultText = formState.numberOfVehicles,
+                            options = vehicleList.map { it },
+                            onSelectionChange = { selectedNumberOfVehicles ->
+                                viewModel.setNumberOfVehicles(selectedNumberOfVehicles)
+                            },
+                            isLoading = false,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                    Spacer(modifier = modifier.height(10.dp))
                 }
-                Spacer(modifier = modifier.height(10.dp))
+
+
                 RadioButton("Do you want hot fogging?", formState.wantsHotFogging, { result ->
                     viewModel.setWantsHotFogging(result)
                 })
@@ -397,11 +447,12 @@ fun ResidentialPestControlFormTwoScreen(
 
                 PrimaryButton("Continue", {
                   val isValidatedAddress = addressValidator.forceValidation()
-                    if(isValidatedAddress &&  formState.images.size >= 5){
-                   
+                  val isValidateApartmentType = typeOfApartmentValidator.forceValidation()
+
+                    if(isValidatedAddress && isValidateApartmentType &&  formState.images.size >= 1){
                         goToNextPage.invoke(NavigationUtils.encodeObject(formState))
                     }else{
-                        snackBar.showError("Kindly upload at least five images before you proceed")
+                        snackBar.showError("Kindly fill all required fields in the form")
                     }
                 }, modifier = Modifier.padding(horizontal = 0.dp))
             }

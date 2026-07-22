@@ -6,14 +6,18 @@ import com.exquisite.a_mobile_kmm.core.screen_components.DateModel
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.auth.domain.usecase.UploadFileUseCase
 import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.ImageUploadState
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.ApartmentTypeModel
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.usecase.FindApartmentTypeUseCase
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.collections.emptyList
 
 class ResidentialPestControlForm2ViewModel(
-    private val uploadFileUseCase: UploadFileUseCase
+    private val uploadFileUseCase: UploadFileUseCase,
+    private val findApartmentTypeUseCase: FindApartmentTypeUseCase
 ): ViewModel() {
 
     private val _formState = MutableStateFlow(ResidentialPestControlFormTwoModel())
@@ -21,6 +25,21 @@ class ResidentialPestControlForm2ViewModel(
 
     private val _imageUploadState = MutableStateFlow<ImageUploadState>(ImageUploadState.Idle)
     val imageUploadState = _imageUploadState.asStateFlow()
+
+    private val _isApartmentTypeLoading = MutableStateFlow(false)
+    val isApartmentTypeLoading = _isApartmentTypeLoading.asStateFlow()
+
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
+
+
+    private val _apartmentTypes = MutableStateFlow<List<ApartmentTypeModel>>(emptyList())
+    val apartmentTypes = _apartmentTypes.asStateFlow()
+
+     init{
+         findApartmentTypes()
+     }
 
     fun uploadImage(image: ByteArray, fileName: String) {
         viewModelScope.launch {
@@ -51,6 +70,29 @@ class ResidentialPestControlForm2ViewModel(
         _formState.update(update)
     }
 
+    fun findApartmentTypes() {
+        viewModelScope.launch {
+            _isApartmentTypeLoading.value = true
+            findApartmentTypeUseCase.invoke().collect { response ->
+                when (response) {
+                    is UseCaseResult.Success -> {
+                        _apartmentTypes.value = response.data
+                        _isApartmentTypeLoading.value = false
+                    }
+
+                    is UseCaseResult.Error -> {
+                        _errorMessage.value = response.message
+                        _isApartmentTypeLoading.value = false
+                    }
+                }
+            }
+        }
+    }
+
+    fun clearError() {
+        _errorMessage.value = null
+    }
+
     fun setAddress(address: String) = updateForm { it.copy(address = address) }
 
     fun setInspectionDate(date: DateModel?) = updateForm { it.copy(inspectionDate = date) }
@@ -69,5 +111,10 @@ class ResidentialPestControlForm2ViewModel(
 
     fun setWantsHotFogging(wants: Boolean) = updateForm { it.copy(wantsHotFogging = wants) }
 
+    fun setApartmentType(type: Pair<String, String>) = updateForm { it.copy(typeOfApartment = type) }
+
+
     fun removeImageUrl(url: String) = updateForm { it.copy(images = it.images.filter { img -> img != url }) }
+
+
 }

@@ -276,7 +276,7 @@ val sharedModule: Module = module {
     single { DebitFromAccountSepticUseCase(get()) }
     single { SendEnquiryUseCase(get()) }
     single { CompleteSepticPaymentUseCase(get()) }
-    single { GetAddressesUseCase(get()) }
+    single { GetAddressesUseCase(get())}
     single { UpdateAddressUseCase(get()) }
     single { CreateAddressUseCase(get()) }
     single { DeleteAddressUseCase(get()) }
@@ -329,5 +329,5 @@ val sharedModule: Module = module {
     viewModel { CartViewModel(get()) }
     viewModel { BasicCleaningFormTwoViewModel(get(), get(), get(), get()) }
     viewModel { BasicCleaningCheckoutViewModel(get(), get(), get(), get()) }
-    viewModel { ResidentialPestControlForm2ViewModel(get()) }
+    viewModel { ResidentialPestControlForm2ViewModel(get(),get()) }
 }

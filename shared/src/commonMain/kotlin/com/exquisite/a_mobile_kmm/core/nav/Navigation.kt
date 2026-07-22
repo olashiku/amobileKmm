@@ -25,18 +25,24 @@ object ForgotPassword
 object SignUp
 
 @Serializable
-data class Otp(val uniqueRef:String,val email:String ,val from:String)
+data class Otp(val uniqueRef: String, val email: String, val from: String)
 
 @Serializable
-data class  CreatePassword(
-    val uniqueRef:String,val realOtp:String,val from:String)
+data class CreatePassword(
+    val uniqueRef: String, val realOtp: String, val from: String
+)
 
 @Serializable
-data class  UploadImage(val uniqueRef:String,val otp:String,val password:String)
+data class UploadImage(val uniqueRef: String, val otp: String, val password: String)
 
 
 @Serializable
-data class Success(val message:String, val title:String,val buttonText:String, val isAuth:Boolean)
+data class Success(
+    val message: String,
+    val title: String,
+    val buttonText: String,
+    val isAuth: Boolean
+)
 
 @Serializable
 object Home
@@ -52,6 +58,7 @@ object Academy
 
 @Serializable
 object Profile
+
 @Serializable
 object AuthNav
 
@@ -68,34 +75,34 @@ object Search
 
 @Serializable
 data class ProductListing(
-    val categoryId:Int,
-    val categoryName:String
+    val categoryId: Int,
+    val categoryName: String
 )
 
 @Serializable
 object CheckoutList
 
 @Serializable
- object AddressList
+object AddressList
 
 @Serializable
 data class AddressForm
-    (val id:Int?,val address:String?,val phone:String?)
+    (val id: Int?, val address: String?, val phone: String?)
 
 @Serializable
 data class DeliverOption(
-    val createOrderModelJson : String,
+    val createOrderModelJson: String,
     val paymentOption: String
 )
 
 @Serializable
-data class WebViewUrl(val url:String)
+data class WebViewUrl(val url: String)
 
 @Serializable
 object CleanersRegistration
 
 @Serializable
-data class CleanersDocumentUpload(val data:String)
+data class CleanersDocumentUpload(val data: String)
 
 @Serializable
 object CleaningService
@@ -104,34 +111,33 @@ object CleaningService
 object DeepCleaningForm
 
 @Serializable
-data class DeepCleaningPriceDetails(val response:String,val data:String)
+data class DeepCleaningPriceDetails(val response: String, val data: String)
 
 @Serializable
 object BasicCleaningForm
 
 @Serializable
-data class BasicCleaningPriceDetails(val data:String, val response:String)
+data class BasicCleaningPriceDetails(val data: String, val response: String)
 
 
 @Serializable
-data class BasicCleaningFormTwo(val data:String, val response:String)
+data class BasicCleaningFormTwo(val data: String, val response: String)
 
 @Serializable
-data class BasicCleaningCheckout(val data:String, val response:String, val inputData:String)
+data class BasicCleaningCheckout(val data: String, val response: String, val inputData: String)
 
 @Serializable
 data class DeepCleaningFormTwo(
-    val response:String,val data:String
+    val response: String, val data: String
 )
 
 @Serializable
 data class DeepCleaningCheckout(
-    val response:String
-    ,val data:String,
-    val imageData:String
+    val response: String, val data: String,
+    val imageData: String
 )
 
- @Serializable
+@Serializable
 object PestControl
 
 @Serializable
@@ -139,21 +145,24 @@ object ResidentialPestControl
 
 @Serializable
 data class ResidentialPestControlPricing(
-    val amount:String,
-    val formData:String
+    val amount: String,
+    val uniqueRef: String,
+    val formData: String
 )
 
 @Serializable
 data class ResidentialPestControlFormTwo(
-    val amount:String,
-    val formData:String
+    val amount: String,
+    val uniqueRef: String,
+    val formData: String
 )
 
 @Serializable
 data class ResidentialPestControlCheckout(
-    val amount:String,
-    val formData:String,
-    val formData2:String
+    val amount: String,
+    val uniqueRef: String,
+    val formData: String,
+    val formData2: String
 )
 
 

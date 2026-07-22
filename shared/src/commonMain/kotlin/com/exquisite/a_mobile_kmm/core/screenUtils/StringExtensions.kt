@@ -2,6 +2,7 @@ package com.exquisite.a_mobile_kmm.core.screenUtils
 
 
 
+import androidx.compose.ui.text.style.TextAlign
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -9,6 +10,7 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.Padding
 import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 
@@ -130,7 +132,7 @@ fun String.to12HourFormat(): String {
             else -> hour
         }
 
-        "$displayHour:$minute $period"
+        "$displayHour:$minute"
     } catch (e: Exception) {
         this
     }
@@ -161,13 +163,13 @@ fun String.toCompactDateFormat(): String {
 }
 
 fun String.toFormattedDate(): String {
-    val dateTime = LocalDateTime.parse(this)
+    val dateTime = LocalDate.parse(this)
 
-    val formatter = LocalDateTime.Format {
+    val formatter = LocalDate.Format {
         monthName(MonthNames.ENGLISH_FULL)
         char(' ')
-        dayOfMonth(padding = androidx.compose.ui.text.style.TextAlign.Start.let {
-            kotlinx.datetime.format.Padding.NONE
+        dayOfMonth(padding = TextAlign.Start.let {
+            Padding.NONE
         })
         char(' ')
         year()

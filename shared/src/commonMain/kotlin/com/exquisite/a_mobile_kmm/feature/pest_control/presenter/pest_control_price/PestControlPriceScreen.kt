@@ -44,7 +44,7 @@ import com.exquisite.dripp.core.components.rememberSnackBar
 
 
 @Composable
-fun PestControlPriceScreen(amount: String, pestControlResidentialFormModel: PestControlResidentialFormModel,
+fun PestControlPriceScreen(amount: String,uniqueRef: String, pestControlResidentialFormModel: PestControlResidentialFormModel,
                            goBack: () -> Unit,goToNextPage: () -> Unit,  modifier: Modifier = Modifier) {
 
     val (snackBar, snackBarHostState) = rememberSnackBar()

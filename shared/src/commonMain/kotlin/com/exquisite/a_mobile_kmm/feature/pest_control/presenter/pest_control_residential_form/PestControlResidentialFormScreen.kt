@@ -39,7 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PestControlResidentialFormScreen(
-    goBack: () -> Unit,goToPricing:(String,String)->Unit, modifier: Modifier = Modifier,
+    goBack: () -> Unit,goToPricing:(String,String,String)->Unit, modifier: Modifier = Modifier,
     viewModel: PestControlResidentialFormViewModel = koinViewModel<PestControlResidentialFormViewModel>()
 ) {
     val serviceListState = viewModel.pestControlServiceListState.collectAsStateWithLifecycle()
@@ -70,7 +70,7 @@ fun PestControlResidentialFormScreen(
               LaunchedEffect(result){
                   val price = result.price
                   val formData =  viewModel.formData.value
-                  goToPricing(price.amount.toString(),NavigationUtils.encodeObject(formData))
+                  goToPricing(price.amount.toString(),price.uniqueRef,NavigationUtils.encodeObject(formData))
                   viewModel.clearFormData()
               }
 

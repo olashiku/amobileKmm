@@ -16,5 +16,6 @@ object PestControlPriceDataSerializer :
 
 @Serializable
 data class PestControlPriceDataDto(
-    val amount: Double
+    val amount: Double,
+    val uniqueRef:String
 )

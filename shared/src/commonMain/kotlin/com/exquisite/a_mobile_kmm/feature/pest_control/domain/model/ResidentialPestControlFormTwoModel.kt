@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ResidentialPestControlFormTwoModel(
     val address: String = "",
+    val typeOfApartment: Pair<String, String>? = null,
     val images: List<String> = emptyList(),
     val inspectionDate: DateModel? = null,
     val inspectionTime: String? = null,

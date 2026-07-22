@@ -41,7 +41,7 @@ fun ServiceDto.toServiceModel(): ServiceModel {
 
 fun GetPestControlPriceResponseDto.toPestControlPriceModel(): PestControlPriceModel? {
     val priceData = data ?: return null
-    return PestControlPriceModel(amount = priceData.amount)
+    return PestControlPriceModel(amount = priceData.amount, uniqueRef = priceData.uniqueRef)
 }
 
 fun DebitFromWalletPestControlResponseDto.toPestControlResponseModel(): PestControlResponseModel {

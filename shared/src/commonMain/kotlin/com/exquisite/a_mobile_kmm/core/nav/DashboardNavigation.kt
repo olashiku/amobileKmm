@@ -451,8 +451,8 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<ResidentialPestControl> {
                 PestControlResidentialFormScreen(goBack = {
                     navController.popBackStack()
-                }, goToPricing = { amount, formData ->
-                    navController.navigate(ResidentialPestControlPricing(amount, formData))
+                }, goToPricing = { amount, uniqueRef,formData ->
+                    navController.navigate(ResidentialPestControlPricing(amount, uniqueRef,formData))
                 })
             }
 
@@ -460,12 +460,13 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 val data = backStack.toRoute<ResidentialPestControlPricing>()
                 val formData =
                     NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
-                PestControlPriceScreen(data.amount, formData, goBack = {
+                PestControlPriceScreen(data.amount,data.uniqueRef, formData, goBack = {
                     navController.popBackStack()
                 }, goToNextPage = {
                     navController.navigate(
                         ResidentialPestControlFormTwo(
                             data.amount,
+                            data.uniqueRef,
                             data.formData
                         )
                     )
@@ -474,13 +475,17 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<ResidentialPestControlFormTwo> { backStack ->
                 val data = backStack.toRoute<ResidentialPestControlPricing>()
+                val formData = NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+
                 ResidentialPestControlFormTwoScreen(
+                  formData,
                     goBack = {
                         navController.popBackStack()
                     }, goToNextPage = {  formData2 ->
                         navController.navigate(
                             ResidentialPestControlCheckout(
                                 data.amount,
+                                data.uniqueRef,
                                 data.formData,
                                 formData2
                             )
@@ -490,11 +495,10 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
              composable<ResidentialPestControlCheckout> { backTrack ->
                  val data = backTrack.toRoute<ResidentialPestControlCheckout>()
-                 val amount = NavigationUtils.decodeObject<String>(data.amount)
                  val formData = NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
                  val formData2 = NavigationUtils.decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
 
-                 PestControlResidentialCheckoutScreen(amount,formData,formData2,
+                 PestControlResidentialCheckoutScreen(data.amount,data.uniqueRef,formData,formData2,
                      savedStateHandle = backTrack.savedStateHandle,
                      goBack = {
                          navController.popBackStack()

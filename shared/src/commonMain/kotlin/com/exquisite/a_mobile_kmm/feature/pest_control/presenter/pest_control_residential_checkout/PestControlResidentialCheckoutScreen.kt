@@ -40,7 +40,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatTime
-import com.exquisite.a_mobile_kmm.core.screenUtils.toCompactDateFormat
+import com.exquisite.a_mobile_kmm.core.screenUtils.to12HourFormat
 import com.exquisite.a_mobile_kmm.core.screenUtils.toFormattedDate
 import com.exquisite.a_mobile_kmm.core.screen_components.Badge
 import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
@@ -53,20 +53,24 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningSummaryData
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getBasicCleaningCheckoutBalances
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.CleaningSummaryItem
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.paymentOptions
+import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.checkout_list.Item
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
+import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.getPestControlResidentialCheckoutBalances
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.getPricingList
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
-import kotlinx.datetime.Clock
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PestControlResidentialCheckoutScreen(
-    amount: String, pestControlResidentialFormModel: PestControlResidentialFormModel,
+    amount: String,
+    uniqueRef: String,
+    pestControlResidentialFormModel: PestControlResidentialFormModel,
     residentialPestControlFormTwoModel: ResidentialPestControlFormTwoModel,
     savedStateHandle: SavedStateHandle,
     viewModel: PestControlResidentialCheckoutViewModel = koinViewModel<PestControlResidentialCheckoutViewModel>(),
@@ -186,14 +190,36 @@ fun PestControlResidentialCheckoutScreen(
                             )
                             CleaningSummaryItem(
                                 CleaningSummaryData(
+                                    "Apartment Type",
+                                    residentialPestControlFormTwoModel.typeOfApartment?.first ?: ""
+                                )
+                            )
+                            CleaningSummaryItem(
+                                CleaningSummaryData(
                                     "Inspection Date",
-                                    residentialPestControlFormTwoModel.inspectionDate?.fullDate?.toCompactDateFormat()?:""
+                                    residentialPestControlFormTwoModel.inspectionDate?.fullDate?.toFormattedDate()
+                                        ?: ""
+                                )
+                            )
+                            CleaningSummaryItem(
+                                CleaningSummaryData(
+                                    "Inspection Time",
+                                    residentialPestControlFormTwoModel.inspectionTime?.to12HourFormat()
+                                        ?: ""
                                 )
                             )
                             CleaningSummaryItem(
                                 CleaningSummaryData(
                                     "Service Date",
-                                    residentialPestControlFormTwoModel.serviceDate?.fullDate?.toCompactDateFormat()?:""
+                                    residentialPestControlFormTwoModel.serviceDate?.fullDate?.toFormattedDate()
+                                        ?: ""
+                                )
+                            )
+                            CleaningSummaryItem(
+                                CleaningSummaryData(
+                                    "Service Time",
+                                    residentialPestControlFormTwoModel.serviceTime?.to12HourFormat()
+                                        ?: ""
                                 )
                             )
                         }
@@ -260,31 +286,49 @@ fun PestControlResidentialCheckoutScreen(
             Spacer(modifier = modifier.height(5.dp))
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                getPestControlResidentialCheckoutBalances(
+                    amount,
+                    residentialPestControlFormTwoModel
+                ).filter { it.balance != 0.0 }
+                    .forEach {
+                        Item(checkoutItemModel = it)
+                    }
+            }
+            Spacer(modifier = modifier.height(10.dp))
+            HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+            Spacer(modifier = modifier.height(20.dp))
+            val balance = getPestControlResidentialCheckoutBalances( amount,
+                residentialPestControlFormTwoModel).sumOf { it.balance }
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Total Cost", style = getPoppinsBold14(), color = Color(0xFF252525))
                 Spacer(modifier = modifier.weight(1F))
                 Text(
-                    text = "₦${amount.toDoubleOrNull()?.formatBalance() ?: "0.00"}",
+                    text = "₦${balance.formatBalance()}",
                     style = getPoppinsBold14(),
                     color = Color(0xFF252525)
                 )
             }
-            Spacer(modifier = modifier.height(40.dp))
+            Spacer(modifier = modifier.height(20.dp))
+
             PrimaryButton("Continue", {
-                val uniqueRef = "PEST-${Clock.System.now().toEpochMilliseconds()}"
+
                 if (selectedPaymentOption == "standard") {
                     viewModel.initPayment(
                         uniqueRef = uniqueRef,
                         address = residentialPestControlFormTwoModel.address,
                         images = residentialPestControlFormTwoModel.images,
-                        apartmentTypeId = pestControlResidentialFormModel.selectedRoomId,
+                        apartmentTypeId = residentialPestControlFormTwoModel.typeOfApartment?.second?.toInt()
+                            ?: 0,
                         isHotFogging = residentialPestControlFormTwoModel.wantsHotFogging,
                         serviceDate = residentialPestControlFormTwoModel.serviceDate?.fullDate
                             ?: "",
                         inspectionDate = residentialPestControlFormTwoModel.inspectionDate?.fullDate
                             ?: "",
-                        serviceTime = residentialPestControlFormTwoModel.serviceTime?.formatTime()?:"",
-                        inspectionTime = residentialPestControlFormTwoModel.inspectionTime?.formatTime()?:"",
+                        serviceTime = residentialPestControlFormTwoModel.serviceTime?.formatTime()
+                            ?: "",
+                        inspectionTime = residentialPestControlFormTwoModel.inspectionTime?.formatTime()
+                            ?: "",
                         extraNote = residentialPestControlFormTwoModel.extraNote,
                         customerOwnVehicle = residentialPestControlFormTwoModel.hasPestInVehicle,
                         numberOfVehicles = residentialPestControlFormTwoModel.numberOfVehicles.toIntOrNull()
@@ -295,14 +339,17 @@ fun PestControlResidentialCheckoutScreen(
                         uniqueRef = uniqueRef,
                         address = residentialPestControlFormTwoModel.address,
                         images = residentialPestControlFormTwoModel.images,
-                        apartmentTypeId = pestControlResidentialFormModel.selectedRoomId,
+                        apartmentTypeId = residentialPestControlFormTwoModel.typeOfApartment?.second?.toInt()
+                            ?: 0,
                         isHotFogging = residentialPestControlFormTwoModel.wantsHotFogging,
                         serviceDate = residentialPestControlFormTwoModel.serviceDate?.fullDate
                             ?: "",
                         inspectionDate = residentialPestControlFormTwoModel.inspectionDate?.fullDate
                             ?: "",
-                        serviceTime = residentialPestControlFormTwoModel.serviceTime?.formatTime()?:"",
-                        inspectionTime = residentialPestControlFormTwoModel.inspectionTime?.formatTime()?:"",
+                        serviceTime = residentialPestControlFormTwoModel.serviceTime?.formatTime()
+                            ?: "",
+                        inspectionTime = residentialPestControlFormTwoModel.inspectionTime?.formatTime()
+                            ?: "",
                         extraNote = residentialPestControlFormTwoModel.extraNote,
                         customerOwnVehicle = residentialPestControlFormTwoModel.hasPestInVehicle,
                         numberOfVehicles = residentialPestControlFormTwoModel.numberOfVehicles.toIntOrNull()

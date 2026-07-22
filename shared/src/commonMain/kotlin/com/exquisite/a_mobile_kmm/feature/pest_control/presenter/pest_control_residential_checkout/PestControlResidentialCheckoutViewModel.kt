@@ -29,7 +29,7 @@ class PestControlResidentialCheckoutViewModel(
     val paymentRefState = paymentRef.asStateFlow()
 
     fun debitFromWallet(
-        uniqueRef: String,
+        uniqueRef:String,
         address: String,
         images: List<String>,
         apartmentTypeId: Int,
@@ -70,7 +70,7 @@ class PestControlResidentialCheckoutViewModel(
     }
 
     fun initPayment(
-        uniqueRef: String,
+        uniqueRef:String,
         address: String,
         images: List<String>,
         apartmentTypeId: Int,
