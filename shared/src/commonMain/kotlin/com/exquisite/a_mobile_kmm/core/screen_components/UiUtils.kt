@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -1077,9 +1078,9 @@ fun Badge(title:String) {
 
 @Serializable
 data class DateModel(
-    val dayName: String,
-    val dayNumber: String,
-    val fullDate: String, // Use this for logic/API calls
+    val dayName: String = "",
+    val dayNumber: String= "",
+    val fullDate: String= "", // Use this for logic/API calls
     val isSelected: Boolean = false
 )
 
@@ -1150,7 +1151,20 @@ fun HybridDatePicker(
     onDateSelected: (DateModel) -> Unit,
     onOpenFullCalendar: () -> Unit // Trigger for the DatePickerDialog
 ) {
+    val listState = rememberLazyListState()
+
+    // Auto-scroll to selected date when it changes
+    LaunchedEffect(selectedDate) {
+        selectedDate?.let { selected ->
+            val index = dates.indexOfFirst { it.fullDate == selected.fullDate }
+            if (index != -1) {
+                listState.animateScrollToItem(index)
+            }
+        }
+    }
+
     LazyRow(
+        state = listState,
         contentPadding = PaddingValues(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically

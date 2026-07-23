@@ -3,8 +3,9 @@ package com.exquisite.a_mobile_kmm.feature.janitorial.domain.usecase
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.janitorial.data.mapper.toCreateJanitorialRequestDto
 import com.exquisite.a_mobile_kmm.feature.janitorial.data.mapper.toJanitorialResponseModel
-import com.exquisite.a_mobile_kmm.feature.janitorial.data.remote.request.CreateJanitorialRequestDto
+import com.exquisite.a_mobile_kmm.feature.janitorial.domain.model.CreateJanitorialRequestModel
 import com.exquisite.a_mobile_kmm.feature.janitorial.domain.model.JanitorialResponseModel
 import com.exquisite.a_mobile_kmm.feature.janitorial.domain.repository.JanitorialRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +16,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class CreateJanitorialUseCase(private val repository: JanitorialRepository) {
-    suspend operator fun invoke(request: CreateJanitorialRequestDto): Flow<UseCaseResult<JanitorialResponseModel>> {
-        return repository.createJanitorial(request).map { result ->
+    suspend operator fun invoke(request: CreateJanitorialRequestModel): Flow<UseCaseResult<JanitorialResponseModel>> {
+        return repository.createJanitorial(request.toCreateJanitorialRequestDto()).map { result ->
             when (result) {
                 is Result.Success -> {
                     if (result.data.responseCode == "00") {

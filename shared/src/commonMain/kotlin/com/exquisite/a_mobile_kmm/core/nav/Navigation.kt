@@ -56,6 +56,7 @@ object Cart
 @Serializable
 object Academy
 
+
 @Serializable
 object Profile
 
@@ -168,6 +169,13 @@ data class ResidentialPestControlCheckout(
 
 @Serializable
 object CompanyPestControl
+
+@Serializable
+object JanitorialService
+
+
+@Serializable
+object SepticService
 
 
 

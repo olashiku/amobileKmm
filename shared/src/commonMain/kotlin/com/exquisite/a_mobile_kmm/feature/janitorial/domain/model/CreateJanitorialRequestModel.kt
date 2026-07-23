@@ -1,9 +1,6 @@
-package com.exquisite.a_mobile_kmm.feature.janitorial.data.remote.request
+package com.exquisite.a_mobile_kmm.feature.janitorial.domain.model
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-data class CreateJanitorialRequestDto(
+data class CreateJanitorialRequestModel(
     val customerId: Int,
     val companyName: String,
     val companyEmail: String,

@@ -27,6 +27,22 @@ object ValidationHelper {
             )
         }
     }
+
+    fun companyNameValidator(companyName: String): ValidationResult {
+        return when {
+            companyName.isEmpty() -> ValidationResult(
+                false,
+                "Company name is required"
+            )
+            companyName.length < 5 -> ValidationResult(
+                false,
+                "First name must be at least 2 characters"
+            )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
     
     fun validatePassword(password: String): ValidationResult {
         return when {

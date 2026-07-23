@@ -315,7 +315,7 @@ val sharedModule: Module = module {
     viewModel { ConstructionMobileToiletViewModel(get()) }
     viewModel { EventToiletCheckoutViewModel(get(), get(), get(), get(), get()) }
     viewModel { EventToiletFormViewModel(get(), get()) }
-    viewModel { JanitorialViewModel(get()) }
+    viewModel { JanitorialViewModel(get(),get(),get()) }
     viewModel { PestControlCommercialViewModel(get(),get()) }
     viewModel { PestControlResidentialFormViewModel(get(), get(), get(), get()) }
     viewModel { PestControlResidentialCheckoutViewModel(get(), get(), get(), get()) }

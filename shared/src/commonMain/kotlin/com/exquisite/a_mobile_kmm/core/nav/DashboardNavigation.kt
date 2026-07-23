@@ -59,6 +59,7 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.home.Home
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_details.ProductDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_listing.ProductListingScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_search.ProductSearchScreen
+import com.exquisite.a_mobile_kmm.feature.janitorial.presenter.janitorial.JanitorialScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control.PestControlScreen
@@ -144,11 +145,29 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                             navController.navigate(Academy)
                         }
 
-                        "janitorial_service" -> {}
-                        "septic" -> {}
+                        "janitorial_service" -> {
+                            navController.navigate(JanitorialService)
+                        }
+                        "septic" -> {
+                            navController.navigate(SepticService)
+                        }
                     }
                 })
             }
+
+             composable<JanitorialService>{
+                 JanitorialScreen(goBack = {
+                     navController.popBackStack()
+                 }, goToSuccessPage = {
+                         title, message, buttonText->
+                     navController.navigate(Success(message, title, buttonText, false))
+
+                 })
+             }
+
+             composable<SepticService>{
+
+             }
 
             composable<Booking> {
                 BookingScreen()
