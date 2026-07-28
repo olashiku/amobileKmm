@@ -2,7 +2,6 @@ package com.exquisite.a_mobile_kmm.core.screenUtils
 
 
 
-import androidx.compose.ui.text.style.TextAlign
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
@@ -163,19 +162,28 @@ fun String.toCompactDateFormat(): String {
 }
 
 fun String.toFormattedDate(): String {
-    val dateTime = LocalDate.parse(this)
+    return try {
+        val date = if (this.contains("T")) {
+            // Parse as ISO 8601 datetime (e.g., "2026-08-03T10:00:00")
+            val instant = Instant.parse(this)
+            instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        } else {
+            // Parse as date-only format (e.g., "2026-08-03")
+            LocalDate.parse(this)
+        }
 
-    val formatter = LocalDate.Format {
-        monthName(MonthNames.ENGLISH_FULL)
-        char(' ')
-        dayOfMonth(padding = TextAlign.Start.let {
-            Padding.NONE
-        })
-        char(' ')
-        year()
+        val formatter = LocalDate.Format {
+            monthName(MonthNames.ENGLISH_FULL)
+            char(' ')
+            dayOfMonth(padding = Padding.NONE)
+            char(' ')
+            year()
+        }
+
+        date.format(formatter)
+    } catch (e: Exception) {
+        this
     }
-
-    return dateTime.format(formatter)
 }
 
 fun getTimeBasedGreeting(): String {

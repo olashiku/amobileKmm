@@ -1,5 +1,6 @@
 package com.exquisite.a_mobile_kmm.feature.septic.data.mapper
 
+import com.exquisite.a_mobile_kmm.feature.septic.data.remote.request.*
 import com.exquisite.a_mobile_kmm.feature.septic.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.*
 
@@ -26,4 +27,17 @@ fun SendEnquiryResponseDto.toSepticResponseModel(): SepticResponseModel {
 
 fun CompleteSepticPaymentResponseDto.toSepticResponseModel(): SepticResponseModel {
     return SepticResponseModel(message = responseMessage)
+}
+
+fun SendEnquiryModel.toRequestDto(): SendEnquiryRequestDto {
+    return SendEnquiryRequestDto(
+        businessName = businessName,
+        contactPersonName = contactPersonName,
+        contactPersonPhone = contactPersonPhone,
+        companyEmail = companyEmail,
+        estimatedTankSize = estimatedTankSize,
+        availableExecutionDate = availableExecutionDate,
+        additionalMessage = additionalMessage,
+        customerId = customerId
+    )
 }

@@ -177,6 +177,12 @@ object JanitorialService
 @Serializable
 object SepticService
 
+@Serializable
+object SepticServiceResidential
+
+@Serializable
+object SepticServiceCommercial
+
 
 
 

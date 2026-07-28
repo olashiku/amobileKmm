@@ -68,6 +68,8 @@ import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_pr
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_checkout.PestControlResidentialCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form.PestControlResidentialFormScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form_two.ResidentialPestControlFormTwoScreen
+import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_commercial_form.SepticCommercialFormScreen
+import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_service.SepticServiceScreen
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile.ProfileScreen
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training.TrainingScreen
 import org.jetbrains.compose.resources.DrawableResource
@@ -148,6 +150,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                         "janitorial_service" -> {
                             navController.navigate(JanitorialService)
                         }
+
                         "septic" -> {
                             navController.navigate(SepticService)
                         }
@@ -155,19 +158,39 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 })
             }
 
-             composable<JanitorialService>{
-                 JanitorialScreen(goBack = {
-                     navController.popBackStack()
-                 }, goToSuccessPage = {
-                         title, message, buttonText->
-                     navController.navigate(Success(message, title, buttonText, false))
+            composable<JanitorialService> {
+                JanitorialScreen(goBack = {
+                    navController.popBackStack()
+                }, goToSuccessPage = { title, message, buttonText ->
+                    navController.navigate(Success(message, title, buttonText, false))
 
-                 })
-             }
+                })
+            }
 
-             composable<SepticService>{
+            composable<SepticService> {
+                SepticServiceScreen(goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = { destination ->
+                    if (destination.equals("residential")) {
+                        navController.navigate(SepticServiceResidential)
+                    } else {
+                        navController.navigate(SepticServiceCommercial)
+                    }
+                })
+            }
 
-             }
+            composable<SepticServiceResidential> {
+
+
+            }
+
+            composable<SepticServiceCommercial> {
+                SepticCommercialFormScreen(goBack = {
+                    navController.popBackStack()
+                }, goToSuccessPage = { title, message, buttonText ->
+                    navController.navigate(Success(message, title, buttonText, false))
+                })
+            }
 
             composable<Booking> {
                 BookingScreen()
@@ -470,8 +493,14 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<ResidentialPestControl> {
                 PestControlResidentialFormScreen(goBack = {
                     navController.popBackStack()
-                }, goToPricing = { amount, uniqueRef,formData ->
-                    navController.navigate(ResidentialPestControlPricing(amount, uniqueRef,formData))
+                }, goToPricing = { amount, uniqueRef, formData ->
+                    navController.navigate(
+                        ResidentialPestControlPricing(
+                            amount,
+                            uniqueRef,
+                            formData
+                        )
+                    )
                 })
             }
 
@@ -479,7 +508,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 val data = backStack.toRoute<ResidentialPestControlPricing>()
                 val formData =
                     NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
-                PestControlPriceScreen(data.amount,data.uniqueRef, formData, goBack = {
+                PestControlPriceScreen(data.amount, data.uniqueRef, formData, goBack = {
                     navController.popBackStack()
                 }, goToNextPage = {
                     navController.navigate(
@@ -494,13 +523,14 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<ResidentialPestControlFormTwo> { backStack ->
                 val data = backStack.toRoute<ResidentialPestControlPricing>()
-                val formData = NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                val formData =
+                    NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
 
                 ResidentialPestControlFormTwoScreen(
-                  formData,
+                    formData,
                     goBack = {
                         navController.popBackStack()
-                    }, goToNextPage = {  formData2 ->
+                    }, goToNextPage = { formData2 ->
                         navController.navigate(
                             ResidentialPestControlCheckout(
                                 data.amount,
@@ -512,23 +542,26 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                     })
             }
 
-             composable<ResidentialPestControlCheckout> { backTrack ->
-                 val data = backTrack.toRoute<ResidentialPestControlCheckout>()
-                 val formData = NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
-                 val formData2 = NavigationUtils.decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
+            composable<ResidentialPestControlCheckout> { backTrack ->
+                val data = backTrack.toRoute<ResidentialPestControlCheckout>()
+                val formData =
+                    NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                val formData2 =
+                    NavigationUtils.decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
 
-                 PestControlResidentialCheckoutScreen(data.amount,data.uniqueRef,formData,formData2,
-                     savedStateHandle = backTrack.savedStateHandle,
-                     goBack = {
-                         navController.popBackStack()
-                     },
-                     goToWebView = { url ->
-                         navController.navigate(WebViewUrl(url))
-                     },
-                     goToSuccess = { title, message, buttonText ->
-                         navController.navigate(Success(message, title, buttonText, false))
-                     })
-             }
+                PestControlResidentialCheckoutScreen(
+                    data.amount, data.uniqueRef, formData, formData2,
+                    savedStateHandle = backTrack.savedStateHandle,
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    goToSuccess = { title, message, buttonText ->
+                        navController.navigate(Success(message, title, buttonText, false))
+                    })
+            }
 
             composable<CompanyPestControl> {
                 PestControlCommercialScreen(goBack = {
