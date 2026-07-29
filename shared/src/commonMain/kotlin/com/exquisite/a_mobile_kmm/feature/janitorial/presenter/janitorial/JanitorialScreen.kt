@@ -82,8 +82,7 @@ fun JanitorialScreen(
     var selectedDate by remember { mutableStateOf<DateModel?>(null) }
     var showModalCalendar by remember { mutableStateOf(false) }
     val isFutureDate = selectedDate != null && !availableQuickDates.any { it.fullDate == selectedDate?.fullDate }
-    val times =
-        listOf("9:00 AM", "10:00 AM", "11:30 AM", "12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
+    val times = listOf("9:00 AM", "10:00 AM", "11:30 AM", "12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
     var selectedAvailableTime by remember { mutableStateOf(times[1]) }
     var selectedResumptionTime by remember { mutableStateOf(times[1]) }
     var showImageSourceDialog by remember { mutableStateOf(false) }

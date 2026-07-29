@@ -2328,4 +2328,69 @@ fun RadioButton(text: String, checked: Boolean = false, isTermsClicked: (Boolean
     }
 }
 
+@Composable
+fun GenericTextArea(
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelText: String,
+    placeHolder: String,
+    modifier: Modifier = Modifier,
+    minLines: Int = 4,
+    maxLines: Int = 6,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    imeAction: ImeAction = ImeAction.Default,
+    leadingIconRes: DrawableResource? = null
+) {
+    val localColorsPalette = LocalColorsPalette.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
+    val borderColor = if (isFocused) localColorsPalette.focusedBorderColor else Color.Transparent
+
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(labelText) },
+        textStyle = LocalTextStyle.current.copy(
+            fontSize = 14.sp,
+            color = Color.Black
+        ),
+        placeholder = { Text(placeHolder, color = Color(0xFF5A5A5A)) },
+        leadingIcon = leadingIconRes?.let {
+            {
+                Icon(
+                    painter = painterResource(it),
+                    contentDescription = "$labelText icon",
+                    tint = Color(0xFFA0A0A0)
+                )
+            }
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType,
+            imeAction = imeAction
+        ),
+        interactionSource = interactionSource,
+        shape = RoundedCornerShape(8.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFF6F6F6),
+            unfocusedContainerColor = Color(0xFFF6F6F6),
+            disabledContainerColor = Color(0xFFF6F6F6),
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            focusedPlaceholderColor = Color(0xFF5A5A5A),
+            unfocusedPlaceholderColor = Color(0xFF5A5A5A)
+        ),
+        minLines = minLines,
+        maxLines = maxLines,
+        modifier = modifier
+            .fillMaxWidth()
+            .border(
+                width = if (borderColor != Color.Transparent) 2.dp else 0.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
+            )
+    )
+}
+
 

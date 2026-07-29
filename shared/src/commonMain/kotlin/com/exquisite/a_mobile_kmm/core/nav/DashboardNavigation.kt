@@ -181,13 +181,12 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<SepticServiceResidential> {
 
-
             }
 
             composable<SepticServiceCommercial> {
                 SepticCommercialFormScreen(goBack = {
                     navController.popBackStack()
-                }, goToSuccessPage = { title, message, buttonText ->
+                }, goToSuccess = { title, message, buttonText ->
                     navController.navigate(Success(message, title, buttonText, false))
                 })
             }
