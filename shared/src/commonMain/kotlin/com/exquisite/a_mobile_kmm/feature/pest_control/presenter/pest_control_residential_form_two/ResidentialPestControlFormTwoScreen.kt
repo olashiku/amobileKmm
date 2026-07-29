@@ -112,7 +112,7 @@ fun ResidentialPestControlFormTwoScreen(
 
     val typeOfApartmentValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Type of apartment Validator")
+            ValidationHelper.validateSelection(value, "Type of apartment")
         }
     }
 
@@ -132,7 +132,7 @@ fun ResidentialPestControlFormTwoScreen(
 
     val numberOfVehiclesValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Number of vehicles ")
+            ValidationHelper.validateSelection(value, "Number of vehicles")
         }.apply {
             if (formState.numberOfVehicles.isNotEmpty()) setValue(formState.numberOfVehicles)
         }

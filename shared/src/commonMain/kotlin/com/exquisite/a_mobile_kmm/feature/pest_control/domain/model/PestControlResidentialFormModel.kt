@@ -1,6 +1,6 @@
 package com.exquisite.a_mobile_kmm.feature.pest_control.domain.model
 
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningSummaryData
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.SummaryData
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,9 +13,9 @@ data class PestControlResidentialFormModel(
 
 
 
-fun getPricingList( pestControlResidentialFormModel: PestControlResidentialFormModel): List<CleaningSummaryData> {
+fun getPricingList( pestControlResidentialFormModel: PestControlResidentialFormModel): List<SummaryData> {
     return listOf(
-        CleaningSummaryData("Service Type", pestControlResidentialFormModel.selectedServiceName),
-        CleaningSummaryData("Number of rooms", pestControlResidentialFormModel.selectedRoomName),
+        SummaryData("Service Type", pestControlResidentialFormModel.selectedServiceName),
+        SummaryData("Number of rooms", pestControlResidentialFormModel.selectedRoomName),
       )
 }

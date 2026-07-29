@@ -13,35 +13,35 @@ data class DeepCleaningFormData(
     val address: Pair<String, String?>? = null
 )
 
-data class CleaningSummaryData(
+data class SummaryData(
     val title: String,
     val description: String
 )
 
-fun getCleaningSummaryData(data: DeepCleaningFormData): List<CleaningSummaryData> {
+fun getCleaningSummaryData(data: DeepCleaningFormData): List<SummaryData> {
     return listOf(
-        CleaningSummaryData("Region", data.region?.first ?: ""),
-        CleaningSummaryData("Location", data.location?.first ?: ""),
-        CleaningSummaryData("Apartment Type", data.typeOfApartment?.first ?: ""),
-        CleaningSummaryData("Number of Rooms", data.numberOfRooms?.first ?: ""),
+        SummaryData("Region", data.region?.first ?: ""),
+        SummaryData("Location", data.location?.first ?: ""),
+        SummaryData("Apartment Type", data.typeOfApartment?.first ?: ""),
+        SummaryData("Number of Rooms", data.numberOfRooms?.first ?: ""),
     )
 }
 
 fun getCheckoutSummaryData(
     data: DeepCleaningFormData,
     deepCleaningFormModel: DeepCleaningFormModel
-): List<CleaningSummaryData> {
+): List<SummaryData> {
     return listOf(
-        CleaningSummaryData("Region", data.region?.first ?: ""),
-        CleaningSummaryData("Location", data.location?.first ?: ""),
-        CleaningSummaryData("Apartment Type", data.typeOfApartment?.first ?: ""),
-        CleaningSummaryData("Number of Rooms", data.numberOfRooms?.first ?: ""),
-        CleaningSummaryData("Date",
+        SummaryData("Region", data.region?.first ?: ""),
+        SummaryData("Location", data.location?.first ?: ""),
+        SummaryData("Apartment Type", data.typeOfApartment?.first ?: ""),
+        SummaryData("Number of Rooms", data.numberOfRooms?.first ?: ""),
+        SummaryData("Date",
             deepCleaningFormModel.cleaningDate.fullDate.formatToReadableDate()
         ),
-        CleaningSummaryData("Time", deepCleaningFormModel.cleaningTime),
-        CleaningSummaryData("Post Construction/Renovation?", deepCleaningFormModel.postConstruction.toString() ?: ""),
-        CleaningSummaryData("Address", data.address?.first ?: "")
+        SummaryData("Time", deepCleaningFormModel.cleaningTime),
+        SummaryData("Post Construction/Renovation?", deepCleaningFormModel.postConstruction.toString() ?: ""),
+        SummaryData("Address", data.address?.first ?: "")
 
 
 

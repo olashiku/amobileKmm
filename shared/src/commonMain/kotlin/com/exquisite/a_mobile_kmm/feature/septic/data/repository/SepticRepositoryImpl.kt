@@ -2,8 +2,13 @@ package com.exquisite.a_mobile_kmm.feature.septic.data.repository
 
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.safeApiCall
-import com.exquisite.a_mobile_kmm.feature.septic.data.remote.request.*
+import com.exquisite.a_mobile_kmm.feature.septic.data.mapper.toRequestDto
+import com.exquisite.a_mobile_kmm.feature.septic.data.remote.request.SendEnquiryRequestDto
 import com.exquisite.a_mobile_kmm.feature.septic.data.remote.response.*
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.CompleteSepticPaymentRequest
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.DebitFromAccountSepticRequest
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.InitSepticPaymentRequest
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SendEnquiryModel
 import com.exquisite.a_mobile_kmm.feature.septic.domain.repository.SepticRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -19,18 +24,18 @@ class SepticRepositoryImpl(private val httpClient: HttpClient) : SepticRepositor
         }
     }
 
-    override suspend fun initPayment(request: InitSepticPaymentRequestDto): Flow<Result<InitSepticPaymentResponseDto>> {
+    override suspend fun initPayment(request: InitSepticPaymentRequest): Flow<Result<InitSepticPaymentResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/septic/init_payment") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }
 
-    override suspend fun debitFromAccount(request: DebitFromAccountSepticRequestDto): Flow<Result<DebitFromAccountSepticResponseDto>> {
+    override suspend fun debitFromAccount(request: DebitFromAccountSepticRequest): Flow<Result<DebitFromAccountSepticResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/septic/debit_from_account") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }
@@ -43,10 +48,10 @@ class SepticRepositoryImpl(private val httpClient: HttpClient) : SepticRepositor
         }
     }
 
-    override suspend fun completePayment(request: CompleteSepticPaymentRequestDto): Flow<Result<CompleteSepticPaymentResponseDto>> {
+    override suspend fun completePayment(request: CompleteSepticPaymentRequest): Flow<Result<CompleteSepticPaymentResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/septic/complete_payment") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }

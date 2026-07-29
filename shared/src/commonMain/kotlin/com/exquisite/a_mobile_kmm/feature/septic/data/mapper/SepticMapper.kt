@@ -41,3 +41,39 @@ fun SendEnquiryModel.toRequestDto(): SendEnquiryRequestDto {
         customerId = customerId
     )
 }
+
+fun InitSepticPaymentRequest.toRequestDto(): InitSepticPaymentRequestDto {
+    return InitSepticPaymentRequestDto(
+        customerId = customerId,
+        fullName = fullName,
+        phoneNo = phoneNo,
+        email = email,
+        address = address,
+        dateOfExcavation = dateOfExcavation,
+        timeOfExcavation = timeOfExcavation,
+        specialNote = specialNote,
+        septicSizeId = septicSizeId
+    )
+}
+
+fun DebitFromAccountSepticRequest.toRequestDto(): DebitFromAccountSepticRequestDto {
+    return DebitFromAccountSepticRequestDto(
+        customerId = customerId,
+        fullName = fullName,
+        phoneNo = phoneNo,
+        email = email,
+        address = address,
+        dateOfExcavation = dateOfExcavation,
+        timeOfExcavation = timeOfExcavation,
+        specialNote = specialNote,
+        septicSizeId = septicSizeId
+    )
+}
+
+fun CompleteSepticPaymentRequest.toRequestDto(): CompleteSepticPaymentRequestDto {
+    return CompleteSepticPaymentRequestDto(
+        customerId = customerId,
+        ref = ref,
+        txnRef = txnRef
+    )
+}

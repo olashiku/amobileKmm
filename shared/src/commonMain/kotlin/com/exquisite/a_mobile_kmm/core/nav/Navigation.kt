@@ -181,6 +181,18 @@ object SepticService
 object SepticServiceResidential
 
 @Serializable
+data class SepticResidentialPricing(val septicTruckSizeModel: String)
+
+@Serializable
+data class SepticResidentialForm2(val septicTruckSizeModel: String)
+
+@Serializable
+data class SepticResidentialCheckout(val septicTruckSizeModel: String,
+    val septicResidentialForm2Model:String)
+
+
+
+@Serializable
 object SepticServiceCommercial
 
 

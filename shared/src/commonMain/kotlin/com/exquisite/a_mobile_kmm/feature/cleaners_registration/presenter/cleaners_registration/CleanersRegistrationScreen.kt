@@ -82,13 +82,13 @@ fun CleanersRegistrationScreen(
 
     val employmentValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Employment Validator")
+            ValidationHelper.validateSelection(value, "Employment")
         }
     }
 
     val experienceLevelValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Experience Validator")
+            ValidationHelper.validateSelection(value, "Experience")
         }
     }
 

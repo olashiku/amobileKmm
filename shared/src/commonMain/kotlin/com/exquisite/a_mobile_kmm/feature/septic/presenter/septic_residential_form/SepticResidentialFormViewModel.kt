@@ -15,6 +15,12 @@ class SepticResidentialFormViewModel(
     private var _septicResidentialFormState = MutableStateFlow<SepticResidentialFormState>(SepticResidentialFormState.Idle)
     val septicResidentialFormState = _septicResidentialFormState.asStateFlow()
 
+
+    init{
+        getSepticTruckSize()
+    }
+
+
     fun getSepticTruckSize() {
         viewModelScope.launch {
             _septicResidentialFormState.value = SepticResidentialFormState.Loading

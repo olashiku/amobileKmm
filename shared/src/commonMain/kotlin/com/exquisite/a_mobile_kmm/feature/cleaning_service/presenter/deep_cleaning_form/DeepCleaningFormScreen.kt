@@ -120,24 +120,24 @@ fun DeepCleaningFormScreen(
 
     val regionValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Region Validator")
+            ValidationHelper.validateSelection(value, "Region")
         }
     }
 
     val locationValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Location Validator")
+            ValidationHelper.validateSelection(value, "Location")
         }
     }
     val typeOfApartmentValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Type of apartment Validator")
+            ValidationHelper.validateSelection(value, "Type of apartment")
         }
     }
 
     val numberOfRoomsValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Number of rooms Validator")
+            ValidationHelper.validateSelection(value, "Number of rooms")
         }
     }
 

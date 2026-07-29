@@ -4,7 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.septic.data.mapper.toSepticResponseModel
-import com.exquisite.a_mobile_kmm.feature.septic.data.remote.request.DebitFromAccountSepticRequestDto
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.DebitFromAccountSepticRequest
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticResponseModel
 import com.exquisite.a_mobile_kmm.feature.septic.domain.repository.SepticRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class DebitFromAccountSepticUseCase(private val repository: SepticRepository) {
-    suspend operator fun invoke(request: DebitFromAccountSepticRequestDto): Flow<UseCaseResult<SepticResponseModel>> {
+    suspend operator fun invoke(request: DebitFromAccountSepticRequest): Flow<UseCaseResult<SepticResponseModel>> {
         return repository.debitFromAccount(request).map { result ->
             when (result) {
                 is Result.Success -> {

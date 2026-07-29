@@ -54,7 +54,7 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningPriceModel
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningSummaryData
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.SummaryData
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormData
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCheckoutSummaryData
@@ -309,7 +309,7 @@ fun DeepCleaningCheckoutScreen(
 }
 
 @Composable
-fun CleaningSummaryItem(deepCleaningFormData: CleaningSummaryData) {
+fun CleaningSummaryItem(deepCleaningFormData: SummaryData) {
     Row {
         Text(
             text = deepCleaningFormData.title, color = Color(0xFF64748B),

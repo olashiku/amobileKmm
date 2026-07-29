@@ -4,7 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.septic.data.mapper.toSepticPaymentModel
-import com.exquisite.a_mobile_kmm.feature.septic.data.remote.request.InitSepticPaymentRequestDto
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.InitSepticPaymentRequest
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticPaymentModel
 import com.exquisite.a_mobile_kmm.feature.septic.domain.repository.SepticRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class InitSepticPaymentUseCase(private val repository: SepticRepository) {
-    suspend operator fun invoke(request: InitSepticPaymentRequestDto): Flow<UseCaseResult<SepticPaymentModel>> {
+    suspend operator fun invoke(request: InitSepticPaymentRequest): Flow<UseCaseResult<SepticPaymentModel>> {
         return repository.initPayment(request).map { result ->
             when (result) {
                 is Result.Success -> {

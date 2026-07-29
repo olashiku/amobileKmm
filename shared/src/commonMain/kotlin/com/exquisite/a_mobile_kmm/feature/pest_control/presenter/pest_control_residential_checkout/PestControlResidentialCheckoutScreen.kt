@@ -52,8 +52,7 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningSummaryData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getBasicCleaningCheckoutBalances
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.SummaryData
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.CleaningSummaryItem
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.paymentOptions
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.checkout_list.Item
@@ -183,40 +182,40 @@ fun PestControlResidentialCheckoutScreen(
                                 CleaningSummaryItem(item)
                             }
                             CleaningSummaryItem(
-                                CleaningSummaryData(
+                                SummaryData(
                                     "Address",
                                     residentialPestControlFormTwoModel.address
                                 )
                             )
                             CleaningSummaryItem(
-                                CleaningSummaryData(
+                                SummaryData(
                                     "Apartment Type",
                                     residentialPestControlFormTwoModel.typeOfApartment?.first ?: ""
                                 )
                             )
                             CleaningSummaryItem(
-                                CleaningSummaryData(
+                                SummaryData(
                                     "Inspection Date",
                                     residentialPestControlFormTwoModel.inspectionDate?.fullDate?.toFormattedDate()
                                         ?: ""
                                 )
                             )
                             CleaningSummaryItem(
-                                CleaningSummaryData(
+                                SummaryData(
                                     "Inspection Time",
                                     residentialPestControlFormTwoModel.inspectionTime?.to12HourFormat()
                                         ?: ""
                                 )
                             )
                             CleaningSummaryItem(
-                                CleaningSummaryData(
+                                SummaryData(
                                     "Service Date",
                                     residentialPestControlFormTwoModel.serviceDate?.fullDate?.toFormattedDate()
                                         ?: ""
                                 )
                             )
                             CleaningSummaryItem(
-                                CleaningSummaryData(
+                                SummaryData(
                                     "Service Time",
                                     residentialPestControlFormTwoModel.serviceTime?.to12HourFormat()
                                         ?: ""

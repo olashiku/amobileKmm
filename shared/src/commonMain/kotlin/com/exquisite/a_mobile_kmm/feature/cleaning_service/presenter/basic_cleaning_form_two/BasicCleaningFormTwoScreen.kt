@@ -145,18 +145,18 @@ fun BasicCleaningFormTwoScreen(
 
     val regionValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Region Validator")
+            ValidationHelper.validateSelection(value, "Region")
         }
     }
 
     val locationValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Location Validator")
+            ValidationHelper.validateSelection(value, "Location")
         }
     }
     val typeOfApartmentValidator = remember {
         FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Type of apartment Validator")
+            ValidationHelper.validateSelection(value, "Type of apartment")
         }
     }
 

@@ -68,7 +68,13 @@ import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_pr
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_checkout.PestControlResidentialCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form.PestControlResidentialFormScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form_two.ResidentialPestControlFormTwoScreen
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticResidentialForm2Model
+import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticTruckSizeModel
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_commercial_form.SepticCommercialFormScreen
+import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_checkout.SepticResidentialCheckoutScreen
+import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_form.SepticResidentialFormScreen
+import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_form2.SepticResidentialForm2Screen
+import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_pricing.SepticResidentialPricingScreen
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_service.SepticServiceScreen
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile.ProfileScreen
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training.TrainingScreen
@@ -180,8 +186,60 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<SepticServiceResidential> {
-
+                SepticResidentialFormScreen(goBack = {
+                    navController.popBackStack()
+                }, goToPricing = {
+                    navController.navigate(SepticResidentialPricing(it))
+                })
             }
+
+            composable<SepticResidentialPricing> { backStackEntry ->
+                val data = backStackEntry.toRoute<SepticResidentialPricing>()
+                val septicTruckSizeModel =
+                    NavigationUtils.decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
+
+                SepticResidentialPricingScreen(septicTruckSizeModel, goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = {
+                    navController.navigate(SepticResidentialForm2(data.septicTruckSizeModel))
+                })
+            }
+
+            composable<SepticResidentialForm2> { backStackEntry ->
+                val data = backStackEntry.toRoute<SepticResidentialPricing>()
+                val septicTruckSizeModel =
+                    NavigationUtils.decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
+
+                SepticResidentialForm2Screen(goBack = {
+                    navController.popBackStack()
+                }, goToCheckout = { septicResidentialForm2Model ->
+                    navController.navigate(
+                        SepticResidentialCheckout(
+                            data.septicTruckSizeModel,
+                            septicResidentialForm2Model
+                        )
+                    )
+                })
+            }
+
+            composable<SepticResidentialCheckout> { backTrack ->
+                val data = backTrack.toRoute<SepticResidentialCheckout>()
+                val septicTruckSizeModel =
+                    NavigationUtils.decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
+                val septicResidentialForm2Model =
+                    NavigationUtils.decodeObject<SepticResidentialForm2Model>(data.septicResidentialForm2Model)
+
+                SepticResidentialCheckoutScreen(
+                    septicTruckSizeModel, septicResidentialForm2Model,backTrack.savedStateHandle, goBack = {
+                        navController.popBackStack()
+                    }, goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    goToSuccess = { title, message, buttonText ->
+                        navController.navigate(Success(message, title, buttonText, false))
+                    })
+            }
+
 
             composable<SepticServiceCommercial> {
                 SepticCommercialFormScreen(goBack = {

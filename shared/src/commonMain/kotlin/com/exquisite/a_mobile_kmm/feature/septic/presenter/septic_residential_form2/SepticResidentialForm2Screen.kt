@@ -1,11 +1,10 @@
-package com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_commercial_form
+package com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_form2
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
@@ -26,7 +25,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper
@@ -45,14 +44,12 @@ import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButt
 import com.exquisite.a_mobile_kmm.core.screen_components.GenericTextArea
 import com.exquisite.a_mobile_kmm.core.screen_components.HybridDatePicker
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
-import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedDropdownField
+import com.exquisite.a_mobile_kmm.core.screen_components.TimeSlotGrid
 import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedTextField
 import com.exquisite.a_mobile_kmm.core.screen_components.generateAvailableDates
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
-import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticTruckSizeModel
 import com.exquisite.dripp.core.components.CustomSnackbarHost
-import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -63,69 +60,41 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SepticCommercialFormScreen(
-    goBack: () -> Unit,
-    goToSuccess: (String, String, String) -> Unit,
-    viewModel: SepticCommercialFormViewModel = koinViewModel<SepticCommercialFormViewModel>(),
+fun SepticResidentialForm2Screen(
+    goBack: () -> Unit ,
+    goToCheckout: (String) -> Unit,
+    viewModel: SepticResidentialFormViewModel2 = koinViewModel<SepticResidentialFormViewModel2>(),
     modifier: Modifier = Modifier
 ) {
     val (snackBar, snackBarHostState) = rememberSnackBar()
-
-    val state by viewModel.septicCommercialFormState.collectAsState()
-    val septicTruckSizeState by viewModel.septicTruckSizeState.collectAsState()
-    var isLoading by remember { mutableStateOf(false) }
-    var truckSize by remember { mutableStateOf<List<SepticTruckSizeModel>>(emptyList()) }
-    var selectedTruckSize by remember { mutableStateOf<SepticTruckSizeModel?>(null) }
+    val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
+    val times =
+        listOf("9:00 AM", "10:00 AM", "11:30 AM", "12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
     val availableQuickDates = remember { generateAvailableDates(11) }
-    var additionalMessage by remember{mutableStateOf("")}
+    val isFutureDate = selectedDate != null && !availableQuickDates.any { it.fullDate == selectedDate?.fullDate }
 
-    when (val result = septicTruckSizeState) {
-        is SepticTruckSizeState.Idle -> {
-            isLoading = false
+    val selectedTime by viewModel.selectedTime.collectAsStateWithLifecycle()
+    val persistedFormData by viewModel.persistedFormData.collectAsStateWithLifecycle()
+    var showModalCalendar by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (selectedTime == null) {
+            viewModel.setSelectedTime(times[1])
         }
-
-        is SepticTruckSizeState.Loading -> {
-            isLoading = true
-        }
-
-        is SepticTruckSizeState.GetTruckSizeSuccess -> {
-            isLoading = false
-            truckSize = result.data
-        }
-
-        is SepticTruckSizeState.Error -> {
-            isLoading = false
-            snackBar.showError(result.message)
+        if (selectedDate == null) {
+            viewModel.setSelectedDate(availableQuickDates.firstOrNull())
         }
     }
 
-    when (state) {
-        is SepticCommercialFormState.Idle -> {
-            LoadingDialog(false)
-
-        }
-
-        is SepticCommercialFormState.Loading -> {
-            LoadingDialog(true)
-        }
-
-        is SepticCommercialFormState.SendEnquirySuccess -> {
-            viewModel.clearError()
-            goToSuccess.invoke(
-                "Successful!✅",
-                "Thank you for reaching out to us. We will get in touch with you as soon as possible.",
-                "Done"
-            )
-        }
-
-        is SepticCommercialFormState.Error -> {
-            // Show error message
-        }
-    }
-
-    val validateBusinessName = remember {
+    val fullNameValidator = remember {
         FieldValidator(
-            ValidationHelper::validateCompanyName
+            ValidationHelper::validateFullName
+        )
+    }
+
+    val addressValidator = remember {
+        FieldValidator(
+            ValidationHelper::validateAddress
         )
     }
 
@@ -135,36 +104,26 @@ fun SepticCommercialFormScreen(
         )
     }
 
-
-    val recipientNameValidator = remember {
-        FieldValidator(
-            ValidationHelper::validateName
-        )
-    }
-
-    val recipientPhoneValidator = remember {
+    val phoneValidator = remember {
         FieldValidator(
             ValidationHelper::validatePhoneNumber
         )
     }
 
-    val truckSizeValidator = remember {
-        FieldValidator { value ->
-            ValidationHelper.validateSelection(value, "Truck Size")
-        }
+    LaunchedEffect(fullNameValidator.value.value) {
+        viewModel.updateFullName(fullNameValidator.value.value)
     }
 
-    var availableExecutionDate by remember { mutableStateOf<DateModel?>(null) }
-    val isFutureDate =
-        availableExecutionDate != null && !availableQuickDates.any { it.fullDate == availableExecutionDate?.fullDate }
-    var showModalCalendar by remember { mutableStateOf(false) }
+    LaunchedEffect(emailValidator.value.value) {
+        viewModel.updateEmail(emailValidator.value.value)
+    }
 
-    // Initialize default values if not set
-    LaunchedEffect(Unit) {
+    LaunchedEffect(phoneValidator.value.value) {
+        viewModel.updatePhone(phoneValidator.value.value)
+    }
 
-        if (availableExecutionDate == null) {
-            availableExecutionDate = availableQuickDates.firstOrNull()
-        }
+    LaunchedEffect(addressValidator.value.value) {
+        viewModel.updateAddress(addressValidator.value.value)
     }
 
     // Get current date in milliseconds for validation
@@ -174,7 +133,6 @@ fun SepticCommercialFormScreen(
             .date
         today.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
     }
-
 
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
@@ -199,7 +157,7 @@ fun SepticCommercialFormScreen(
         Column {
             // Fixed Header
             FixedHeaderWithBackButton(
-                title = "Commercial Pest Control",
+                title = "Residential Septic Request",
                 onBackClick = goBack
             )
 
@@ -217,70 +175,63 @@ fun SepticCommercialFormScreen(
                 )
                 Spacer(modifier = modifier.height(22.dp))
                 ValidatedTextField(
-                    labelText = "Business Name",
-                    placeHolder = "Enter business name",
-                    fieldValidator = validateBusinessName,
+                    labelText = "Full Name",
+                    placeHolder = "Enter you full name",
+                    fieldValidator = fullNameValidator,
+                    defaultText = persistedFormData.fullName,
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next,
                 )
                 Spacer(modifier = Modifier.height(15.dp))
                 ValidatedTextField(
-                    labelText = "Business Email",
-                    placeHolder = "Enter business email ",
+                    labelText = "Email",
+                    placeHolder = "Enter email ",
                     fieldValidator = emailValidator,
+                    defaultText = persistedFormData.email,
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Next,
                 )
                 Spacer(modifier = Modifier.height(15.dp))
                 ValidatedTextField(
-                    labelText = "Recipient Name",
-                    placeHolder = "Enter Recipient Name",
-                    fieldValidator = recipientNameValidator,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next,
-                )
-                Spacer(modifier = modifier.height(15.dp))
-                ValidatedTextField(
-                    labelText = "Recipient Phone Number",
-                    placeHolder = "Enter Recipient Phone Number ",
-                    fieldValidator = recipientPhoneValidator,
+                    labelText = "Mobile number",
+                    placeHolder = "Enter mobile number ",
+                    fieldValidator = phoneValidator,
+                    defaultText = persistedFormData.phone,
                     keyboardType = KeyboardType.Phone,
                     imeAction = ImeAction.Next
                 )
-                Spacer(modifier = modifier.height(15.dp))
-                ValidatedDropdownField(
-                    labelText = "Truck Size in Liters",
-                    placeHolder = "Select truck size",
-                    fieldValidator = truckSizeValidator,
-                    options = truckSize.map { it.liter.toString() },
-                    onSelectionChange = { selectedRoomName ->
-                        selectedTruckSize =
-                            truckSize.find { it.liter.toString() == selectedRoomName }
-                    },
-                    isLoading = isLoading,
-                    modifier = Modifier.fillMaxWidth()
+                Spacer(modifier = Modifier.height(15.dp))
+                ValidatedTextField(
+                    labelText = "Address",
+                    placeHolder = "Enter you address ",
+                    fieldValidator = addressValidator,
+                    defaultText = persistedFormData.address,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
                 )
-                Spacer(modifier = modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Select Excavation Date",
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    style = getPoppinsRegular14()
+                )
+                Spacer(modifier = modifier.height(12.dp))
+
+                // 3. Implement the Hybrid Picker
                 HybridDatePicker(
                     dates = availableQuickDates,
-                    selectedDate = availableExecutionDate,
-                    onDateSelected = {
-                        availableExecutionDate = it
-                    },
-                    onOpenFullCalendar = {
-                        showModalCalendar = true
-                    }
+                    selectedDate = selectedDate,
+                    onDateSelected = { viewModel.setSelectedDate(it) },
+                    onOpenFullCalendar = { showModalCalendar = true }
                 )
                 // 4. Show a summary if a "Future Date" was picked that isn't in the slider
                 if (isFutureDate) {
                     SuggestionChip(
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
-                        onClick = {
-                            showModalCalendar = true
-                        },
+                        onClick = { showModalCalendar = true },
                         label = {
                             Text(
-                                text = "Selected: ${availableExecutionDate?.fullDate} (Change)",
+                                text = "Selected: ${selectedDate?.fullDate} (Change)",
                                 style = getPoppinsMedium14()
                             )
                         },
@@ -293,10 +244,19 @@ fun SepticCommercialFormScreen(
                         }
                     )
                 }
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Select Excavation Time",
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    style = getPoppinsRegular14()
+                )
+                Spacer(modifier = modifier.height(12.dp))
+                TimeSlotGrid(times, selectedTime) { viewModel.setSelectedTime(it) }
+
                 Spacer(modifier = modifier.height(15.dp))
                 GenericTextArea(
-                    value = additionalMessage,
-                    onValueChange = { additionalMessage = it },
+                    value = persistedFormData.additionalMessage,
+                    onValueChange = { viewModel.updateAdditionalMessage(it) },
                     labelText = "Additional Message (Optional)",
                     placeHolder = "Enter Additional Message",
                     minLines = 4,
@@ -304,10 +264,28 @@ fun SepticCommercialFormScreen(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
                 )
-                Spacer(modifier = modifier.height(25.dp))
+                Spacer(modifier = modifier.height(15.dp))
             }
         }
 
+        PrimaryButton("Continue", {
+            val isNameValid = fullNameValidator.forceValidation()
+            val isEmailValid = emailValidator.forceValidation()
+            val isPhoneValid = phoneValidator.forceValidation()
+            val isAddressValid = addressValidator.forceValidation()
+            if(isNameValid && isEmailValid && isPhoneValid && isAddressValid){
+                goToCheckout(NavigationUtils.encodeObject(persistedFormData))
+            }
+
+
+        }, modifier = Modifier.align(BottomCenter).padding(20.dp))
+
+
+        // Snackbar at bottom
+        CustomSnackbarHost(
+            snackbarHostState = snackBarHostState,
+            modifier = Modifier.align(BottomCenter).padding(20.dp)
+        )
         if (showModalCalendar) {
             DatePickerDialog(
                 onDismissRequest = { showModalCalendar = false },
@@ -327,7 +305,7 @@ fun SepticCommercialFormScreen(
                                     localDate.monthNumber.toString().padStart(2, '0')
                                 }-${localDate.dayOfMonth.toString().padStart(2, '0')}"
                             )
-                            availableExecutionDate = newDate
+                            viewModel.setSelectedDate(newDate)
                         }
                         showModalCalendar = false
                     }) { Text("Select") }
@@ -336,29 +314,7 @@ fun SepticCommercialFormScreen(
                 DatePicker(state = datePickerState)
             }
         }
-
-        PrimaryButton("Continue", {
-
-            val isValidatedBusiness = validateBusinessName.forceValidation()
-            val isValidatedEmail = emailValidator.forceValidation()
-            val isValidatedRecipientName = recipientNameValidator.forceValidation()
-            val isValidatedRecipientPhone = recipientPhoneValidator.forceValidation()
-            val isValidatedTruckSize = truckSizeValidator.forceValidation()
-
-            if (isValidatedBusiness && isValidatedEmail && isValidatedRecipientName && isValidatedRecipientPhone && isValidatedTruckSize) {
-            viewModel.sendEnquiry(validateBusinessName.value.value
-                ,recipientNameValidator.value.value,recipientPhoneValidator.value.value,
-                emailValidator.value.value,selectedTruckSize?.liter.toString(),availableExecutionDate?.fullDate.toString(),"")
-
-            } else {
-                snackBar.showError("Kindly fill all required fields in the form")
-            }
-        }, modifier = Modifier.align(BottomCenter).padding(20.dp))
-
-        // Snackbar at bottom
-        CustomSnackbarHost(
-            snackbarHostState = snackBarHostState,
-            modifier = Modifier.align(BottomCenter).padding(20.dp)
-        )
     }
+
+
 }
