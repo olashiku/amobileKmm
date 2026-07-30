@@ -13,9 +13,7 @@ class TrainingViewModel(private val getActiveCoursesAndTrainingUseCase: GetActiv
     private var _trainingState = MutableStateFlow<TrainingState>(TrainingState.Idle)
     val trainingState = _trainingState.asStateFlow()
 
-    init {
-        loadActiveCoursesAndTraining()
-    }
+
 
     fun loadActiveCoursesAndTraining() {
         viewModelScope.launch {

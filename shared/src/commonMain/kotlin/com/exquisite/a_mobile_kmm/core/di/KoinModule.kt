@@ -144,6 +144,7 @@ import com.exquisite.a_mobile_kmm.feature.training.domain.usecase.EnrollTraining
 import com.exquisite.a_mobile_kmm.feature.training.domain.usecase.GetActiveCoursesAndTrainingUseCase
 import com.exquisite.a_mobile_kmm.feature.training.domain.usecase.InitEnrollTrainingUseCase
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training.TrainingViewModel
+import com.exquisite.a_mobile_kmm.feature.training.presenter.training_checkout.TrainingCheckoutViewModel
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training_registration.TrainingRegistrationViewModel
 import com.exquisite.a_mobile_kmm.feature.wallet.data.repository.WalletRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.repository.WalletRepository
@@ -294,7 +295,7 @@ val sharedModule: Module = module {
     viewModel { LoginViewModel(get()) }
     viewModel { OtpViewModel(get(), get()) }
     viewModel { UploadImageViewModel(get(), get()) }
-    single { ForgotPasswordViewModel(get()) }
+    viewModel { ForgotPasswordViewModel(get()) }
     viewModel { CreatePasswordViewModel(get()) }
     viewModel { HomeViewModel(get(), get(), get()) }
     viewModel { ProductListingViewModel(get()) }
@@ -306,7 +307,7 @@ val sharedModule: Module = module {
     viewModel { BookingViewModel(get()) }
     viewModel { BookingDetailsViewModel(get(), get(), get(), get(), get()) }
     viewModel { TrainingViewModel(get()) }
-    viewModel { TrainingRegistrationViewModel(get(), get(), get()) }
+    viewModel { TrainingRegistrationViewModel() }
     viewModel { CleanersRegistrationViewModel(get(), get(), get()) }
     viewModel { CleaningServiceViewModel(get(), get()) }
     viewModel { DeepCleaningFormViewModel(get(), get(), get(), get(), get(), get(), get()) }
@@ -332,4 +333,6 @@ val sharedModule: Module = module {
     viewModel { BasicCleaningCheckoutViewModel(get(), get(), get(), get()) }
     viewModel { ResidentialPestControlForm2ViewModel(get(),get()) }
     viewModel { SepticResidentialFormViewModel2() }
+    viewModel {TrainingRegistrationViewModel()}
+    viewModel { TrainingCheckoutViewModel(get(), get(), get(), get()) }
 }

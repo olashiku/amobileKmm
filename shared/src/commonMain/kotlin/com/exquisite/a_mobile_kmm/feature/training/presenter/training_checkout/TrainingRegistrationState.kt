@@ -1,4 +1,4 @@
-package com.exquisite.a_mobile_kmm.feature.training.presenter.training_registration
+package com.exquisite.a_mobile_kmm.feature.training.presenter.training_checkout
 
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.EnrollmentSuccessModel
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.InitEnrollTrainingModel

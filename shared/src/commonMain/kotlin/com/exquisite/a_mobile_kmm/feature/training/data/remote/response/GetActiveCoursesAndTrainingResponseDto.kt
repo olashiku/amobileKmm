@@ -17,16 +17,21 @@ object TrainingCourseListSerializer :
 
 @Serializable
 data class TrainingCourseDto(
-    val id: Int? = null,
-    val title: String? = null,
-    val description: String? = null,
-    val bannerImageUrl: String? = null,
-    val author: String? = null,
-    val authorImageUrl: String? = null,
-    val type: String? = null,
-    val isActive: Boolean? = null,
-    val resourceLink: String? = null,
-    val numberOfDays: Int? = null,
-    val created_at: String? = null,
-    val updated_at: String? = null
+    val id: Int,
+    val title: String,
+    val description: String,
+    val bannerImageUrl: String,
+    val author: String,
+    val authorImageUrl: String,
+    val type: String,
+    val isEnabled: Boolean,
+    val resourceLink: String?,
+    val numberOfDays: Int?,
+    val amount: Double,
+    val tax: Double?,
+    val trainingVenue:String?,
+    val startDate:String?,
+    val endDate:String?,
+    val created_at: String,
+    val updated_at: String
 )

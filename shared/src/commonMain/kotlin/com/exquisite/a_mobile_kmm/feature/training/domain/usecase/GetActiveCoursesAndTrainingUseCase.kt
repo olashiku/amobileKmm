@@ -21,11 +21,7 @@ class GetActiveCoursesAndTrainingUseCase(private val trainingRepository: Trainin
                 is Result.Success -> {
                     if (result.data.responseCode == "00") {
                         val trainingCoursesModel = result.data.toTrainingCoursesModel()
-                        if (trainingCoursesModel != null) {
-                            UseCaseResult.Success(trainingCoursesModel)
-                        } else {
-                            UseCaseResult.Error("Invalid training courses response data")
-                        }
+                        UseCaseResult.Success(trainingCoursesModel)
                     } else {
                         UseCaseResult.Error(result.data.responseMessage)
                     }

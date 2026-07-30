@@ -77,7 +77,12 @@ import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_fo
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_pricing.SepticResidentialPricingScreen
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_service.SepticServiceScreen
 import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile.ProfileScreen
+import com.exquisite.a_mobile_kmm.feature.training.domain.model.TrainingCourse
+import com.exquisite.a_mobile_kmm.feature.training.domain.model.TrainingRegistrationModel
+import com.exquisite.a_mobile_kmm.feature.training.presenter.course_details.CourseDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training.TrainingScreen
+import com.exquisite.a_mobile_kmm.feature.training.presenter.training_checkout.TrainingCheckoutScreen
+import com.exquisite.a_mobile_kmm.feature.training.presenter.training_registration.TrainingRegistrationScreen
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -230,9 +235,13 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                     NavigationUtils.decodeObject<SepticResidentialForm2Model>(data.septicResidentialForm2Model)
 
                 SepticResidentialCheckoutScreen(
-                    septicTruckSizeModel, septicResidentialForm2Model,backTrack.savedStateHandle, goBack = {
+                    septicTruckSizeModel,
+                    septicResidentialForm2Model,
+                    backTrack.savedStateHandle,
+                    goBack = {
                         navController.popBackStack()
-                    }, goToWebView = { url ->
+                    },
+                    goToWebView = { url ->
                         navController.navigate(WebViewUrl(url))
                     },
                     goToSuccess = { title, message, buttonText ->
@@ -260,7 +269,56 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<Academy> {
-                TrainingScreen()
+                TrainingScreen(goToCourseDetails = { trainingCourse ->
+                    navController.navigate(CourseDetails(trainingCourse))
+                }, goToTrainingReg = { trainingCourse ->
+                    navController.navigate(TrainingForm(trainingCourse))
+                })
+            }
+
+            composable<CourseDetails> { backTrack ->
+                val data = backTrack.toRoute<CourseDetails>()
+                val trainingCourse =
+                    NavigationUtils.decodeObject<TrainingCourse>(data.trainingCourse)
+                CourseDetailsScreen(
+                    trainingCourse, goBack =
+                        { navController.popBackStack() })
+            }
+
+            composable<TrainingForm> { backTrack ->
+                val data = backTrack.toRoute<TrainingForm>()
+
+                TrainingRegistrationScreen(goBack = {
+                    navController.popBackStack()
+                }, goToCheckoutPage = { trainingRegistrationModel ->
+                    navController.navigate(
+                        TrainingCheckout(
+                            data.trainingCourse,
+                            trainingRegistrationModel
+                        )
+                    )
+                })
+            }
+
+            composable<TrainingCheckout> { backTrack ->
+                val data = backTrack.toRoute<TrainingCheckout>()
+                val trainingCourse =
+                    NavigationUtils.decodeObject<TrainingCourse>(data.trainingCourse)
+                val trainingRegistrationModel =
+                    NavigationUtils.decodeObject<TrainingRegistrationModel>(data.trainingFormModel)
+
+                TrainingCheckoutScreen(
+                    trainingCourse, trainingRegistrationModel,
+                    backTrack.savedStateHandle,
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    goToSuccess = { title, message, buttonText ->
+                        navController.navigate(Success(message, title, buttonText, false))
+                    })
             }
 
             composable<Profile> {
@@ -289,6 +347,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                     navController.navigate(DeliverOption(createOrderModelJson, paymentOption))
                 })
             }
+
             composable<DeliverOption> { backStack ->
                 val createOrderModel =
                     NavigationUtils.decodeObject<CreateOrderModel>(backStack.toRoute<DeliverOption>().createOrderModelJson)

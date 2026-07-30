@@ -10,40 +10,36 @@ import com.exquisite.a_mobile_kmm.feature.training.domain.model.EnrollmentSucces
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.InitEnrollTrainingModel
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.TrainingCourse
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.TrainingCoursesModel
+import kotlin.Int
 
 /**
  * Maps GetActiveCoursesAndTrainingResponseDto to TrainingCoursesModel
  */
-fun GetActiveCoursesAndTrainingResponseDto.toTrainingCoursesModel(): TrainingCoursesModel? {
-    val coursesList = data?.mapNotNull { it.toDomainModel() } ?: return null
-    return if (coursesList.isNotEmpty()) {
-        TrainingCoursesModel(courses = coursesList)
-    } else {
-        null
-    }
+fun GetActiveCoursesAndTrainingResponseDto.toTrainingCoursesModel(): TrainingCoursesModel {
+    val courses = data?.map{ it.toDomainModel() } ?:emptyList()
+    return TrainingCoursesModel(courses = courses)
 }
 
-fun TrainingCourseDto.toDomainModel(): TrainingCourse? {
-    return if (id != null && title != null && description != null && bannerImageUrl != null &&
-        author != null && authorImageUrl != null && type != null && isActive != null &&
-        numberOfDays != null && created_at != null && updated_at != null) {
-        TrainingCourse(
-            id = id,
-            title = title,
-            description = description,
-            bannerImageUrl = bannerImageUrl,
-            author = author,
-            authorImageUrl = authorImageUrl,
-            type = type,
-            isActive = isActive,
-            resourceLink = resourceLink,
-            numberOfDays = numberOfDays,
-            createdAt = created_at,
-            updatedAt = updated_at
+fun TrainingCourseDto.toDomainModel(): TrainingCourse {
+    return TrainingCourse(
+             id = id,
+         title = title,
+         description= description,
+         bannerImageUrl = bannerImageUrl,
+         author = author,
+         authorImageUrl = authorImageUrl,
+         type = type,
+         isEnabled= isEnabled,
+         resourceLink = resourceLink,
+         numberOfDays= numberOfDays,
+         amount = amount,
+         tax = tax,
+         trainingVenue = trainingVenue,
+         startDate = startDate,
+         endDate = endDate,
+         createdAt = created_at,
+         updatedAt = updated_at
         )
-    } else {
-        null
-    }
 }
 
 /**

@@ -3,8 +3,9 @@ package com.exquisite.a_mobile_kmm.feature.training.domain.usecase
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.training.data.mapper.TrainingRequestMapper.toDto
 import com.exquisite.a_mobile_kmm.feature.training.data.mapper.toEnrollmentSuccessModel
-import com.exquisite.a_mobile_kmm.feature.training.data.remote.request.CompleteEnrollTrainingRequestDto
+import com.exquisite.a_mobile_kmm.feature.training.domain.model.CompleteEnrollTrainingRequest
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.EnrollmentSuccessModel
 import com.exquisite.a_mobile_kmm.feature.training.domain.repository.TrainingRepository
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +17,8 @@ import kotlinx.coroutines.flow.map
 
 class CompleteEnrollTrainingUseCase(private val trainingRepository: TrainingRepository) {
 
-    suspend operator fun invoke(request: CompleteEnrollTrainingRequestDto): Flow<UseCaseResult<EnrollmentSuccessModel>> {
-        return trainingRepository.completeEnrollTraining(request).map { result ->
+    suspend operator fun invoke(request: CompleteEnrollTrainingRequest): Flow<UseCaseResult<EnrollmentSuccessModel>> {
+        return trainingRepository.completeEnrollTraining(request.toDto()).map { result ->
             when (result) {
                 is Result.Success -> {
                     if (result.data.responseCode == "00") {

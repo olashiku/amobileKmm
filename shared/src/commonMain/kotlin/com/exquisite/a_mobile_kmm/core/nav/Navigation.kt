@@ -56,6 +56,15 @@ object Cart
 @Serializable
 object Academy
 
+@Serializable
+data class CourseDetails(val trainingCourse: String)
+
+@Serializable
+data class TrainingForm(val trainingCourse: String)
+
+@Serializable
+data class TrainingCheckout(val trainingCourse: String,val trainingFormModel:String)
+
 
 @Serializable
 object Profile
