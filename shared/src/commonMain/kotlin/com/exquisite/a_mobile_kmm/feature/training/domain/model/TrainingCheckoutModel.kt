@@ -26,7 +26,6 @@ fun getTrainingList( trainingCourse: TrainingCourse,
 fun getBalances(trainingCourse: TrainingCourse): List<CheckoutItemModel> {
 
     val totalAmount = trainingCourse.amount
-    val  taxAmount = totalAmount * 0.075
     return listOf(
 
         CheckoutItemModel(
@@ -34,8 +33,8 @@ fun getBalances(trainingCourse: TrainingCourse): List<CheckoutItemModel> {
             balance = totalAmount
         ),
         CheckoutItemModel(
-            title = "Tax (7.5%)",
-            balance = taxAmount
+            title = "Tax",
+            balance = trainingCourse.tax?:0.0
         )
     )
 }

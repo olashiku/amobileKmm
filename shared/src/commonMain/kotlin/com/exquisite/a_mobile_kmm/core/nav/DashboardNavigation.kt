@@ -60,6 +60,9 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_d
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_listing.ProductListingScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_search.ProductSearchScreen
 import com.exquisite.a_mobile_kmm.feature.janitorial.presenter.janitorial.JanitorialScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.construction_mobile_toilet.ConstructionMobileToiletScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet.MobileToiletService
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.onboarding.MobileToiletOnboardingScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control.PestControlScreen
@@ -147,7 +150,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                         }
 
                         "mobile_toilet" -> {
-
+                            navController.navigate(MobileToiletOnboarding)
                         }
 
                         "pest_control" -> {
@@ -685,6 +688,33 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 }, goToSuccess = { title, message, buttonText ->
                     navController.navigate(Success(message, title, buttonText, false))
                 })
+            }
+
+            composable<MobileToiletOnboarding> {
+                MobileToiletOnboardingScreen(goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = {
+                    navController.navigate(MobileToilet)
+                })
+            }
+
+            composable<MobileToilet> {
+                MobileToiletService(goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = { route ->
+                    if (route.equals("event")) {
+                        navController.navigate(MobileToiletEvent)
+                    } else {
+                        navController.navigate(MobileToiletConstruction)
+                    }
+                })
+            }
+
+            composable<MobileToiletEvent> {
+                ConstructionMobileToiletScreen()
+            }
+
+            composable<MobileToiletConstruction> {
 
             }
         }

@@ -204,6 +204,18 @@ data class SepticResidentialCheckout(val septicTruckSizeModel: String,
 @Serializable
 object SepticServiceCommercial
 
+@Serializable
+object MobileToiletOnboarding
+
+@Serializable
+object MobileToilet
+
+@Serializable
+object MobileToiletEvent
+
+@Serializable
+object MobileToiletConstruction
+
 
 
 
