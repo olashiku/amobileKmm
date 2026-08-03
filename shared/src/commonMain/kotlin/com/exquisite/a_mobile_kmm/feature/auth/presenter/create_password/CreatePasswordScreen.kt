@@ -92,8 +92,7 @@ fun CreatePasswordScreen(
     Box(
         modifier = Modifier.fillMaxSize().background(
             color = Color.White
-        )
-            .windowInsetsPadding(WindowInsets.safeDrawing)
+        ).windowInsetsPadding(WindowInsets.safeDrawing)
             .verticalScroll(rememberScrollState())
     ) {
 

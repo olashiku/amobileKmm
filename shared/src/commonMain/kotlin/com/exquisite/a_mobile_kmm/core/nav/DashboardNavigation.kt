@@ -27,6 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils.decodeObject
 import com.exquisite.a_mobile_kmm.core.screen_components.WebViewUrlScreen
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_form.AddressFormScreen
@@ -60,8 +61,17 @@ import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_d
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_listing.ProductListingScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_search.ProductSearchScreen
 import com.exquisite.a_mobile_kmm.feature.janitorial.presenter.janitorial.JanitorialScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.MobileToiletEventFormOneFormData
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.MobileToiletFormThreeModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletAvailabilityModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletPriceModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.construction_mobile_toilet.ConstructionMobileToiletScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.event_toilet_checkout.EventToiletCheckoutScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_pricing.MobileToiletPricingScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet.MobileToiletService
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_form_one.MobileToiletEventFormOneScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_form_three.MobileToiletFormThreeScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_toilet_form_two.EventToiletFormTwoScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.onboarding.MobileToiletOnboardingScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
@@ -204,7 +214,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<SepticResidentialPricing> { backStackEntry ->
                 val data = backStackEntry.toRoute<SepticResidentialPricing>()
                 val septicTruckSizeModel =
-                    NavigationUtils.decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
+                    decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
 
                 SepticResidentialPricingScreen(septicTruckSizeModel, goBack = {
                     navController.popBackStack()
@@ -216,7 +226,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<SepticResidentialForm2> { backStackEntry ->
                 val data = backStackEntry.toRoute<SepticResidentialPricing>()
                 val septicTruckSizeModel =
-                    NavigationUtils.decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
+                    decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
 
                 SepticResidentialForm2Screen(goBack = {
                     navController.popBackStack()
@@ -233,9 +243,9 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<SepticResidentialCheckout> { backTrack ->
                 val data = backTrack.toRoute<SepticResidentialCheckout>()
                 val septicTruckSizeModel =
-                    NavigationUtils.decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
+                    decodeObject<SepticTruckSizeModel>(data.septicTruckSizeModel)
                 val septicResidentialForm2Model =
-                    NavigationUtils.decodeObject<SepticResidentialForm2Model>(data.septicResidentialForm2Model)
+                    decodeObject<SepticResidentialForm2Model>(data.septicResidentialForm2Model)
 
                 SepticResidentialCheckoutScreen(
                     septicTruckSizeModel,
@@ -282,7 +292,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<CourseDetails> { backTrack ->
                 val data = backTrack.toRoute<CourseDetails>()
                 val trainingCourse =
-                    NavigationUtils.decodeObject<TrainingCourse>(data.trainingCourse)
+                    decodeObject<TrainingCourse>(data.trainingCourse)
                 CourseDetailsScreen(
                     trainingCourse, goBack =
                         { navController.popBackStack() })
@@ -306,9 +316,9 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<TrainingCheckout> { backTrack ->
                 val data = backTrack.toRoute<TrainingCheckout>()
                 val trainingCourse =
-                    NavigationUtils.decodeObject<TrainingCourse>(data.trainingCourse)
+                    decodeObject<TrainingCourse>(data.trainingCourse)
                 val trainingRegistrationModel =
-                    NavigationUtils.decodeObject<TrainingRegistrationModel>(data.trainingFormModel)
+                    decodeObject<TrainingRegistrationModel>(data.trainingFormModel)
 
                 TrainingCheckoutScreen(
                     trainingCourse, trainingRegistrationModel,
@@ -331,7 +341,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<ProductDetails> { backStackEntry ->
                 showBottomBar = false
                 val data = backStackEntry.toRoute<ProductDetails>()
-                ProductDetailsScreen(NavigationUtils.decodeObject(data.productItem), onBackClick = {
+                ProductDetailsScreen(decodeObject(data.productItem), onBackClick = {
                     navController.popBackStack()
                 }, onSearchClick = {
                     navController.navigate(Search)
@@ -353,7 +363,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<DeliverOption> { backStack ->
                 val createOrderModel =
-                    NavigationUtils.decodeObject<CreateOrderModel>(backStack.toRoute<DeliverOption>().createOrderModelJson)
+                    decodeObject<CreateOrderModel>(backStack.toRoute<DeliverOption>().createOrderModelJson)
                 DeliveryOptionScreen(
                     createOrderModel = createOrderModel,
                     paymentOption = backStack.toRoute<DeliverOption>().paymentOption,
@@ -440,7 +450,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<CleanersDocumentUpload> { backStack ->
                 val data = backStack.toRoute<CleanersDocumentUpload>()
-                val request = NavigationUtils.decodeObject<RegisterCleanerRequest>(data.data)
+                val request = decodeObject<RegisterCleanerRequest>(data.data)
                 CleanersDocumentUploadScreen(request, goBack = {
                     navController.popBackStack()
                 }, goToSuccessPage = { title, message, buttonText ->
@@ -471,9 +481,9 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<DeepCleaningPriceDetails> { backTrack ->
                 val data = backTrack.toRoute<DeepCleaningPriceDetails>()
                 val deepCleaningFormData =
-                    NavigationUtils.decodeObject<DeepCleaningFormData>(data.data)
+                    decodeObject<DeepCleaningFormData>(data.data)
                 val deepCleaningPriceModel =
-                    NavigationUtils.decodeObject<CleaningPriceModel>(data.response)
+                    decodeObject<CleaningPriceModel>(data.response)
                 DeepCleaningPriceDetailsScreen(
                     deepCleaningFormData,
                     deepCleaningPriceModel,
@@ -500,11 +510,11 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<DeepCleaningCheckout> { backTrace ->
                 val data = backTrace.toRoute<DeepCleaningCheckout>()
-                val deepCleaningData = NavigationUtils.decodeObject<DeepCleaningFormData>(data.data)
+                val deepCleaningData = decodeObject<DeepCleaningFormData>(data.data)
                 val deepCleaningPriceModel =
-                    NavigationUtils.decodeObject<CleaningPriceModel>(data.response)
+                    decodeObject<CleaningPriceModel>(data.response)
                 val deepCleaningFormModel =
-                    NavigationUtils.decodeObject<DeepCleaningFormModel>(data.imageData)
+                    decodeObject<DeepCleaningFormModel>(data.imageData)
                 DeepCleaningCheckoutScreen(
                     deepCleaningData,
                     deepCleaningPriceModel,
@@ -533,9 +543,9 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<BasicCleaningPriceDetails> { backTrack ->
                 val data = backTrack.toRoute<BasicCleaningPriceDetails>()
                 val basicCleaningFormModel =
-                    NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                    decodeObject<BasicCleaningFormModel>(data.data)
                 val basicCleaningBreakdownModel =
-                    NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                    decodeObject<BasicCleaningBreakdownModel>(data.response)
                 BasicCleaningPriceDetailsScreen(
                     basicCleaningFormModel,
                     basicCleaningBreakdownModel,
@@ -550,9 +560,9 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<BasicCleaningFormTwo> { backTrack ->
                 val data = backTrack.toRoute<BasicCleaningPriceDetails>()
                 val basicCleaningFormModel =
-                    NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                    decodeObject<BasicCleaningFormModel>(data.data)
                 val basicCleaningBreakdownModel =
-                    NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                    decodeObject<BasicCleaningBreakdownModel>(data.response)
 
                 BasicCleaningFormTwoScreen(
                     basicCleaningFormModel, basicCleaningBreakdownModel, goBack = {
@@ -573,11 +583,11 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<BasicCleaningCheckout> { backTrack ->
                 val data = backTrack.toRoute<BasicCleaningCheckout>()
                 val basicCleaningFormModel =
-                    NavigationUtils.decodeObject<BasicCleaningFormModel>(data.data)
+                    decodeObject<BasicCleaningFormModel>(data.data)
                 val basicCleaningBreakdownModel =
-                    NavigationUtils.decodeObject<BasicCleaningBreakdownModel>(data.response)
+                    decodeObject<BasicCleaningBreakdownModel>(data.response)
                 val basicCleaningForm2Model =
-                    NavigationUtils.decodeObject<BasicCleaningForm2Model>(data.inputData)
+                    decodeObject<BasicCleaningForm2Model>(data.inputData)
 
 
                 BasicCleaningCheckoutScreen(
@@ -626,7 +636,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<ResidentialPestControlPricing> { backStack ->
                 val data = backStack.toRoute<ResidentialPestControlPricing>()
                 val formData =
-                    NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                    decodeObject<PestControlResidentialFormModel>(data.formData)
                 PestControlPriceScreen(data.amount, data.uniqueRef, formData, goBack = {
                     navController.popBackStack()
                 }, goToNextPage = {
@@ -643,7 +653,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<ResidentialPestControlFormTwo> { backStack ->
                 val data = backStack.toRoute<ResidentialPestControlPricing>()
                 val formData =
-                    NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                    decodeObject<PestControlResidentialFormModel>(data.formData)
 
                 ResidentialPestControlFormTwoScreen(
                     formData,
@@ -664,9 +674,9 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<ResidentialPestControlCheckout> { backTrack ->
                 val data = backTrack.toRoute<ResidentialPestControlCheckout>()
                 val formData =
-                    NavigationUtils.decodeObject<PestControlResidentialFormModel>(data.formData)
+                    decodeObject<PestControlResidentialFormModel>(data.formData)
                 val formData2 =
-                    NavigationUtils.decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
+                    decodeObject<ResidentialPestControlFormTwoModel>(data.formData2)
 
                 PestControlResidentialCheckoutScreen(
                     data.amount, data.uniqueRef, formData, formData2,
@@ -703,19 +713,114 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                     navController.popBackStack()
                 }, goToNextPage = { route ->
                     if (route.equals("event")) {
-                        navController.navigate(MobileToiletEvent)
+                        navController.navigate(MobileToiletEventFormOne)
                     } else {
                         navController.navigate(MobileToiletConstruction)
                     }
                 })
             }
 
-            composable<MobileToiletEvent> {
-                ConstructionMobileToiletScreen()
+            composable<MobileToiletEventFormOne> {
+                MobileToiletEventFormOneScreen(goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = { mobileToiletEventFormOneFormData, toiletAvailabilityModel ->
+                    navController.navigate(
+                        MobileToiletEventFormTwo(
+                            mobileToiletEventFormOneFormData,
+                            toiletAvailabilityModel
+                        )
+                    )
+                })
             }
 
-            composable<MobileToiletConstruction> {
+            composable<MobileToiletEventFormTwo> {
+                val data = it.toRoute<MobileToiletEventFormTwo>()
+                val mobileToiletEventFormOneFormData =
+                    decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
+                val toiletAvailabilityModel =
+                    decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
 
+                EventToiletFormTwoScreen(
+                    mobileToiletEventFormOneFormData, toiletAvailabilityModel, goBack = {
+                        navController.popBackStack()
+                    },
+                    goToPricePage = { toiletPriceModel ->
+                        navController.navigate(
+                            MobileToiletPricing(
+                                data.mobileToiletEventFormOneFormData,
+                                data.toiletAvailabilityModel,
+                                toiletPriceModel
+                            )
+                        )
+                    }
+                )
+            }
+
+            composable<MobileToiletPricing> { backTrack ->
+                val data = backTrack.toRoute<MobileToiletPricing>()
+                val mobileToiletEventFormOneFormData =
+                    decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
+                val toiletPriceModel = decodeObject<ToiletPriceModel>(data.toiletPriceModel)
+
+                MobileToiletPricingScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToNextPage = {
+                        navController.navigate(
+                            MobileToiletFormThree(
+                                data.mobileToiletEventFormOneFormData,
+                                data.toiletAvailabilityModel,
+                                data.toiletPriceModel
+                            )
+                        )
+                    },
+                    toiletPriceModel = toiletPriceModel,
+                    mobileToiletEventFormOneFormData = mobileToiletEventFormOneFormData
+                )
+            }
+
+            composable<MobileToiletFormThree> { backTrack ->
+                val data = backTrack.toRoute<MobileToiletFormThree>()
+                val mobileToiletEventFormOneFormData = decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
+                val toiletPriceModel = decodeObject<ToiletPriceModel>(data.toiletPriceModel)
+                val toiletAvailabilityModel = decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
+
+                MobileToiletFormThreeScreen( goBack = {
+                    navController.popBackStack()
+                }, goToNextPage = { mobileToiletFormThreeModel ->
+                    navController.navigate(EventToiletCheckout(data.mobileToiletEventFormOneFormData, data.toiletAvailabilityModel, data.toiletPriceModel, mobileToiletFormThreeModel))
+                })
+            }
+
+            composable<EventToiletCheckout> { backTrack->
+                val data = backTrack.toRoute<EventToiletCheckout>()
+                val mobileToiletEventFormOneFormData = decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
+                val toiletPriceModel = decodeObject<ToiletPriceModel>(data.toiletPriceModel)
+                val toiletAvailabilityModel = decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
+                val mobileToiletFormThreeModel = decodeObject<MobileToiletFormThreeModel>(data.mobileToiletFormThreeData)
+
+                EventToiletCheckoutScreen(toiletPriceModel,mobileToiletFormThreeModel,
+                    backTrack.savedStateHandle,
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
+                    },
+                    goToSuccess = { title, message, buttonText ->
+                        navController.navigate(Success(message, title, buttonText, false))
+                    })
+            }
+
+
+
+            composable<MobileToiletConstruction> {
+                ConstructionMobileToiletScreen(goBack = {
+                    navController.popBackStack()
+                }, goToSuccess = { title, message, buttonText ->
+                    navController.navigate(Success(message, title, buttonText, false))
+                })
             }
         }
     }

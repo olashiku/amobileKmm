@@ -1,10 +1,9 @@
-package com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price
+package com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_pricing
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,24 +33,22 @@ import com.exquisite.a_mobile_kmm.core.screen_components.Badge
 import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold32
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium13
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold13
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.CleaningPriceModel
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.SummaryData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.DeepCleaningFormData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCleaningSummaryData
-import com.exquisite.dripp.core.components.CustomSnackbarHost
-import com.exquisite.dripp.core.components.rememberSnackBar
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.SummaryItem
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.MobileToiletEventFormOneFormData
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletPriceModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.getToiletPricingList
 
 @Composable
-fun DeepCleaningPriceDetailsScreen(
-    deepCleaningFormData: DeepCleaningFormData,
-    cleaningPriceModel: CleaningPriceModel, goBack: () -> Unit,goToNextPage: () -> Unit, modifier: Modifier = Modifier,
+fun MobileToiletPricingScreen(
+    goBack: () -> Unit,
+    goToNextPage: () -> Unit,
+    toiletPriceModel: ToiletPriceModel,
+    mobileToiletEventFormOneFormData: MobileToiletEventFormOneFormData,
+    modifier: Modifier = Modifier
 ) {
 
-    val (snackBar, snackBarHostState) = rememberSnackBar()
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -60,7 +57,7 @@ fun DeepCleaningPriceDetailsScreen(
         Column {
             // Fixed Header
             FixedHeaderWithBackButton(
-                title = "Deep Cleaning Summary",
+                title = "Mobile Toilet Pricing",
                 onBackClick = goBack
             )
 
@@ -82,43 +79,46 @@ fun DeepCleaningPriceDetailsScreen(
                             .background(Color(0XFFFFF9F0)).padding(20.dp)
                     ) {
                         Spacer(modifier = modifier.height(1.dp))
-                        Badge("DEEP CLEANING")
+
+                        Badge("${
+                            if(mobileToiletEventFormOneFormData.selectedCleaningOption.equals("both")){
+                                "STANDARD & VIP"
+                            }else {
+                                mobileToiletEventFormOneFormData.selectedCleaningOption
+                            }
+                        } MOBILE TOILET(S)")
                         Spacer(modifier = modifier.height(8.dp))
                         Text(
-                            text = "${
-                                cleaningPriceModel.cleaningType.name.lowercase().replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                            } service",style = getPoppinsSemiBold18(),color =Color(0XFF1A1A1A))
+                            text = "Mobile Toilet",
+                            style = getPoppinsSemiBold18(),
+                            color = Color(0XFF1A1A1A)
+                        )
                     }
                     Column(modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                            getCleaningSummaryData(deepCleaningFormData).forEach { item ->
+                            getToiletPricingList(toiletPriceModel).forEach { item ->
                                 SummaryItem(item)
                             }
                         }
                         Spacer(modifier = modifier.height(16.dp))
-                        HorizontalDivider( thickness = 1.dp, color = Color(0XFFE2E8F0))
+                        HorizontalDivider(thickness = 1.dp, color = Color(0XFFE2E8F0))
                         Spacer(modifier = modifier.height(20.dp))
-                        Row {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = modifier.fillMaxWidth()
+                        ) {
                             Text(
-                                text = "Address", color = Color(0xFF64748B),
-                                style = getPoppinsSemiBold13(),
-                                fontSize = 13.sp
-                            )
-                            Spacer(modifier = Modifier.weight(1f))
-                            Text(text = deepCleaningFormData.address?.first?:"",
-                                style = getPoppinsMedium13(),
-                                color = Color(0xFF1A1A1A), fontSize = 13.sp)
-                        }
-                        Spacer(modifier = modifier.height(36.dp))
-                        Column(horizontalAlignment = Alignment.CenterHorizontally,modifier= modifier.fillMaxWidth()){
-                            Text(text = "Estimated Total",
+                                text = "Estimated Total",
                                 style = getPoppinsRegular14(),
-                                color = Color(0xFF64748B), fontSize = 14.sp)
+                                color = Color(0xFF64748B), fontSize = 14.sp
+                            )
                             Spacer(modifier = modifier.height(8.dp))
 
-                            Text(text = "₦${cleaningPriceModel.amount.formatBalance()}",
+                            Text(
+                                text = "₦${toiletPriceModel.totalAmount.formatBalance()}",
                                 style = getPoppinsBold32(),
-                                color = Color(0xFFF29100))
+                                color = Color(0xFFF29100)
+                            )
                             Spacer(modifier = modifier.height(24.dp))
                         }
 
@@ -127,44 +127,19 @@ fun DeepCleaningPriceDetailsScreen(
                 }
                 Spacer(modifier = modifier.height(12.dp))
 
-                Text(text = "Review your details before continuing",
+                Text(
+                    text = "Review your details before continuing",
                     style = getPoppinsRegular14(),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF64748B), fontSize = 14.sp, modifier = modifier.fillMaxSize())
+                    color = Color(0xFF64748B), fontSize = 14.sp, modifier = modifier.fillMaxSize()
+                )
             }
         }
         PrimaryButton("Confirm and Continue", {
             goToNextPage.invoke()
         }, modifier = Modifier.align(BottomCenter).padding(20.dp))
 
-        // Snackbar at bottom
-        CustomSnackbarHost(
-            snackbarHostState = snackBarHostState,
-            modifier = Modifier.align(BottomCenter).padding(20.dp)
-        )
-    }
-}
 
-@Composable
-fun SummaryItem(deepCleaningFormData: SummaryData) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = deepCleaningFormData.title,
-            color = Color(0xFF64748B),
-            style = getPoppinsSemiBold13(),
-            fontSize = 13.sp,
-            modifier = Modifier.weight(0.4f, fill = false)
-        )
-        Text(
-            text = deepCleaningFormData.description,
-            style = getPoppinsMedium13(),
-            color = Color(0xFF1A1A1A),
-            fontSize = 13.sp,
-            textAlign = TextAlign.End,
-            modifier = Modifier.weight(0.6f, fill = false)
-        )
     }
+
 }

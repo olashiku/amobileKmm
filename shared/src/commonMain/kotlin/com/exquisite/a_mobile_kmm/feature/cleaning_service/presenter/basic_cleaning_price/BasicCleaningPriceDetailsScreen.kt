@@ -38,7 +38,7 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningBreakdownModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCleaningSummaryData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.CleaningSummaryItem
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.SummaryItem
 import com.exquisite.dripp.core.components.CustomSnackbarHost
 import com.exquisite.dripp.core.components.rememberSnackBar
 
@@ -89,7 +89,7 @@ fun BasicCleaningPriceDetailsScreen(
                     Column(modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             getCleaningSummaryData(basicCleaningBreakdownModel).forEach { item ->
-                                CleaningSummaryItem(item)
+                                SummaryItem(item)
                             }
                         }
                         Spacer(modifier = modifier.height(16.dp))

@@ -1,5 +1,7 @@
 package com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.onboarding
 
+import amobilekmm.shared.generated.resources.Res
+import amobilekmm.shared.generated.resources.back_arrow
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -28,35 +31,49 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.exquisite.a_mobile_kmm.core.screen_components.LineButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsLight14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium28
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.auth.presenter.onboard.getOnboardingData
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.getToiletOnboardingData
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun  MobileToiletOnboardingScreen(modifier: Modifier = Modifier,goBack: () -> Unit, goToNextPage: () -> Unit) {
-    val pagerState = rememberPagerState(pageCount = { 3 })
-    val onboardingData = getOnboardingData()
+    val pagerState = rememberPagerState(pageCount = { getToiletOnboardingData().size })
+    val onboardingData = getToiletOnboardingData()
     val scope = rememberCoroutineScope()
 
     Box(
-    contentAlignment = Alignment.Center,
     modifier = modifier.fillMaxSize()
     ) {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Image(
-                    painter = painterResource(onboardingData[page].image),
-                    contentDescription = "onboardingImage",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+        Column(
+            modifier = modifier.align(Alignment.TopCenter)
+
+        ){
+            Image(
+                painter = painterResource(Res.drawable.back_arrow),
+                contentDescription = "Back arrow",
+                modifier = modifier.padding(top =50.dp, start = 30.dp).clickable{
+                    goBack()
+                }
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxWidth()
+            ) { index ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center, modifier = modifier.fillMaxWidth()){
+                    Text(onboardingData[index].title, style = getPoppinsMedium28(), color = Color(0xFF252525), textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(44.dp))
+                    Image(painter = painterResource(onboardingData[index].image), contentDescription = "onboardingImage", modifier = Modifier.width(342.dp).height(334.dp), contentScale = ContentScale.Crop)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Text(onboardingData[index].description, style = getPoppinsLight14(), color = Color(0xFF252525), textAlign = TextAlign.Center)
+                }
             }
         }
-
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,21 +100,7 @@ fun  MobileToiletOnboardingScreen(modifier: Modifier = Modifier,goBack: () -> Un
                 }
             }
 
-            Spacer(modifier = modifier.height(10.dp))
-            Text(
-                text = onboardingData[pagerState.currentPage].title,
-                style = getPoppinsSemiBold18(),
-                textAlign = TextAlign.Center,
-                color = Color(0xFFFFFFFF)
-            )
-            Spacer(modifier = modifier.height(10.dp))
-            Text(
-                text = onboardingData[pagerState.currentPage].description,
-                style = MaterialTheme.typography.labelMedium,
-                textAlign = TextAlign.Center,
-                color = Color(0xFFFFFFFF)
-            )
-            Spacer(modifier = modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(29.dp))
             PrimaryButton(
                 "Next",
                 {
@@ -113,9 +116,9 @@ fun  MobileToiletOnboardingScreen(modifier: Modifier = Modifier,goBack: () -> Un
             LineButton("Skip",
                 {
                     goToNextPage()
-                }
+                }, textColor = Color(0xFF252525)
             )
-            Spacer(modifier = modifier.height(20.dp))
+            Spacer(modifier = modifier.height(10.dp))
         }
     }
 }

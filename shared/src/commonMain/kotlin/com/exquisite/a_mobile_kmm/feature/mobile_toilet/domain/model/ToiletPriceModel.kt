@@ -1,5 +1,8 @@
 package com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ToiletPriceModel(
     val numberOfDays: Int,
     val discountGiven: Double,

@@ -1,7 +1,24 @@
 package com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.mapper
 
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.remote.request.*
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.*
+
+fun ConstructionToiletRequestModel.toRequestDto(): RequestForConstructionRequestDto {
+    return RequestForConstructionRequestDto(
+        customerId = customerId,
+        companyName = companyName,
+        companyEmail = companyEmail,
+        constructionAddress = constructionAddress,
+        availabilityDate = availabilityDate,
+        availabilityTime = availabilityTime,
+        recipientName = recipientName,
+        recipientEmail = recipientEmail,
+        recipientPhone = recipientPhone,
+        numberOfPeopleOnSite = numberOfPeopleOnSite,
+        numberOfMonths = numberOfMonths
+    )
+}
 
 fun RequestForConstructionResponseDto.toToiletResponseModel(): ToiletResponseModel {
     return ToiletResponseModel(message = responseMessage)
@@ -48,6 +65,69 @@ fun GetEventTypeResponseDto.toEventTypeModelList(): List<EventTypeModel>? {
 
 fun EventTypeDto.toEventTypeModel(): EventTypeModel {
     return EventTypeModel(id = id, name = name)
+}
+
+fun InitToiletPaymentRequestModel.toRequestDto(): InitToiletPaymentRequestDto {
+    return InitToiletPaymentRequestDto(
+        uniqueRef = uniqueRef,
+        contactPersonName = contactPersonName,
+        contactPersonPhone = contactPersonPhone,
+        contactPersonEmail = contactPersonEmail,
+        address = address,
+        typeOfEvent = typeOfEvent,
+        extraNote = extraNote,
+        customerId = customerId,
+        pictureOfEventLocation = pictureOfEventLocation,
+        pictureOfToiletPlacement = pictureOfToiletPlacement,
+        companyName = companyName,
+        companyEmail = companyEmail
+    )
+}
+
+fun GetToiletPriceRequestModel.toRequestDto(): GetToiletPriceRequestDto {
+    return GetToiletPriceRequestDto(
+        minimumNumberOfGuest = minimumNumberOfGuest,
+        maximumNumberOfGuest = maximumNumberOfGuest,
+        serviceType = serviceType,
+        numberOfStandardToilet = numberOfStandardToilet,
+        numberOfVipToilets = numberOfVipToilets,
+        eventStartDate = eventStartDate,
+        eventEndDate = eventEndDate,
+        eventStartTIme = eventStartTime,
+        eventEndTIme = eventEndTime
+    )
+}
+
+fun CompleteToiletPaymentRequestModel.toRequestDto(): CompleteToiletPaymentRequestDto {
+    return CompleteToiletPaymentRequestDto(
+        customerId = customerId,
+        ref = ref,
+        txnRef = txnRef
+    )
+}
+
+fun DebitFromAccountRequestModel.toRequestDto(): DebitFromAccountRequestDto {
+    return DebitFromAccountRequestDto(
+        uniqueRef = uniqueRef,
+        contactPersonName = contactPersonName,
+        contactPersonPhone = contactPersonPhone,
+        contactPersonEmail = contactPersonEmail,
+        address = address,
+        typeOfEvent = typeOfEvent,
+        extraNote = extraNote,
+        customerId = customerId,
+        pictureOfEventLocation = pictureOfEventLocation,
+        pictureOfToiletPlacement = pictureOfToiletPlacement,
+        companyName = companyName,
+        companyEmail = companyEmail
+    )
+}
+
+fun CheckToiletAvailabilityRequestModel.toRequestDto(): CheckToiletAvailabilityRequestDto {
+    return CheckToiletAvailabilityRequestDto(
+        serviceType = serviceType,
+        eventDate = eventDate
+    )
 }
 
 fun CheckToiletAvailabilityResponseDto.toToiletAvailabilityModel(): ToiletAvailabilityModel? {

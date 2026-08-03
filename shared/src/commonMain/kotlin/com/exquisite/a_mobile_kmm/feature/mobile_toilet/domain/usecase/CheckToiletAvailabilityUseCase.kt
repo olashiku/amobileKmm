@@ -3,8 +3,9 @@ package com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.usecase
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.mapper.toRequestDto
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.mapper.toToiletAvailabilityModel
-import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.remote.request.CheckToiletAvailabilityRequestDto
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.CheckToiletAvailabilityRequestModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletAvailabilityModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.repository.MobileToiletRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +16,8 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class CheckToiletAvailabilityUseCase(private val repository: MobileToiletRepository) {
-    suspend operator fun invoke(request: CheckToiletAvailabilityRequestDto): Flow<UseCaseResult<ToiletAvailabilityModel>> {
-        return repository.checkToiletAvailability(request).map { result ->
+    suspend operator fun invoke(request: CheckToiletAvailabilityRequestModel): Flow<UseCaseResult<ToiletAvailabilityModel>> {
+        return repository.checkToiletAvailability(request.toRequestDto()).map { result ->
             when (result) {
                 is Result.Success -> {
                     if (result.data.responseCode == "00" && result.data.data != null) {

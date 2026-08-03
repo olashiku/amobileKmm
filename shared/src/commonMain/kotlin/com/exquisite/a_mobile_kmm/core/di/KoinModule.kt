@@ -104,7 +104,9 @@ import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.usecase.InitToile
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.usecase.RequestForConstructionUseCase
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.construction_mobile_toilet.ConstructionMobileToiletViewModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.event_toilet_checkout.EventToiletCheckoutViewModel
-import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.event_toilet_form.EventToiletFormViewModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_toilet_form_two.EventToiletFormViewModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_form_one.MobileToiletEventFormOneViewModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_form_three.MobileToiletFormThreeViewModel
 import com.exquisite.a_mobile_kmm.feature.order.data.repository.OrderRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.order.domain.repository.OrderRepository
 import com.exquisite.a_mobile_kmm.feature.order.domain.usecase.GetCustomerOrdersUseCase
@@ -314,8 +316,8 @@ val sharedModule: Module = module {
     viewModel { DeepCleaningFormTwoViewModel(get()) }
     viewModel { DeepCleaningCheckoutViewModel(get(), get(), get(), get()) }
     viewModel { BasicCleaningFormViewModel(get(), get(), get()) }
-    viewModel { ConstructionMobileToiletViewModel(get()) }
-    viewModel { EventToiletCheckoutViewModel(get(), get(), get(), get(), get()) }
+    viewModel { ConstructionMobileToiletViewModel(get(),get()) }
+    viewModel { EventToiletCheckoutViewModel(get(), get(), get(),get()) }
     viewModel { EventToiletFormViewModel(get(), get()) }
     viewModel { JanitorialViewModel(get(),get(),get()) }
     viewModel { PestControlCommercialViewModel(get(),get()) }
@@ -335,4 +337,6 @@ val sharedModule: Module = module {
     viewModel { SepticResidentialFormViewModel2() }
     viewModel {TrainingRegistrationViewModel()}
     viewModel { TrainingCheckoutViewModel(get(), get(), get(), get()) }
+    viewModel { MobileToiletEventFormOneViewModel(get()) }
+    viewModel { MobileToiletFormThreeViewModel(get()) }
 }

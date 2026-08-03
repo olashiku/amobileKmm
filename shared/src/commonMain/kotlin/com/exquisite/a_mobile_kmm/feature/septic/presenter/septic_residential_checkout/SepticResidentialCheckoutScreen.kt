@@ -299,6 +299,4 @@ fun SepticResidentialCheckoutScreen(
             modifier = Modifier.align(BottomCenter).padding(20.dp)
         )
     }
-
-
 }

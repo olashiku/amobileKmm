@@ -68,8 +68,7 @@ fun SepticResidentialForm2Screen(
 ) {
     val (snackBar, snackBarHostState) = rememberSnackBar()
     val selectedDate by viewModel.selectedDate.collectAsStateWithLifecycle()
-    val times =
-        listOf("9:00 AM", "10:00 AM", "11:30 AM", "12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
+    val times = listOf("9:00 AM", "10:00 AM", "11:30 AM", "12:00 PM", "1:00 PM", "2:30 PM", "4:00 PM")
     val availableQuickDates = remember { generateAvailableDates(11) }
     val isFutureDate = selectedDate != null && !availableQuickDates.any { it.fullDate == selectedDate?.fullDate }
 

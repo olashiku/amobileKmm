@@ -3,6 +3,7 @@ package com.exquisite.a_mobile_kmm.core.screen_components
 import amobilekmm.shared.generated.resources.Res
 import amobilekmm.shared.generated.resources.empty_state_list
 import amobilekmm.shared.generated.resources.hide_password
+import amobilekmm.shared.generated.resources.logout_icon
 import amobilekmm.shared.generated.resources.password_icon
 import amobilekmm.shared.generated.resources.show_password
 import androidx.compose.foundation.BorderStroke
@@ -43,6 +44,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -120,7 +122,7 @@ import kotlinx.serialization.Serializable
 
 
 @Composable
-fun LineButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun LineButton(text: String, onClick: () -> Unit,textColor : Color= Color(0xFFFFFFFF), modifier: Modifier = Modifier) {
     Button(
         onClick = { onClick() },
         colors = ButtonDefaults.buttonColors(
@@ -135,7 +137,7 @@ fun LineButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier)
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFFFFFFFF)
+            color = textColor
         )
     }
 }
@@ -2392,5 +2394,73 @@ fun GenericTextArea(
             )
     )
 }
+
+@Composable
+fun StrongNote(message:String,modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically, modifier =
+            modifier.fillMaxWidth().clip(RoundedCornerShape(20.dp)).background(Color(0XFFFAEE6D))
+    ) {
+        Text(
+            text = message,
+            textAlign = TextAlign.Center,
+            style = getPoppinsRegular12(), modifier = modifier.padding(20.dp), color = Color.Black
+        )
+    }
+}
+
+@Composable
+fun InfoNotification(
+    message: String,
+    modifier: Modifier = Modifier,
+    icon: @Composable () -> Unit = {
+        Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = "Info",
+            tint = Color(0xFF485F84),
+            modifier = Modifier.size(24.dp)
+        )
+    }
+) {
+    val borderColor = Color(0xFF485F84)
+    val cornerRadius = 8.dp
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .drawBehind {
+                val strokeWidth = 1.dp.toPx()
+                val cornerRadiusPx = cornerRadius.toPx()
+                val pathEffect = androidx.compose.ui.graphics.PathEffect.dashPathEffect(
+                    intervals = floatArrayOf(8f, 8f),
+                    phase = 0f
+                )
+
+                drawRoundRect(
+                    color = borderColor,
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(
+                        width = strokeWidth,
+                        pathEffect = pathEffect
+                    ),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(cornerRadiusPx)
+                )
+            }
+            .background(Color.Transparent)
+            .padding(12.dp),
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Box(modifier = Modifier.padding(end = 12.dp)) {
+            icon()
+        }
+        Text(
+            text = message,
+            style = getPoppinsRegular12(),
+            color = Color(0xFF252525),
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
 
 

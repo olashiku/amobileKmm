@@ -54,8 +54,7 @@ import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCle
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.BasicCleaningFormModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getBasicCleaningCheckoutBalances
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCleaningSummaryDataWithPrice
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.DeepCleaningCheckoutState
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.CleaningSummaryItem
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.SummaryItem
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.paymentOptions
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.checkout_list.Item
 import com.exquisite.dripp.core.components.CustomSnackbarHost
@@ -172,7 +171,7 @@ fun BasicCleaningCheckoutScreen(
                                 basicCleaningFormModel,
                                 basicCleaningForm2Model
                             ).forEach { item ->
-                                CleaningSummaryItem(item)
+                                SummaryItem(item)
                             }
                         }
                         Spacer(modifier = modifier.height(20.dp))

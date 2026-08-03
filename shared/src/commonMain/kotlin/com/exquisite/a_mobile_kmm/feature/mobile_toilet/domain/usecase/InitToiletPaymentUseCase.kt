@@ -4,7 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.mapper.toToiletPaymentModel
-import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.remote.request.InitToiletPaymentRequestDto
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.InitToiletPaymentRequestModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletPaymentModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.repository.MobileToiletRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class InitToiletPaymentUseCase(private val repository: MobileToiletRepository) {
-    suspend operator fun invoke(request: InitToiletPaymentRequestDto): Flow<UseCaseResult<ToiletPaymentModel>> {
+    suspend operator fun invoke(request: InitToiletPaymentRequestModel): Flow<UseCaseResult<ToiletPaymentModel>> {
         return repository.initToiletPayment(request).map { result ->
             when (result) {
                 is Result.Success -> {

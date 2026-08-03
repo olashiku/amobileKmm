@@ -211,7 +211,36 @@ object MobileToiletOnboarding
 object MobileToilet
 
 @Serializable
-object MobileToiletEvent
+object MobileToiletEventFormOne
+@Serializable
+data class  MobileToiletEventFormTwo(
+    val mobileToiletEventFormOneFormData:String,
+    val toiletAvailabilityModel:String
+)
+
+
+@Serializable
+data class  MobileToiletPricing (
+    val mobileToiletEventFormOneFormData:String,
+    val toiletAvailabilityModel:String,
+    val toiletPriceModel:String
+)
+
+@Serializable
+data class  MobileToiletFormThree (
+    val mobileToiletEventFormOneFormData:String,
+    val toiletAvailabilityModel:String,
+    val toiletPriceModel:String
+)
+
+@Serializable
+data class  EventToiletCheckout (
+    val mobileToiletEventFormOneFormData:String,
+    val toiletAvailabilityModel:String,
+    val toiletPriceModel:String,
+    val mobileToiletFormThreeData:String
+)
+
 
 @Serializable
 object MobileToiletConstruction

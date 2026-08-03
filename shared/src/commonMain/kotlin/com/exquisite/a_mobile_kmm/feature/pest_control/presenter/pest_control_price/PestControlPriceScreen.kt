@@ -35,8 +35,7 @@ import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold32
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.domain.model.getCleaningSummaryData
-import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.CleaningSummaryItem
+import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.SummaryItem
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.getPricingList
 import com.exquisite.dripp.core.components.CustomSnackbarHost
@@ -85,7 +84,7 @@ fun PestControlPriceScreen(amount: String,uniqueRef: String, pestControlResident
                     Column(modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
                         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                             getPricingList(pestControlResidentialFormModel).forEach { item ->
-                                CleaningSummaryItem(item)
+                                SummaryItem(item)
                             }
                         }
                         Spacer(modifier = modifier.height(16.dp))

@@ -2,8 +2,13 @@ package com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.repository
 
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.safeApiCall
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.mapper.*
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.remote.request.*
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.data.remote.response.*
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.CompleteToiletPaymentRequestModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.DebitFromAccountRequestModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.GetToiletPriceRequestModel
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.InitToiletPaymentRequestModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.repository.MobileToiletRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -21,34 +26,34 @@ class MobileToiletRepositoryImpl(private val httpClient: HttpClient) : MobileToi
         }
     }
 
-    override suspend fun initToiletPayment(request: InitToiletPaymentRequestDto): Flow<Result<InitToiletPaymentResponseDto>> {
+    override suspend fun initToiletPayment(request: InitToiletPaymentRequestModel): Flow<Result<InitToiletPaymentResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/toilets/init_toilet_payment") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }
 
-    override suspend fun getToiletPrice(request: GetToiletPriceRequestDto): Flow<Result<GetToiletPriceResponseDto>> {
+    override suspend fun getToiletPrice(request: GetToiletPriceRequestModel): Flow<Result<GetToiletPriceResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/toilets/get_toilet_price") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }
 
-    override suspend fun completeToiletPayment(request: CompleteToiletPaymentRequestDto): Flow<Result<CompleteToiletPaymentResponseDto>> {
+    override suspend fun completeToiletPayment(request: CompleteToiletPaymentRequestModel): Flow<Result<CompleteToiletPaymentResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/toilets/complete_payment") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }
 
-    override suspend fun debitFromAccount(request: DebitFromAccountRequestDto): Flow<Result<DebitFromAccountResponseDto>> {
+    override suspend fun debitFromAccount(request: DebitFromAccountRequestModel): Flow<Result<DebitFromAccountResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/toilets/debit_from_account") {
-                setBody(request)
+                setBody(request.toRequestDto())
             }
         }
     }

@@ -189,6 +189,54 @@ object ValidationHelper {
             )
         }
     }
+
+    fun validateNumberOfGuest(numberOfGuest: String): ValidationResult {
+        return when {
+            numberOfGuest.isEmpty() -> ValidationResult(
+                false,
+                "Number of guests is required"
+            )
+            numberOfGuest.toInt()  < 1 -> ValidationResult(
+                false,
+                "Number of guests must be  grater than 1"
+            )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
+
+    fun peopleOnSiteValidation(address: String): ValidationResult {
+        return when {
+            address.isEmpty() -> ValidationResult(
+                false,
+                "people on site is required"
+            )
+            address.length < 1 -> ValidationResult(
+                false,
+                "people on site must be at least 1 characters"
+            )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
+
+    fun durationValidation(address: String): ValidationResult {
+        return when {
+            address.isEmpty() -> ValidationResult(
+                false,
+                "Duration is required"
+            )
+            address.length < 1 -> ValidationResult(
+                false,
+                "Duration must be at least 1 characters"
+            )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
     
     fun validatePhoneNumber(phone: String): ValidationResult {
         val cleanPhone = phone.replace(Regex("[\\s\\-\\(\\)]"), "")
@@ -217,6 +265,34 @@ object ValidationHelper {
             selection.isEmpty() -> ValidationResult(
                 false,
                 "$fieldName is required"
+            )
+            else -> ValidationResult(
+                true
+            )
+        }
+    }
+
+    fun validateToiletQuantity(quantity: String, maxAvailable: Int, toiletType: String = "toilet"): ValidationResult {
+        return when {
+            quantity.isEmpty() -> ValidationResult(
+                false,
+                "Number of ${toiletType}s is required"
+            )
+            !quantity.all { it.isDigit() } -> ValidationResult(
+                false,
+                "Please enter a valid number"
+            )
+            quantity.toIntOrNull() == null -> ValidationResult(
+                false,
+                "Please enter a valid number"
+            )
+            quantity.toInt() <= 0 -> ValidationResult(
+                false,
+                "Quantity must be greater than 0"
+            )
+            quantity.toInt() > maxAvailable -> ValidationResult(
+                false,
+                "Maximum available ${toiletType}s: $maxAvailable"
             )
             else -> ValidationResult(
                 true

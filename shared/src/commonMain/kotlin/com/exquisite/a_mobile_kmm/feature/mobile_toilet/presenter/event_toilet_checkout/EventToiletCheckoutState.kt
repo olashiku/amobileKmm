@@ -11,7 +11,5 @@ sealed class EventToiletCheckoutState {
     data class InitPaymentSuccess(val payment: ToiletPaymentModel) : EventToiletCheckoutState()
     data class CompletePaymentSuccess(val response: ToiletResponseModel) : EventToiletCheckoutState()
     data class DebitAccountSuccess(val response: ToiletResponseModel) : EventToiletCheckoutState()
-    data class EventTypesSuccess(val eventTypes: List<EventTypeModel>) : EventToiletCheckoutState()
-    data class AvailabilitySuccess(val availability: ToiletAvailabilityModel) : EventToiletCheckoutState()
     data class Error(val message: String) : EventToiletCheckoutState()
 }
