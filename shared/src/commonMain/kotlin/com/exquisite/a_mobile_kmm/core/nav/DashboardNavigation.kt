@@ -33,7 +33,9 @@ import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_form.AddressFormScreen
 import com.exquisite.a_mobile_kmm.feature.address.presenter.address_list.AddressListScreen
 import com.exquisite.a_mobile_kmm.feature.auth.presenter.success.SuccessScreen
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.CustomerBooking
 import com.exquisite.a_mobile_kmm.feature.booking.presenter.booking.BookingScreen
+import com.exquisite.a_mobile_kmm.feature.booking.presenter.booking_details.BookingDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.cart.presenter.CartScreen
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.domain.model.RegisterCleanerRequest
 import com.exquisite.a_mobile_kmm.feature.cleaners_registration.presenter.cleaners_document.CleanersDocumentUploadScreen
@@ -272,8 +274,20 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<Booking> {
-                BookingScreen()
+                BookingScreen(
+                    toBookingDetails = { customerBooking->
+                        navController.navigate(customerBooking)
+                    }
+                )
             }
+
+             composable<BookingDetails>{ backTrack ->
+                 val data = backTrack.toRoute<BookingDetails>()
+                 val customerBooking = decodeObject<CustomerBooking>(data.customerBooking)
+                 BookingDetailsScreen(customerBooking)
+             }
+
+
 
             composable<Cart> {
                 CartScreen(toCheckout = {

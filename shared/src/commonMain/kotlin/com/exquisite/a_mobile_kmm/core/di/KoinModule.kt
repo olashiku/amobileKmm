@@ -306,7 +306,7 @@ val sharedModule: Module = module {
     viewModel { CheckoutListViewModel(get(), get(), get()) }
     viewModel { DeliverOptionViewModel(get(), get(), get(), get(), get()) }
     viewModel { OrderListingViewModel(get()) }
-    viewModel { BookingViewModel(get()) }
+    viewModel { BookingViewModel(get(),get()) }
     viewModel { BookingDetailsViewModel(get(), get(), get(), get(), get()) }
     viewModel { TrainingViewModel(get()) }
     viewModel { TrainingRegistrationViewModel() }

@@ -65,4 +65,14 @@ data class NumberOfRoomsDto(
 )
 
 @Serializable
-class AssignedAgentDto
+data class AssignedAgentDto(
+    val id: Int? = null,
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val email: String? = null,
+    val phone: String? = null,
+    val profilePictureUrl: String? = null,
+    val isActive: String? = null,
+    val createdAt: String? = null,
+    val updatedAt: String? = null
+)

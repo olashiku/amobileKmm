@@ -24,6 +24,7 @@ data class CustomerBookingDto(
     val serviceStatus: String? = null,
     val amountPaid: Double? = null,
     val bookingId: Int? = null,
+    val assignedAgent: AssignedAgentDto? = null,
     val createdAt: String? = null,
     val updatedAt: String? = null
 )

@@ -26,6 +26,27 @@ fun CustomerBookingDto.toDomainModel(): CustomerBooking? {
             serviceStatus = serviceStatus,
             amountPaid = amountPaid,
             bookingId = bookingId,
+            assignedAgent = assignedAgent?.toDomainModel(),
+            createdAt = createdAt,
+            updatedAt = updatedAt
+        )
+    } else {
+        null
+    }
+}
+
+fun AssignedAgentDto.toDomainModel(): AssignedAgent? {
+    return if (id != null && firstName != null && lastName != null &&
+        email != null && phone != null && isActive != null &&
+        createdAt != null && updatedAt != null) {
+        AssignedAgent(
+            id = id,
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            phone = phone,
+            profilePictureUrl = profilePictureUrl,
+            isActive = isActive,
             createdAt = createdAt,
             updatedAt = updatedAt
         )

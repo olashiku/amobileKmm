@@ -51,6 +51,9 @@ object Home
 object Booking
 
 @Serializable
+data class BookingDetails(val customerBooking:String)
+
+@Serializable
 object Cart
 
 @Serializable
