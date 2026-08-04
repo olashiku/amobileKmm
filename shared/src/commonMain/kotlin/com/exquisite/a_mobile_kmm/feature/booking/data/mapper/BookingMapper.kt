@@ -1,5 +1,6 @@
 package com.exquisite.a_mobile_kmm.feature.booking.data.mapper
 
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.request.RateAndReviewRequestDto
 import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.booking.domain.model.*
 
@@ -84,8 +85,8 @@ fun CleaningBookingDataDto.toDomainModel(): CleaningBookingModel? {
             amount = amount,
             address = address,
             serviceType = serviceType,
-            customerImages = customerImages ?: "",
-            employeeImages = employeeImages ?: "",
+            customerImages = customerImages ?: emptyList(),
+            employeeImages = employeeImages ?: emptyList(),
             paymentStatus = paymentStatus ?: "",
             serviceStatus = serviceStatus ?: "",
             createdAt = createdAt,
@@ -338,4 +339,17 @@ fun ToiletEstimateDto.toDomainModel(): ToiletEstimate? {
  */
 fun RateAndReviewResponseDto.toRateReviewModel(): RateReviewModel {
     return RateReviewModel(message = responseMessage)
+}
+
+/**
+ * Maps RateAndReviewRequest (domain model) to RateAndReviewRequestDto
+ */
+fun RateAndReviewRequest.toDto(): RateAndReviewRequestDto {
+    return RateAndReviewRequestDto(
+        serviceType = serviceType,
+        comment = comment,
+        rate = rate.toString(),
+        customerId = customerId.toString(),
+        bookingId = bookingId.toString()
+    )
 }

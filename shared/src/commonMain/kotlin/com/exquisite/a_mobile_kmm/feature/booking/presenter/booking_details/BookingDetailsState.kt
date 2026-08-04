@@ -13,6 +13,12 @@ sealed class BookingDetailsState {
     data class SepticBookingSuccess(val data: SepticBookingModel) : BookingDetailsState()
     data class PestControlBookingSuccess(val data: PestControlBookingModel) : BookingDetailsState()
     data class ToiletBookingSuccess(val data: ToiletBookingModel) : BookingDetailsState()
-    data class RateReviewSuccess(val data: RateReviewModel) : BookingDetailsState()
     data class Error(val message: String) : BookingDetailsState()
+}
+
+sealed class RateReviewState{
+    data object Idle : RateReviewState()
+    data object Loading : RateReviewState()
+   data class RateReviewSuccess(val data: RateReviewModel) : RateReviewState()
+    data class Error(val message: String) : RateReviewState()
 }

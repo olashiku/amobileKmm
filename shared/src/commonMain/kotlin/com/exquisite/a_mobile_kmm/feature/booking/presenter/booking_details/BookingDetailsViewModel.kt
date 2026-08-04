@@ -2,8 +2,9 @@ package com.exquisite.a_mobile_kmm.feature.booking.presenter.booking_details
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
-import com.exquisite.a_mobile_kmm.feature.booking.data.remote.request.RateAndReviewRequestDto
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.RateAndReviewRequest
 import com.exquisite.a_mobile_kmm.feature.booking.domain.usecase.GetCleaningBookingUseCase
 import com.exquisite.a_mobile_kmm.feature.booking.domain.usecase.GetPestControlBookingUseCase
 import com.exquisite.a_mobile_kmm.feature.booking.domain.usecase.GetSepticBookingUseCase
@@ -11,6 +12,7 @@ import com.exquisite.a_mobile_kmm.feature.booking.domain.usecase.GetToiletBookin
 import com.exquisite.a_mobile_kmm.feature.booking.domain.usecase.RateAndReviewUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class BookingDetailsViewModel(
@@ -18,11 +20,15 @@ class BookingDetailsViewModel(
     private val getSepticBookingUseCase: GetSepticBookingUseCase,
     private val getPestControlBookingUseCase: GetPestControlBookingUseCase,
     private val getToiletBookingUseCase: GetToiletBookingUseCase,
-    private val rateAndReviewUseCase: RateAndReviewUseCase
+    private val rateAndReviewUseCase: RateAndReviewUseCase,
+    private val dataStore: AMobileDataStore
 ) : ViewModel() {
 
     private var _bookingDetailsState = MutableStateFlow<BookingDetailsState>(BookingDetailsState.Idle)
     val bookingDetailsState = _bookingDetailsState.asStateFlow()
+
+     private val _rateReviewState = MutableStateFlow<RateReviewState>(RateReviewState.Idle)
+    val rateReviewState = _rateReviewState.asStateFlow()
 
     fun loadCleaningBooking(bookingId: Int) {
         viewModelScope.launch {
@@ -30,7 +36,9 @@ class BookingDetailsViewModel(
             getCleaningBookingUseCase.invoke(bookingId).collect { response ->
                 when (response) {
                     is UseCaseResult.Success ->
-                        _bookingDetailsState.value = BookingDetailsState.CleaningBookingSuccess(response.data)
+                        _bookingDetailsState.value =
+                            BookingDetailsState.CleaningBookingSuccess(response.data)
+
                     is UseCaseResult.Error ->
                         _bookingDetailsState.value = BookingDetailsState.Error(response.message)
                 }
@@ -44,7 +52,9 @@ class BookingDetailsViewModel(
             getSepticBookingUseCase.invoke(bookingId).collect { response ->
                 when (response) {
                     is UseCaseResult.Success ->
-                        _bookingDetailsState.value = BookingDetailsState.SepticBookingSuccess(response.data)
+                        _bookingDetailsState.value =
+                            BookingDetailsState.SepticBookingSuccess(response.data)
+
                     is UseCaseResult.Error ->
                         _bookingDetailsState.value = BookingDetailsState.Error(response.message)
                 }
@@ -58,7 +68,9 @@ class BookingDetailsViewModel(
             getPestControlBookingUseCase.invoke(bookingId).collect { response ->
                 when (response) {
                     is UseCaseResult.Success ->
-                        _bookingDetailsState.value = BookingDetailsState.PestControlBookingSuccess(response.data)
+                        _bookingDetailsState.value =
+                            BookingDetailsState.PestControlBookingSuccess(response.data)
+
                     is UseCaseResult.Error ->
                         _bookingDetailsState.value = BookingDetailsState.Error(response.message)
                 }
@@ -72,7 +84,9 @@ class BookingDetailsViewModel(
             getToiletBookingUseCase.invoke(bookingId).collect { response ->
                 when (response) {
                     is UseCaseResult.Success ->
-                        _bookingDetailsState.value = BookingDetailsState.ToiletBookingSuccess(response.data)
+                        _bookingDetailsState.value =
+                            BookingDetailsState.ToiletBookingSuccess(response.data)
+
                     is UseCaseResult.Error ->
                         _bookingDetailsState.value = BookingDetailsState.Error(response.message)
                 }
@@ -80,15 +94,32 @@ class BookingDetailsViewModel(
         }
     }
 
-    fun rateAndReview(request: RateAndReviewRequestDto) {
+    fun rateAndReview(
+        serviceType: String,
+        comment: String,
+        rate: Int,
+        bookingId: Int
+    ) {
         viewModelScope.launch {
-            _bookingDetailsState.value = BookingDetailsState.Loading
+            val customerId = dataStore.getUserId().first().toInt()
+            _rateReviewState.value = RateReviewState.Loading
+
+            val request = RateAndReviewRequest(
+                serviceType = serviceType,
+                comment = comment,
+                rate = rate,
+                customerId = customerId,
+                bookingId = bookingId
+            )
+
             rateAndReviewUseCase.invoke(request).collect { response ->
                 when (response) {
                     is UseCaseResult.Success ->
-                        _bookingDetailsState.value = BookingDetailsState.RateReviewSuccess(response.data)
+                        _rateReviewState.value =
+                            RateReviewState.RateReviewSuccess(response.data)
+
                     is UseCaseResult.Error ->
-                        _bookingDetailsState.value = BookingDetailsState.Error(response.message)
+                        _rateReviewState.value = RateReviewState.Error(response.message)
                 }
             }
         }

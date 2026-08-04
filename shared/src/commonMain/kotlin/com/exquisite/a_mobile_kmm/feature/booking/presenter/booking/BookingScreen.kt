@@ -353,8 +353,10 @@ private fun formatStatus(status: String?): String {
 private fun getServiceStatusColor(status: String?): Color {
     return when (status) {
         "AGENT_DEPLOYED" -> Color(0xFF2196F3)
-        "COMPLETED" -> Color(0xFF4CAF50)
-        "PENDING" -> Color(0xFFF09103)
+        "REQUEST_CONFIRMED" -> Color(0xFF4CAF50)
+        "JOB_COMPLETED" -> Color(0xFFF09103)
+        "REQUEST_RECEIVED" -> Color(0xFF4480B1)
+        "REQUEST_PENDING" -> Color(0xFFC946C5)
         "CANCELLED" -> Color(0xFFF44336)
         else -> Color(0xFF9E9E9E)
     }

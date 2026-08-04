@@ -276,18 +276,19 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<Booking> {
                 BookingScreen(
                     toBookingDetails = { customerBooking->
-                        navController.navigate(customerBooking)
+                        navController.navigate(BookingDetails(customerBooking))
                     }
                 )
             }
 
-             composable<BookingDetails>{ backTrack ->
+             composable<BookingDetails> { backTrack ->
                  val data = backTrack.toRoute<BookingDetails>()
                  val customerBooking = decodeObject<CustomerBooking>(data.customerBooking)
-                 BookingDetailsScreen(customerBooking)
+                 BookingDetailsScreen(
+                     customerBooking = customerBooking,
+                     goBack = { navController.popBackStack() }
+                 )
              }
-
-
 
             composable<Cart> {
                 CartScreen(toCheckout = {

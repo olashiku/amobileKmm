@@ -4,7 +4,7 @@ data class PestControlBookingModel(
     val id: Int,
     val preorder: Preorder,
     val address: String,
-    val images: String,
+    val images: List<String>,
     val propertyType: String,
     val isHotFogging: Boolean,
     val serviceDate: String,

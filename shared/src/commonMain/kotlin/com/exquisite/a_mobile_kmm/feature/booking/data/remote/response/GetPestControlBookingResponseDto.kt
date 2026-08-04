@@ -19,7 +19,7 @@ data class PestControlBookingDataDto(
     val id: Int? = null,
     val preorder: PreorderDto? = null,
     val address: String? = null,
-    val images: String? = null,
+    val images: List<String>? = null,
     val propertyType: String? = null,
     val isHotFogging: Boolean? = null,
     val serviceDate: String? = null,
