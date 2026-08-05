@@ -1,4 +1,4 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.response
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.response
 
 import kotlinx.serialization.Serializable
 

@@ -1,7 +1,8 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile
 
 import amobilekmm.shared.generated.resources.Res
-import amobilekmm.shared.generated.resources.avatar_line
+import amobilekmm.shared.generated.resources.logout_icon
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,44 +26,74 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold14
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium12
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold18
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.model.ProfileMenuModel
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.model.getProfileMenuModel
-import org.jetbrains.compose.resources.DrawableResource
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold20
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.ProfileMenuModel
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.getProfileMenuModel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.vectorResource
+import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
+    onMenuItemClick: (String) -> Unit = {},
     modifier: Modifier = Modifier,
-    userName: String = "Alex Johnson",
-    userEmail: String = "alex.johnson@example.com",
-    onMenuItemClick: (ProfileMenuModel) -> Unit = {}
+    viewModel: ProfileViewModel = koinViewModel<ProfileViewModel>(),
+
 ) {
     val menuItems = getProfileMenuModel()
     val accountItems = menuItems.filter { it.title in listOf("Edit Profile", "Password Manager") }
-    val activityItems = menuItems.filter { it.title in listOf("My Order", "My Wallet", "Address Book", "Contact Us") }
+    val activityItems = menuItems.filter {
+        it.title in listOf(
+            "My Order",
+            "My Wallet",
+            "Address Book",
+            "Contact Us"
+        )
+    }
     val logoutItem = menuItems.find { it.isLogOut }
+    var showLogoutBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
+
+    val customerName = viewModel.customerName.collectAsStateWithLifecycle().value
+    val image = viewModel.profilePicture.collectAsStateWithLifecycle().value
+    val customerEmail = viewModel.customerEmail.collectAsStateWithLifecycle().value
+
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -98,25 +129,37 @@ fun ProfileScreen(
                         .border(4.dp, Color.White, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Profile Avatar",
-                        tint = Color(0xFF94A3B8),
-                        modifier = Modifier.size(40.dp)
-                    )
+
+                    if (image.isEmpty()) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile Avatar",
+                            tint = Color(0xFF94A3B8),
+                            modifier = Modifier.size(40.dp)
+                        )
+                    } else {
+                        AsyncImage(
+                            model = image,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // User Info
                 Text(
-                    text = userName,
+                    text = customerName,
                     style = getPoppinsBold18().copy(fontSize = 22.sp),
                     color = Color(0xFF1A1D23)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = userEmail,
+                    text = customerEmail,
                     style = getPoppinsSemiBold14(),
                     color = Color(0xFF717680)
                 )
@@ -131,7 +174,7 @@ fun ProfileScreen(
                     model = item,
                     iconBackgroundColor = if (index == 0) Color(0xFFEEF2FF) else Color(0xFFFFF7ED),
                     iconTintColor = if (index == 0) Color(0xFF4F46E5) else Color(0xFFF97316),
-                    onClick = { onMenuItemClick(item) }
+                    onClick = { onMenuItemClick(item.label) }
                 )
                 if (index < accountItems.size - 1) {
                     HorizontalDivider(color = Color(0xFFF1F5F9), thickness = 1.dp)
@@ -150,7 +193,7 @@ fun ProfileScreen(
                     model = item,
                     iconBackgroundColor = colors.first,
                     iconTintColor = colors.second,
-                    onClick = { onMenuItemClick(item) }
+                    onClick = { onMenuItemClick(item.label) }
                 )
                 if (index < activityItems.size - 1) {
                     HorizontalDivider(color = Color(0xFFF1F5F9), thickness = 1.dp)
@@ -168,7 +211,9 @@ fun ProfileScreen(
                     .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(Color(0xFFFFF1F2))
-                    .clickable { onMenuItemClick(logout) }
+                    .clickable {
+                        showLogoutBottomSheet = true
+                    }
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -188,6 +233,109 @@ fun ProfileScreen(
                         color = Color(0xFFEF4444)
                     )
                 }
+            }
+        }
+    }
+
+    // Logout confirmation bottom sheet
+    if (showLogoutBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showLogoutBottomSheet = false
+            },
+            sheetState = sheetState,
+            containerColor = Color(0xFFFFFFFF),
+            contentColor = Color.White
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Icon
+                Image(
+                    painter = painterResource(Res.drawable.logout_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Title
+                Text(
+                    text = "Logout Confirmation",
+                    style = getPoppinsBold20().copy( fontSize = 22.sp),
+                    color = Color(0xFf000000)
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Description
+                Text(
+                    text = "Are you sure you want to logout?",
+                    style = MaterialTheme.typography.titleMedium,
+                    color =Color(0xFF444447),
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Yes Button
+                Button(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            showLogoutBottomSheet = false
+                            onMenuItemClick("logout")
+                        }
+                    },
+                    shape = RoundedCornerShape(25.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFEF4444)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = "Yes, Logout",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // No Button
+                Button(
+                    onClick = {
+                        scope.launch {
+                            sheetState.hide()
+                            showLogoutBottomSheet = false
+                        }
+                    },
+                    shape = RoundedCornerShape(25.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .border(
+                            width = 1.5.dp,
+                            color = Color(0xFF2D2D2D),
+                            shape = RoundedCornerShape(25.dp)
+                        )
+                ) {
+                    Text(
+                        text = "No, Cancel",
+                        color = Color(0xFF2D2D2D),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

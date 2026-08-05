@@ -1,12 +1,12 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.usecase
 
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.mapper.toProfileResponseModel
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.request.EditProfileRequestDto
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.model.ProfileResponseModel
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.repository.ProfileRepository
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.mapper.toProfileResponseModel
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.request.EditProfileRequestDto
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.ProfileResponseModel
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow

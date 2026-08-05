@@ -83,6 +83,12 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
     }
 
 
+    fun getUserEmail() =  dataStore.data.map { preferences ->
+        preferences[EMAIL_KEY] ?: ""
+    }
+
+
+
 
 
 

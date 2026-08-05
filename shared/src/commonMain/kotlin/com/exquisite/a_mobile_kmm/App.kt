@@ -51,18 +51,21 @@ fun App() {
                             popUpTo(AuthNav) { inclusive = true }
                         }
                     },
-                    startDestination = Splash
+                    startDestination =  authStartDestination ?: Splash
                 )
             }
             composable<DashboardNav> {
                 DashboardNavigation(
                     onLogout = {
                         scope.launch {
-                            // Clear all user data from DataStore
-                            //    dataStore.clearAllData()
+
+
 
                             // Set start destination to Login screen
                             authStartDestination = Login
+
+                            // Clear all user data from DataStore
+                            dataStore.saveHasLoggedIn(false)
 
                             // Navigate back to Auth screen
                             navController.navigate(AuthNav) {

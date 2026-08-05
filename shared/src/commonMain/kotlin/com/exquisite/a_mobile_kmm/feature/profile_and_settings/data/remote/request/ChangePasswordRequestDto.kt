@@ -1,9 +1,9 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.request
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.request
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class EditProfileRequestDto(
+data class ChangePasswordRequestDto(
     val email: String,
     val firstName: String,
     val lastName: String,

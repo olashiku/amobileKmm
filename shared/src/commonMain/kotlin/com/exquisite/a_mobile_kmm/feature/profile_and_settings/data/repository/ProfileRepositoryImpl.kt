@@ -1,10 +1,10 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.repository
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.repository
 
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.safeApiCall
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.request.*
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.response.*
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.repository.ProfileRepository
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.request.*
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.response.*
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.repository.ProfileRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody

@@ -69,11 +69,11 @@ import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletAvail
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.domain.model.ToiletPriceModel
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.construction_mobile_toilet.ConstructionMobileToiletScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.event_toilet_checkout.EventToiletCheckoutScreen
-import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_pricing.MobileToiletPricingScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet.MobileToiletService
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_form_one.MobileToiletEventFormOneScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_form_three.MobileToiletFormThreeScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_toilet_form_two.EventToiletFormTwoScreen
+import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_pricing.MobileToiletPricingScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.onboarding.MobileToiletOnboardingScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
@@ -83,6 +83,7 @@ import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_pr
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_checkout.PestControlResidentialCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form.PestControlResidentialFormScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form_two.ResidentialPestControlFormTwoScreen
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile.ProfileScreen
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticResidentialForm2Model
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticTruckSizeModel
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_commercial_form.SepticCommercialFormScreen
@@ -91,7 +92,6 @@ import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_fo
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_form2.SepticResidentialForm2Screen
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_pricing.SepticResidentialPricingScreen
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_service.SepticServiceScreen
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile.ProfileScreen
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.TrainingCourse
 import com.exquisite.a_mobile_kmm.feature.training.domain.model.TrainingRegistrationModel
 import com.exquisite.a_mobile_kmm.feature.training.presenter.course_details.CourseDetailsScreen
@@ -275,20 +275,20 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<Booking> {
                 BookingScreen(
-                    toBookingDetails = { customerBooking->
+                    toBookingDetails = { customerBooking ->
                         navController.navigate(BookingDetails(customerBooking))
                     }
                 )
             }
 
-             composable<BookingDetails> { backTrack ->
-                 val data = backTrack.toRoute<BookingDetails>()
-                 val customerBooking = decodeObject<CustomerBooking>(data.customerBooking)
-                 BookingDetailsScreen(
-                     customerBooking = customerBooking,
-                     goBack = { navController.popBackStack() }
-                 )
-             }
+            composable<BookingDetails> { backTrack ->
+                val data = backTrack.toRoute<BookingDetails>()
+                val customerBooking = decodeObject<CustomerBooking>(data.customerBooking)
+                BookingDetailsScreen(
+                    customerBooking = customerBooking,
+                    goBack = { navController.popBackStack() }
+                )
+            }
 
             composable<Cart> {
                 CartScreen(toCheckout = {
@@ -350,7 +350,20 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             }
 
             composable<Profile> {
-                ProfileScreen()
+                ProfileScreen({ menuItem ->
+                    when (menuItem) {
+                        "edit_profile" -> {}
+                        "my_order" -> {}
+                        "my_wallet" -> {}
+                        "address_book" -> {}
+                        "contact_us" -> {}
+                        "password_manager" -> {}
+                        "logout" -> {
+                            onLogout.invoke()
+                        }
+
+                    }
+                })
             }
 
             composable<ProductDetails> { backStackEntry ->
@@ -797,25 +810,38 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
 
             composable<MobileToiletFormThree> { backTrack ->
                 val data = backTrack.toRoute<MobileToiletFormThree>()
-                val mobileToiletEventFormOneFormData = decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
+                val mobileToiletEventFormOneFormData =
+                    decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
                 val toiletPriceModel = decodeObject<ToiletPriceModel>(data.toiletPriceModel)
-                val toiletAvailabilityModel = decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
+                val toiletAvailabilityModel =
+                    decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
 
-                MobileToiletFormThreeScreen( goBack = {
+                MobileToiletFormThreeScreen(goBack = {
                     navController.popBackStack()
                 }, goToNextPage = { mobileToiletFormThreeModel ->
-                    navController.navigate(EventToiletCheckout(data.mobileToiletEventFormOneFormData, data.toiletAvailabilityModel, data.toiletPriceModel, mobileToiletFormThreeModel))
+                    navController.navigate(
+                        EventToiletCheckout(
+                            data.mobileToiletEventFormOneFormData,
+                            data.toiletAvailabilityModel,
+                            data.toiletPriceModel,
+                            mobileToiletFormThreeModel
+                        )
+                    )
                 })
             }
 
-            composable<EventToiletCheckout> { backTrack->
+            composable<EventToiletCheckout> { backTrack ->
                 val data = backTrack.toRoute<EventToiletCheckout>()
-                val mobileToiletEventFormOneFormData = decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
+                val mobileToiletEventFormOneFormData =
+                    decodeObject<MobileToiletEventFormOneFormData>(data.mobileToiletEventFormOneFormData)
                 val toiletPriceModel = decodeObject<ToiletPriceModel>(data.toiletPriceModel)
-                val toiletAvailabilityModel = decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
-                val mobileToiletFormThreeModel = decodeObject<MobileToiletFormThreeModel>(data.mobileToiletFormThreeData)
+                val toiletAvailabilityModel =
+                    decodeObject<ToiletAvailabilityModel>(data.toiletAvailabilityModel)
+                val mobileToiletFormThreeModel =
+                    decodeObject<MobileToiletFormThreeModel>(data.mobileToiletFormThreeData)
 
-                EventToiletCheckoutScreen(toiletPriceModel,mobileToiletFormThreeModel,
+                EventToiletCheckoutScreen(
+                    toiletPriceModel, mobileToiletFormThreeModel,
                     backTrack.savedStateHandle,
                     goBack = {
                         navController.popBackStack()

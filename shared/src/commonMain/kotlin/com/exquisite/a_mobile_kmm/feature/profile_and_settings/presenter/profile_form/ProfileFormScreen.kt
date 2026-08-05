@@ -1,4 +1,4 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile_form
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile_form
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState

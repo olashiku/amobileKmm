@@ -1,12 +1,12 @@
-package com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile_form
+package com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile_form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.request.ChangePasswordRequestDto
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.remote.request.EditProfileRequestDto
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.ChangePasswordUseCase
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.EditProfileUseCase
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.request.ChangePasswordRequestDto
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.request.EditProfileRequestDto
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.usecase.ChangePasswordUseCase
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.usecase.EditProfileUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

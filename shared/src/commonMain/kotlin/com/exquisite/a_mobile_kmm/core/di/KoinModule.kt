@@ -134,11 +134,12 @@ import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_commercial_for
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_checkout.SepticResidentialCheckoutViewModel
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_form.SepticResidentialFormViewModel
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_residential_form2.SepticResidentialFormViewModel2
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.data.repository.ProfileRepositoryImpl
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.repository.ProfileRepository
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.ChangePasswordUseCase
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.domain.usecase.EditProfileUseCase
-import com.exquisite.a_mobile_kmm.feature.settings_and_profile.presenter.profile_form.ProfileFormViewModel
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.repository.ProfileRepositoryImpl
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.repository.ProfileRepository
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.usecase.ChangePasswordUseCase
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.usecase.EditProfileUseCase
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile.ProfileViewModel
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile_form.ProfileFormViewModel
 import com.exquisite.a_mobile_kmm.feature.training.data.repository.TrainingRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.training.domain.repository.TrainingRepository
 import com.exquisite.a_mobile_kmm.feature.training.domain.usecase.CompleteEnrollTrainingUseCase
@@ -339,4 +340,5 @@ val sharedModule: Module = module {
     viewModel { TrainingCheckoutViewModel(get(), get(), get(), get()) }
     viewModel { MobileToiletEventFormOneViewModel(get()) }
     viewModel { MobileToiletFormThreeViewModel(get()) }
+    viewModel { ProfileViewModel(get()) }
 }

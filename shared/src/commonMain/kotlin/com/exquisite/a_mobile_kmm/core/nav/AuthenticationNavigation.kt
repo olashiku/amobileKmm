@@ -26,7 +26,7 @@ fun AuthenticationNavigation( goToDashboard: () -> Unit,
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Splash
+        startDestination = startDestination
     ) {
 
         composable<Splash> {
