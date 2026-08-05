@@ -76,6 +76,7 @@ import com.exquisite.dripp.core.components.LoadingDialog
 import com.exquisite.dripp.core.components.rememberSnackBar
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.abs
 
 @Composable
 fun BookingDetailsScreen(
@@ -258,8 +259,14 @@ private fun CleaningBookingDetailsContent(
         else -> Color(0xFF3498DB)
     }
 
-    // Header status color - using searching state
-    val statusColor = Color(0xFF94A3B8)
+    // Header status color based on service status
+    val statusColor = when (customerBooking.serviceStatus) {
+        "REQUEST_PENDING", "REQUEST_RECEIVED" -> Color(0xFF94A3B8) // Gray - Pending
+        "REQUEST_CONFIRMED" -> Color(0xFF3498DB) // Blue - Confirmed
+        "AGENT_DEPLOYED" -> Color(0xFFF09103) // Orange - In Progress
+        "JOB_COMPLETED" -> Color(0xFF10B981) // Green - Completed
+        else -> Color(0xFF94A3B8) // Default gray
+    }
 
     Column(
         modifier = modifier
@@ -334,7 +341,7 @@ private fun CleaningBookingDetailsContent(
                         "Matching you with a trusted pro...",
                     style = getPoppinsMedium12().copy(fontSize = 13.sp),
                     color = Color.White.copy(alpha = 0.9f),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -403,6 +410,11 @@ private fun CleaningBookingDetailsContent(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
+                    // Parse cleaning dates
+                    val datesList = cleaningBooking.cleaningDates.split(",").map { it.trim() }
+                    val startDate = datesList.firstOrNull()?.formatToReadableDate() ?: "N/A"
+                    val endDate = datesList.lastOrNull()?.formatToReadableDate() ?: "N/A"
+
                     // Subscription Summary Grid
                     Column(
                         modifier = Modifier
@@ -429,7 +441,7 @@ private fun CleaningBookingDetailsContent(
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    cleaningBooking.createdAt.formatToReadableDate(),
+                                    startDate,
                                     style = getPoppinsBold14().copy(fontSize = 13.sp),
                                     color = Color(0xFF0F172A)
                                 )
@@ -442,7 +454,7 @@ private fun CleaningBookingDetailsContent(
                                     .background(Color(0xFFE2E8F0))
                             )
 
-                            // Rooms
+                            // End Date
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
@@ -451,7 +463,7 @@ private fun CleaningBookingDetailsContent(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    "ROOMS",
+                                    "END DATE",
                                     style = getPoppinsBold14().copy(
                                         fontSize = 9.sp,
                                         letterSpacing = 0.5.sp
@@ -460,7 +472,7 @@ private fun CleaningBookingDetailsContent(
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    cleaningBooking.numberOfRooms.name,
+                                    endDate,
                                     style = getPoppinsBold14().copy(fontSize = 13.sp),
                                     color = Color(0xFF0F172A)
                                 )
@@ -474,7 +486,7 @@ private fun CleaningBookingDetailsContent(
                                 .background(Color(0xFFE2E8F0))
                         )
 
-                        // Service Type (full width)
+                        // Schedule Info (full width)
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -483,7 +495,7 @@ private fun CleaningBookingDetailsContent(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                "SERVICE TYPE",
+                                "TOTAL SCHEDULE",
                                 style = getPoppinsBold14().copy(
                                     fontSize = 9.sp,
                                     letterSpacing = 0.5.sp
@@ -492,7 +504,7 @@ private fun CleaningBookingDetailsContent(
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                "${cleaningBooking.cleaningType.name} • ${cleaningBooking.region.name}",
+                                "${datesList.size} ${if (datesList.size > 1) "Sessions" else "Session"} • ${cleaningBooking.cleaningTime.formatTime()}",
                                 style = getPoppinsBold14().copy(fontSize = 13.sp),
                                 color = Color(0xFF0F172A)
                             )
@@ -590,6 +602,52 @@ private fun CleaningBookingDetailsContent(
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
+            // 3. Property Photos Card
+            if (cleaningBooking.employeeImages.isNotEmpty()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Text(
+                            "JOB DONE IMAGES",
+                            style = getPoppinsExtraBold12().copy(
+                                fontSize = 10.sp,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = Color(0xFF64748B)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(cleaningBooking.employeeImages) { imageUrl ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(70.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(Color(0xFFF3F3F5))
+                                ) {
+                                    AsyncImage(
+                                        model = imageUrl,
+                                        contentDescription = "Property Photo",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
             // 4. Total Billing Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -665,12 +723,13 @@ private fun DeepCleaningBookingDetailsContent(
     // Primary color for deep cleaning
     val primaryColor = Color(0xFFF29100)
 
-    // Header status color - using success green for completed state
+    // Header status color based on service status
     val statusColor = when (customerBooking.serviceStatus) {
-        "SERVICE_COMPLETED" -> Color(0xFF10B981) // Green
-        "AGENT_DEPLOYED" -> Color(0xFFF29100) // Orange
-        "REQUEST_RECEIVED" -> Color(0xFF94A3B8) // Gray
-        else -> Color(0xFF94A3B8)
+        "REQUEST_PENDING", "REQUEST_RECEIVED" -> Color(0xFF94A3B8) // Gray - Pending
+        "REQUEST_CONFIRMED" -> Color(0xFF8B5CF6) // Purple - Confirmed (Deep Cleaning)
+        "AGENT_DEPLOYED" -> Color(0xFFF29100) // Orange - In Progress
+        "JOB_COMPLETED" -> Color(0xFF10B981) // Green - Completed
+        else -> Color(0xFF94A3B8) // Default gray
     }
 
     Column(
@@ -726,9 +785,11 @@ private fun DeepCleaningBookingDetailsContent(
 
                 Text(
                     when (customerBooking.serviceStatus) {
-                        "SERVICE_COMPLETED" -> "Job Completed!"
+                        "REQUEST_PENDING", "REQUEST_RECEIVED" -> "Request Received"
+                        "REQUEST_CONFIRMED" -> "Request Confirmed"
                         "AGENT_DEPLOYED" -> "In Progress"
-                        else -> "Request Confirmed"
+                        "JOB_COMPLETED" -> "Job Completed!"
+                        else -> "Request Received"
                     },
                     style = getPoppinsBold18(),
                     color = Color.White
@@ -739,8 +800,10 @@ private fun DeepCleaningBookingDetailsContent(
                 customerBooking.assignedAgent?.let { agent ->
                     Text(
                         when (customerBooking.serviceStatus) {
-                            "SERVICE_COMPLETED" -> "${agent.firstName} ${agent.lastName} finished the service"
+                            "REQUEST_PENDING", "REQUEST_RECEIVED" -> "Finding your cleaning specialist"
+                            "REQUEST_CONFIRMED" -> "Agent assigned to your booking"
                             "AGENT_DEPLOYED" -> "${agent.firstName} ${agent.lastName} is on the way"
+                            "JOB_COMPLETED" -> "${agent.firstName} ${agent.lastName} finished the service"
                             else -> "Finding your cleaning specialist"
                         },
                         style = getPoppinsMedium12().copy(fontSize = 13.sp),
@@ -855,6 +918,10 @@ private fun DeepCleaningBookingDetailsContent(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
+                    // Parse cleaning dates
+                    val datesList = cleaningBooking.cleaningDates.split(",").map { it.trim() }
+                    val cleaningDate = datesList.firstOrNull()?.formatToReadableDate() ?: "N/A"
+
                     // Schedule Display
                     Box(
                         modifier = Modifier
@@ -872,7 +939,7 @@ private fun DeepCleaningBookingDetailsContent(
 
                             Column {
                                 Text(
-                                    cleaningBooking.createdAt.formatToReadableDate(),
+                                    "$cleaningDate • ${cleaningBooking.cleaningTime.formatTime()}",
                                     style = getPoppinsBold14().copy(fontSize = 13.sp),
                                     color = Color(0xFF0F172A)
                                 )
@@ -914,6 +981,52 @@ private fun DeepCleaningBookingDetailsContent(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             items(cleaningBooking.customerImages) { imageUrl ->
+                                Box(
+                                    modifier = Modifier
+                                        .size(75.dp)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(10.dp))
+                                        .background(Color(0xFFF3F3F5))
+                                ) {
+                                    AsyncImage(
+                                        model = imageUrl,
+                                        contentDescription = "Property Photo",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // 3. Customer Images Card
+            if (cleaningBooking.employeeImages.isNotEmpty()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Text(
+                            "PROPERTY PHOTOS (${cleaningBooking.customerImages.size})",
+                            style = getPoppinsBold14().copy(
+                                fontSize = 10.sp,
+                                letterSpacing = 0.5.sp
+                            ),
+                            color = Color(0xFF64748B)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(cleaningBooking.employeeImages) { imageUrl ->
                                 Box(
                                     modifier = Modifier
                                         .size(75.dp)
@@ -1007,7 +1120,14 @@ private fun ToiletBookingDetailsContent(
     goBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorsPalette = LocalColorsPalette.current
+    // Determine status color based on service status
+    val statusColor = when (customerBooking.serviceStatus) {
+        "REQUEST_PENDING", "REQUEST_RECEIVED" -> Color(0xFF94A3B8) // Gray - Pending
+        "REQUEST_CONFIRMED" -> Color(0xFF3498DB) // Blue - Confirmed
+        "AGENT_DEPLOYED" -> Color(0xFFF09103) // Orange - In Progress
+        "JOB_COMPLETED" -> Color(0xFF10B981) // Green - Completed
+        else -> Color(0xFF94A3B8) // Default gray
+    }
 
     Column(
         modifier = modifier
@@ -1018,7 +1138,7 @@ private fun ToiletBookingDetailsContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0XFFF09103))
+                .background(statusColor)
                 .padding(vertical = 25.dp, horizontal = 20.dp)
         ) {
             // Back button
@@ -1108,8 +1228,15 @@ private fun ToiletBookingDetailsContent(
                 )
                 StatusBadge(
                     label = "Service",
-                    value = customerBooking.serviceStatus ?: "Pending",
-                    color = colorsPalette.captionColor,
+                    value = when (customerBooking.serviceStatus) {
+                        "REQUEST_PENDING" -> "Pending"
+                        "REQUEST_RECEIVED" -> "Received"
+                        "REQUEST_CONFIRMED" -> "Confirmed"
+                        "AGENT_DEPLOYED" -> "In Progress"
+                        "JOB_COMPLETED" -> "Completed"
+                        else -> customerBooking.serviceStatus ?: "Pending"
+                    },
+                    color = statusColor,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -1269,13 +1396,8 @@ private fun ToiletBookingDetailsContent(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 PriceRow(
-                    "Overnight Fee",
-                    "₦${toiletBooking.toiletEstimate.overnight.formatBalance()}"
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                PriceRow(
-                    "Discount Given",
-                    "₦${toiletBooking.toiletEstimate.discountGiven.formatBalance()}",
+                    "Tax(0.75%)",
+                    "₦${abs(toiletBooking.toiletEstimate.totalAmount - (customerBooking.amountPaid ?: 0.0)).formatBalance()}",
                     Color(0xFF27AE60)
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -1309,20 +1431,19 @@ private fun SepticBookingDetailsContent(
     goBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorsPalette = LocalColorsPalette.current
-
     // Determine status color based on service status
     val statusColor = when (customerBooking.serviceStatus) {
-        "REQUEST_RECEIVED" -> Color(0xFF64748B) // Pending gray
-        "AGENT_DEPLOYED" -> Color(0xFFF09103) // Assigned orange
-        "SERVICE_COMPLETED" -> Color(0xFF10B981) // Completed green
-        else -> colorsPalette.captionColor
+        "REQUEST_PENDING", "REQUEST_RECEIVED" -> Color(0xFF64748B) // Gray - Pending
+        "REQUEST_CONFIRMED" -> Color(0xFF3498DB) // Blue - Confirmed
+        "AGENT_DEPLOYED" -> Color(0xFFF09103) // Orange - In Progress
+        "JOB_COMPLETED" -> Color(0xFF10B981) // Green - Completed
+        else -> Color(0xFF64748B) // Default gray
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF9FAFB))
+            .background(Color(0xFFFFFFF))
     ) {
         // Hero Header
         Box(
@@ -1416,9 +1537,11 @@ private fun SepticBookingDetailsContent(
                 StatusBadge(
                     label = "Service",
                     value = when (customerBooking.serviceStatus) {
+                        "REQUEST_PENDING" -> "Pending"
                         "REQUEST_RECEIVED" -> "Received"
-                        "AGENT_DEPLOYED" -> "Assigned"
-                        "SERVICE_COMPLETED" -> "Completed"
+                        "REQUEST_CONFIRMED" -> "Confirmed"
+                        "AGENT_DEPLOYED" -> "In Progress"
+                        "JOB_COMPLETED" -> "Completed"
                         else -> customerBooking.serviceStatus ?: "Pending"
                     },
                     color = statusColor,
@@ -1472,7 +1595,7 @@ private fun SepticBookingDetailsContent(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            "₦${septicBooking.amount.formatBalance()}",
+                            "₦${customerBooking.amountPaid?.formatBalance()}",
                             style = getPoppinsBold18().copy(fontSize = 22.sp),
                             color = statusColor
                         )
@@ -1545,14 +1668,13 @@ private fun PestControlBookingDetailsContent(
     goBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorsPalette = LocalColorsPalette.current
-
     // Determine status color based on service status
     val statusColor = when (customerBooking.serviceStatus) {
-        "REQUEST_RECEIVED" -> Color(0xFF64748B) // Pending gray
-        "AGENT_DEPLOYED" -> Color(0xFFF29100) // Assigned orange
-        "SERVICE_COMPLETED" -> Color(0xFF10B981) // Completed green
-        else -> colorsPalette.captionColor
+        "REQUEST_PENDING", "REQUEST_RECEIVED" -> Color(0xFF64748B) // Gray - Pending
+        "REQUEST_CONFIRMED" -> Color(0xFF3498DB) // Blue - Confirmed
+        "AGENT_DEPLOYED" -> Color(0xFFF29100) // Orange - In Progress
+        "JOB_COMPLETED" -> Color(0xFF10B981) // Green - Completed
+        else -> Color(0xFF64748B) // Default gray
     }
 
     Column(
@@ -1907,28 +2029,89 @@ private fun PestControlBookingDetailsContent(
                             color = Color(0xFF64748B)
                         )
                         Text(
-                            "₦${pestControlBooking.preorder.service.basePrice.formatBalance()}",
+                            "₦${pestControlBooking.preorder.amount.formatBalance()}",
                             style = getPoppinsSemiBold14().copy(fontSize = 13.sp),
                             color = Color(0xFF64748B)
                         )
                     }
 
+                    if(pestControlBooking.isHotFogging){
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Base Service Fee
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                "Hot Fogging Fee",
+                                style = getPoppinsMedium12().copy(fontSize = 13.sp),
+                                color = Color(0xFF64748B)
+                            )
+                            Text(
+                                "₦${30000.00.formatBalance()}",
+                                style = getPoppinsSemiBold14().copy(fontSize = 13.sp),
+                                color = Color(0xFF64748B)
+                            )
+                        }
+                    }
+
+                    if(pestControlBooking.customerOwnVehicle && pestControlBooking.preorder.service.serviceName.equals("Bed Bug Control") ){
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Base Service Fee
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                "Bed Bug Control Fee(${pestControlBooking.numberOfVehicles} Vehicles)",
+                                style = getPoppinsMedium12().copy(fontSize = 13.sp),
+                                color = Color(0xFF64748B)
+                            )
+                            Text(
+                                "₦${(pestControlBooking.numberOfVehicles * 30000.00).formatBalance()}",
+                                style = getPoppinsSemiBold14().copy(fontSize = 13.sp),
+                                color = Color(0xFF64748B)
+                            )
+                        }
+                    }
+
+                    if(pestControlBooking.customerOwnVehicle && pestControlBooking.preorder.service.serviceName.equals("Tick Control") ){
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Base Service Fee
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                "Tick Control Fee(${pestControlBooking.numberOfVehicles} Vehicles)",
+                                style = getPoppinsMedium12().copy(fontSize = 13.sp),
+                                color = Color(0xFF64748B)
+                            )
+                            Text(
+                                "₦${(pestControlBooking.numberOfVehicles * 12500.00).formatBalance()}",
+                                style = getPoppinsSemiBold14().copy(fontSize = 13.sp),
+                                color = Color(0xFF64748B)
+                            )
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Add-ons & Tax
-                    val addOnsFee =
-                        pestControlBooking.preorder.amount - pestControlBooking.preorder.service.basePrice
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            "Add-ons & Tax",
+                            "Tax (0.75%)",
                             style = getPoppinsMedium12().copy(fontSize = 13.sp),
                             color = Color(0xFF64748B)
                         )
                         Text(
-                            "₦${addOnsFee.formatBalance()}",
+                            "₦${((pestControlBooking.preorder.amount+30000) * 0.075).formatBalance()}",
                             style = getPoppinsSemiBold14().copy(fontSize = 13.sp),
                             color = Color(0xFF64748B)
                         )
@@ -1953,7 +2136,7 @@ private fun PestControlBookingDetailsContent(
                             color = Color(0xFF10B981)
                         )
                         Text(
-                            "₦${pestControlBooking.preorder.amount.formatBalance()}",
+                            "₦${customerBooking.amountPaid?.formatBalance()}",
                             style = getPoppinsBold18(),
                             color = Color(0xFF0F172A)
                         )

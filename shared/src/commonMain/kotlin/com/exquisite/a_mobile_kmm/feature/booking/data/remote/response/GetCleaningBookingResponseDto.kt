@@ -25,6 +25,8 @@ data class CleaningBookingDataDto(
     val amount: Double? = null,
     val address: String? = null,
     val serviceType: String? = null,
+    val cleaningDates:String? = null,
+    val cleaningTime:String? = null,
     val customerImages: List<String>? = null,
     val employeeImages: List<String>? = null,
     val assignedAgent: AssignedAgentDto? = null,

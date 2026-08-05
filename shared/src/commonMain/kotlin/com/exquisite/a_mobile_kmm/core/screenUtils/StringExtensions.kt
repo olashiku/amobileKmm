@@ -22,13 +22,20 @@ fun String.getInitials(): String =
 
 fun String.formatToReadableDate(): String {
     return try {
-        // Try parsing as ISO 8601 timestamp first (e.g., "2025-12-17T13:17:22.095Z")
-        val date = try {
-            val instant = Instant.parse(this)
-            instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-        } catch (e: Exception) {
-            // If that fails, try parsing as date-only format (e.g., "2025-12-17")
-            LocalDate.parse(this)
+        val date = when {
+            // Handle ISO 8601 with timezone (e.g., "2025-12-17T13:17:22.095Z")
+            this.contains("Z") || this.contains("+") -> {
+                val instant = Instant.parse(this)
+                instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            }
+            // Handle datetime without timezone (e.g., "2026-08-10T10:00" or "2026-08-10T10:00:00")
+            this.contains("T") -> {
+                // Extract just the date part before 'T'
+                val datePart = this.substringBefore("T")
+                LocalDate.parse(datePart)
+            }
+            // Handle date-only format (e.g., "2025-12-17")
+            else -> LocalDate.parse(this)
         }
 
         val format = LocalDate.Format {

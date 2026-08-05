@@ -10,6 +10,8 @@ data class CleaningBookingModel(
     val amount: Double,
     val address: String,
     val serviceType: String,
+    val cleaningDates:String,
+    val cleaningTime:String,
     val customerImages: List<String>,
     val employeeImages: List<String>,
     val paymentStatus: String,

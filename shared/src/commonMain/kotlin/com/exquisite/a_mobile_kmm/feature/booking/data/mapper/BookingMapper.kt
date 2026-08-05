@@ -1,8 +1,43 @@
 package com.exquisite.a_mobile_kmm.feature.booking.data.mapper
 
 import com.exquisite.a_mobile_kmm.feature.booking.data.remote.request.RateAndReviewRequestDto
-import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.*
-import com.exquisite.a_mobile_kmm.feature.booking.domain.model.*
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.ApartmentTypeDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.AssignedAgentDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.CleaningBookingDataDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.CleaningTypeDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.CustomerBookingDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.GetCleaningBookingResponseDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.GetCustomerBookingsResponseDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.GetPestControlBookingResponseDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.GetSepticBookingResponseDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.GetToiletBookingResponseDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.LocationDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.NumberOfRoomsDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.PestControlBookingDataDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.PreorderDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.RateAndReviewResponseDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.RegionDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.SepticBookingDataDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.ServiceDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.ToiletBookingDataDto
+import com.exquisite.a_mobile_kmm.feature.booking.data.remote.response.ToiletEstimateDto
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.ApartmentType
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.AssignedAgent
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.CleaningBookingModel
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.CleaningType
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.CustomerBooking
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.CustomerBookingsModel
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.Location
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.NumberOfRooms
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.PestControlBookingModel
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.Preorder
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.RateAndReviewRequest
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.RateReviewModel
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.Region
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.SepticBookingModel
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.Service
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.ToiletBookingModel
+import com.exquisite.a_mobile_kmm.feature.booking.domain.model.ToiletEstimate
 
 /**
  * Maps GetCustomerBookingsResponseDto to CustomerBookingsModel
@@ -18,7 +53,8 @@ fun GetCustomerBookingsResponseDto.toCustomerBookingsModel(): CustomerBookingsMo
 
 fun CustomerBookingDto.toDomainModel(): CustomerBooking? {
     return if (id != null && bookingType != null && bookingDescription != null &&
-        bookingId != null && createdAt != null && updatedAt != null) {
+        bookingId != null && createdAt != null && updatedAt != null
+    ) {
         CustomerBooking(
             id = id,
             bookingType = bookingType,
@@ -39,7 +75,8 @@ fun CustomerBookingDto.toDomainModel(): CustomerBooking? {
 fun AssignedAgentDto.toDomainModel(): AssignedAgent? {
     return if (id != null && firstName != null && lastName != null &&
         email != null && phone != null && isActive != null &&
-        createdAt != null && updatedAt != null) {
+        createdAt != null && updatedAt != null
+    ) {
         AssignedAgent(
             id = id,
             firstName = firstName,
@@ -66,44 +103,46 @@ fun GetCleaningBookingResponseDto.toCleaningBookingModel(): CleaningBookingModel
 
 fun CleaningBookingDataDto.toDomainModel(): CleaningBookingModel {
     return CleaningBookingModel(
-            id = id?:0,
-            region = region?.toDomainModel()?:Region(),
-            location = location?.toDomainModel()?:Location(),
-            apartmentType = apartmentType?.toDomainModel()?:ApartmentType(),
-            cleaningType =  cleaningType?.toDomainModel()?:CleaningType(),
-            numberOfRooms =  numberOfRooms?.toDomainModel()?:NumberOfRooms() ,
-            amount = amount?:0.0,
-            address = address?:"",
-            serviceType = serviceType?:"",
-            customerImages = customerImages ?: emptyList(),
-            employeeImages = employeeImages ?: emptyList(),
-            paymentStatus = paymentStatus ?: "",
-            serviceStatus = serviceStatus ?: "",
-            createdAt = createdAt?:"",
-            updatedAt = updatedAt?:""
-        )
+        id = id ?: 0,
+        region = region?.toDomainModel() ?: Region(),
+        location = location?.toDomainModel() ?: Location(),
+        apartmentType = apartmentType?.toDomainModel() ?: ApartmentType(),
+        cleaningType = cleaningType?.toDomainModel() ?: CleaningType(),
+        numberOfRooms = numberOfRooms?.toDomainModel() ?: NumberOfRooms(),
+        amount = amount ?: 0.0,
+        address = address ?: "",
+        serviceType = serviceType ?: "",
+        cleaningDates = cleaningDates ?: "",
+        cleaningTime = cleaningTime ?: "",
+        customerImages = customerImages ?: emptyList(),
+        employeeImages = employeeImages ?: emptyList(),
+        paymentStatus = paymentStatus ?: "",
+        serviceStatus = serviceStatus ?: "",
+        createdAt = createdAt ?: "",
+        updatedAt = updatedAt ?: ""
+    )
 
 
 }
 
 fun RegionDto.toDomainModel(): Region {
-    return  Region(id = id?:0, name = name?:"")
+    return Region(id = id ?: 0, name = name ?: "")
 }
 
 fun LocationDto.toDomainModel(): Location {
-    return Location(id = id?:0, name = name?:"")
+    return Location(id = id ?: 0, name = name ?: "")
 }
 
 fun ApartmentTypeDto.toDomainModel(): ApartmentType {
-    return  ApartmentType(name = name?:"", id = id?:0)
+    return ApartmentType(name = name ?: "", id = id ?: 0)
 }
 
 fun CleaningTypeDto.toDomainModel(): CleaningType {
-    return  CleaningType(id = id?:0, name = name?:"")
+    return CleaningType(id = id ?: 0, name = name ?: "")
 }
 
 fun NumberOfRoomsDto.toDomainModel(): NumberOfRooms {
-    return   NumberOfRooms(id = id?:0, name = name?:"")
+    return NumberOfRooms(id = id ?: 0, name = name ?: "")
 }
 
 /**
@@ -118,7 +157,8 @@ fun SepticBookingDataDto.toDomainModel(): SepticBookingModel? {
     return if (id != null && fullName != null && phoneNo != null && email != null &&
         address != null && dateOfExcavation != null && timeOfExcavation != null &&
         specialNote != null && liter != null && amount != null && paymentStatus != null &&
-        serviceStatus != null && createdAt != null && updatedAt != null) {
+        serviceStatus != null && createdAt != null && updatedAt != null
+    ) {
         SepticBookingModel(
             id = id,
             fullName = fullName,
@@ -153,7 +193,8 @@ fun PestControlBookingDataDto.toDomainModel(): PestControlBookingModel? {
         propertyType != null && isHotFogging != null && serviceDate != null &&
         inspectionDate != null && serviceTime != null && inspectionTime != null &&
         customerOwnVehicle != null && numberOfVehicles != null && extraNote != null &&
-        paymentStatus != null && created_at != null && updated_at != null && serviceStatus != null) {
+        paymentStatus != null && created_at != null && updated_at != null && serviceStatus != null
+    ) {
 
         val domainPreorder = preorder.toDomainModel() ?: return null
 
@@ -183,7 +224,8 @@ fun PestControlBookingDataDto.toDomainModel(): PestControlBookingModel? {
 
 fun PreorderDto.toDomainModel(): Preorder? {
     return if (id != null && numberOfRooms != null && service != null && customerId != null &&
-        uniqueRef != null && amount != null && created_at != null && updated_at != null) {
+        uniqueRef != null && amount != null && created_at != null && updated_at != null
+    ) {
 
         val domainService = service.toDomainModel() ?: return null
 
@@ -204,7 +246,8 @@ fun PreorderDto.toDomainModel(): Preorder? {
 
 fun ServiceDto.toDomainModel(): Service? {
     return if (id != null && serviceName != null && basePrice != null &&
-        created_at != null && updated_at != null) {
+        created_at != null && updated_at != null
+    ) {
         Service(
             id = id,
             serviceName = serviceName,
@@ -234,7 +277,8 @@ fun ToiletBookingDataDto.toDomainModel(): ToiletBookingModel? {
         finishingDate != null && pictureOfEventLocation != null && pictureOfToiletPlacement != null &&
         typeOfEvent != null && extraNote != null && address != null && contactPersonEmail != null &&
         contactPersonName != null && paymentStatus != null && serviceStatus != null &&
-        createdAt != null && updatedAt != null) {
+        createdAt != null && updatedAt != null
+    ) {
 
         val domainToiletEstimate = toiletEstimate.toDomainModel() ?: return null
 
@@ -277,7 +321,8 @@ fun ToiletEstimateDto.toDomainModel(): ToiletEstimate? {
         eventEndTIme != null && numberOfDays != null && discountGiven != null &&
         overnight != null && totalNumberOfGuests != null && totalAmount != null &&
         recommendedNumberOfStandardToilets != null && recommendedNumberOfVipToilets != null &&
-        uniqueRef != null) {
+        uniqueRef != null
+    ) {
         ToiletEstimate(
             id = id,
             minimumNumberOfGuest = minimumNumberOfGuest,
