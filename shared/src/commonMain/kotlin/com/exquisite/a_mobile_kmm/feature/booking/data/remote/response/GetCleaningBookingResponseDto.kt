@@ -48,8 +48,8 @@ data class LocationDto(
 
 @Serializable
 data class ApartmentTypeDto(
-    val name: String? = null,
-    val id: Int? = null
+    val name: String = "",
+    val id: Int = 0
 )
 
 @Serializable

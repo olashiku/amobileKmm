@@ -64,77 +64,46 @@ fun GetCleaningBookingResponseDto.toCleaningBookingModel(): CleaningBookingModel
     return bookingData.toDomainModel()
 }
 
-fun CleaningBookingDataDto.toDomainModel(): CleaningBookingModel? {
-    return if (id != null && region != null && location != null && apartmentType != null &&
-        cleaningType != null && numberOfRooms != null && amount != null && address != null &&
-        serviceType != null && createdAt != null && updatedAt != null) {
-
-        val domainRegion = region.toDomainModel() ?: return null
-        val domainLocation = location.toDomainModel() ?: return null
-        val domainApartmentType = apartmentType.toDomainModel() ?: return null
-        val domainCleaningType = cleaningType.toDomainModel() ?: return null
-        val domainNumberOfRooms = numberOfRooms.toDomainModel() ?: return null
-
-        CleaningBookingModel(
-            id = id,
-            region = domainRegion,
-            location = domainLocation,
-            apartmentType = domainApartmentType,
-            cleaningType = domainCleaningType,
-            numberOfRooms = domainNumberOfRooms,
-            amount = amount,
-            address = address,
-            serviceType = serviceType,
+fun CleaningBookingDataDto.toDomainModel(): CleaningBookingModel {
+    return CleaningBookingModel(
+            id = id?:0,
+            region = region?.toDomainModel()?:Region(),
+            location = location?.toDomainModel()?:Location(),
+            apartmentType = apartmentType?.toDomainModel()?:ApartmentType(),
+            cleaningType =  cleaningType?.toDomainModel()?:CleaningType(),
+            numberOfRooms =  numberOfRooms?.toDomainModel()?:NumberOfRooms() ,
+            amount = amount?:0.0,
+            address = address?:"",
+            serviceType = serviceType?:"",
             customerImages = customerImages ?: emptyList(),
             employeeImages = employeeImages ?: emptyList(),
             paymentStatus = paymentStatus ?: "",
             serviceStatus = serviceStatus ?: "",
-            createdAt = createdAt,
-            updatedAt = updatedAt
+            createdAt = createdAt?:"",
+            updatedAt = updatedAt?:""
         )
-    } else {
-        null
-    }
+
+
 }
 
-fun RegionDto.toDomainModel(): Region? {
-    return if (id != null && name != null) {
-        Region(id = id, name = name)
-    } else {
-        null
-    }
+fun RegionDto.toDomainModel(): Region {
+    return  Region(id = id?:0, name = name?:"")
 }
 
-fun LocationDto.toDomainModel(): Location? {
-    return if (id != null && name != null) {
-        Location(id = id, name = name)
-    } else {
-        null
-    }
+fun LocationDto.toDomainModel(): Location {
+    return Location(id = id?:0, name = name?:"")
 }
 
-fun ApartmentTypeDto.toDomainModel(): ApartmentType? {
-    return if (name != null && id != null) {
-        ApartmentType(name = name, id = id)
-    } else {
-        null
-    }
+fun ApartmentTypeDto.toDomainModel(): ApartmentType {
+    return  ApartmentType(name = name?:"", id = id?:0)
 }
 
-fun CleaningTypeDto.toDomainModel(): CleaningType? {
-    return if (id != null && name != null) {
-        CleaningType(id = id, name = name)
-    } else {
-        null
-    }
+fun CleaningTypeDto.toDomainModel(): CleaningType {
+    return  CleaningType(id = id?:0, name = name?:"")
 }
 
-fun NumberOfRoomsDto.toDomainModel(): NumberOfRooms? {
-    return if (id != null && name != null) {
-        NumberOfRooms(id = id, name = name)
-    } else {
-        null
-    }
+fun NumberOfRoomsDto.toDomainModel(): NumberOfRooms {
+    return   NumberOfRooms(id = id?:0, name = name?:"")
 }
 
 /**

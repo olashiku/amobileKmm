@@ -19,26 +19,26 @@ data class CleaningBookingModel(
 )
 
 data class Region(
-    val id: Int,
-    val name: String
+    val id: Int =0,
+    val name: String =""
 )
 
 data class Location(
-    val id: Int,
-    val name: String
+    val id: Int =0,
+    val name: String =""
 )
 
 data class ApartmentType(
-    val name: String,
-    val id: Int
+    val name: String = "",
+    val id: Int = 0
 )
 
 data class CleaningType(
-    val id: Int,
-    val name: String
+    val id: Int = 0,
+    val name: String = ""
 )
 
 data class NumberOfRooms(
-    val id: Int,
-    val name: String
+    val id: Int = 0,
+    val name: String = ""
 )
