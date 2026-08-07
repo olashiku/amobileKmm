@@ -29,6 +29,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,13 +58,27 @@ import com.exquisite.a_mobile_kmm.feature.order.domain.model.OrderDetail
 
 @Composable
 fun OrderDetailsScreen(
-    order: CustomerOrder? = null,  // Make nullable for now, can be passed from navigation
+    orderId: Int = -1,
+    order: CustomerOrder? = null,  // For backwards compatibility
     onBackClick: (() -> Unit)? = null,
-    onTrackShipment: ((String) -> Unit)? = null,
+    viewModel: com.exquisite.a_mobile_kmm.feature.order.presenter.order_listing.OrderListingViewModel = org.koin.compose.viewmodel.koinViewModel(),
     modifier: Modifier = Modifier
 ) {
-    // Sample data for demonstration (replace with actual order when passed)
-    val sampleOrder = order ?: createSampleOrder()
+    println("OrderDetailsScreen: orderId=$orderId")
+
+    // Get orders from viewModel and find the specific order by ID
+    val orderListingState by viewModel.orderListingState.collectAsState()
+
+    val sampleOrder = when {
+        order != null -> order
+        orderId != -1 && orderListingState is com.exquisite.a_mobile_kmm.feature.order.presenter.order_listing.OrderListingState.Success -> {
+            val orders = (orderListingState as com.exquisite.a_mobile_kmm.feature.order.presenter.order_listing.OrderListingState.Success).data.orders
+            orders.find { it.order.id == orderId } ?: createSampleOrder()
+        }
+        else -> createSampleOrder()
+    }
+
+    println("OrderDetailsScreen: Order loaded successfully")
 
     Box(
         modifier = modifier
@@ -149,8 +165,9 @@ fun OrderDetailsScreen(
                 // Track Button
                 Button(
                     onClick = {
-                        sampleOrder.shipping?.trackingUrl?.let {
-                            onTrackShipment?.invoke(it)
+                        sampleOrder.shipping?.trackingUrl?.let { trackingUrl ->
+                            // Open in system browser instead of WebView
+                            com.exquisite.a_mobile_kmm.core.utils.openInBrowser(trackingUrl)
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -215,6 +232,8 @@ private fun OrderInfoCard(order: CustomerOrder) {
 
 @Composable
 private fun OrderItemsCard(order: CustomerOrder) {
+    println("OrderItemsCard: Rendering ${order.orderDetails.size} items")
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -224,13 +243,17 @@ private fun OrderItemsCard(order: CustomerOrder) {
             .padding(16.dp)
     ) {
         // Items List
+        println("OrderItemsCard: About to render items list")
         order.orderDetails.forEachIndexed { index, orderDetail ->
+            println("OrderItemsCard: Rendering item $index")
             OrderItemRow(orderDetail = orderDetail)
 
             if (index < order.orderDetails.size - 1) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
+
+        println("OrderItemsCard: Items rendered, now rendering summary")
 
         // Summary Table
         Column(
@@ -256,7 +279,7 @@ private fun OrderItemsCard(order: CustomerOrder) {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Shipping (calculated as difference if totalAmount exists)
-            val shipping = (order.order.totalAmount ?: order.order.amount) - order.order.amount - order.order.taxAmount
+            val shipping = kotlin.math.max(0.0, (order.order.totalAmount ?: order.order.amount) - order.order.amount - order.order.taxAmount)
             SummaryRow(
                 label = "Shipping",
                 value = "₦${shipping.formatBalance()}"
@@ -304,20 +327,42 @@ private fun OrderItemsCard(order: CustomerOrder) {
 
 @Composable
 private fun OrderItemRow(orderDetail: OrderDetail) {
+    println("OrderItemRow: Rendering item ${orderDetail.product.name}")
+
+    // Safe price calculation outside composable
+    val totalPrice = try {
+        (orderDetail.quantity * orderDetail.amount).formatBalance()
+    } catch (e: Exception) {
+        println("OrderItemRow: Error formatting price: ${e.message}")
+        "0.00"
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Product Image
-        AsyncImage(
-            model = orderDetail.product.coverImageUrl,
-            contentDescription = orderDetail.product.name,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(50.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFF1F1F1))
-        )
+        // Product Image - with error handling
+        if (orderDetail.product.coverImageUrl.isNotBlank()) {
+            AsyncImage(
+                model = orderDetail.product.coverImageUrl,
+                contentDescription = orderDetail.product.name,
+                contentScale = ContentScale.Crop,
+                onError = {
+                    println("OrderItemRow: Error loading image for ${orderDetail.product.name}")
+                },
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF1F1F1))
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF1F1F1))
+            )
+        }
 
         // Item Details
         Column(
@@ -340,7 +385,7 @@ private fun OrderItemRow(orderDetail: OrderDetail) {
 
         // Price
         Text(
-            text = "₦${( orderDetail.quantity *orderDetail.amount).formatBalance()}",
+            text = "₦$totalPrice",
             style = getPoppinsBold13(),
             color = Color(0xFF1E293B)
         )
@@ -403,7 +448,7 @@ private fun ShippingCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = order.shipping.trackingUrl?.split("/")?.last()?:"",
+                        text = order.shipping.trackingUrl?.split("/")?.lastOrNull() ?: "",
                         style = getPoppinsBold13().copy(
                             fontFamily = FontFamily.Monospace
                         ),

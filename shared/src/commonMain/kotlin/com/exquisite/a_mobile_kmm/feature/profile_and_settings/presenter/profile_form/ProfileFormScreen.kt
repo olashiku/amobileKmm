@@ -1,5 +1,8 @@
 package com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile_form
 
+import amobilekmm.shared.generated.resources.Res
+import amobilekmm.shared.generated.resources.success_icon
+import amobilekmm.shared.generated.resources.warning_icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,16 +55,27 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.exquisite.a_mobile_kmm.core.camera.rememberCameraLauncher
 import com.exquisite.a_mobile_kmm.core.screenUtils.FieldValidator
 import com.exquisite.a_mobile_kmm.core.screenUtils.ValidationHelper
+import com.exquisite.a_mobile_kmm.core.screenUtils.generateImageFileName
+import com.exquisite.a_mobile_kmm.core.screen_components.GenericAlertModal
+import com.exquisite.a_mobile_kmm.core.screen_components.MediaSourceDialog
+import com.exquisite.a_mobile_kmm.core.screen_components.ModalButton
+import com.exquisite.a_mobile_kmm.core.screen_components.ModalType
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.screen_components.ValidatedTextField
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold20
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium13
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold13
+import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.ImageUploadState
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.EditProfileRequest
+import com.exquisite.dripp.core.components.LoadingDialog
+import com.preat.peekaboo.image.picker.SelectionMode
+import com.preat.peekaboo.image.picker.rememberImagePickerLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,6 +86,7 @@ fun ProfileFormScreen(
 ) {
     val state by viewModel.profileFormState.collectAsState()
     val userData by viewModel.userData.collectAsState()
+    val imageUploadState = viewModel.imageUploadState.collectAsStateWithLifecycle()
 
     // Form state
     var firstName by remember { mutableStateOf("") }
@@ -81,6 +97,10 @@ fun ProfileFormScreen(
     var profilePicture by remember { mutableStateOf("") }
     var countryCode by remember { mutableStateOf("+234") }
     var expandedCountryCode by remember { mutableStateOf(false) }
+
+    var showSuccessModal by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+    var imageUploadError by remember { mutableStateOf<String?>(null) }
 
     val countryCodes = listOf("+234", "+1", "+44", "+91", "+254")
 
@@ -97,6 +117,49 @@ fun ProfileFormScreen(
     val phoneValidator = remember {
         FieldValidator(ValidationHelper::validatePhoneNumber)
     }
+
+    var showImageSourceDialog by remember { mutableStateOf(false) }
+
+    var imageByte by remember { mutableStateOf<ByteArray?>(null) }
+
+    val cameraLauncher = rememberCameraLauncher { imageData ->
+        imageData?.let {
+            imageByte = it
+            viewModel.uploadImage(it, generateImageFileName(it))
+        }
+    }
+
+    val scope = rememberCoroutineScope()
+
+
+    val imagePickerLaunch = rememberImagePickerLauncher(
+        selectionMode = SelectionMode.Single,
+        scope = scope,
+        onResult = { byteArrays ->
+            byteArrays.firstOrNull()?.let { imageData ->
+                imageByte = imageData
+                viewModel.uploadImage(imageData, generateImageFileName(imageData))
+            }
+        }
+    )
+
+    when (val result = imageUploadState.value) {
+        is ImageUploadState.Success -> {
+            profilePicture = result.url
+            imageUploadError = null
+        }
+        is ImageUploadState.Loading -> {
+            LoadingDialog(true)
+        }
+        is ImageUploadState.Error -> {
+            imageUploadError = result.message
+        }
+        is ImageUploadState.Idle -> {
+            LoadingDialog(false)
+        }
+    }
+
+
 
     // Load user data from viewModel
     LaunchedEffect(userData) {
@@ -230,6 +293,9 @@ fun ProfileFormScreen(
                         modifier = Modifier
                             .size(100.dp)
                             .clip(CircleShape)
+                            .clickable {
+                                showImageSourceDialog = true
+                            }
                             .background(Color(0xFFE2E8F0))
                             .border(2.dp, Color(0xFFE2E8F0), CircleShape),
                         contentAlignment = Alignment.Center
@@ -416,6 +482,82 @@ fun ProfileFormScreen(
                 }
             }
         }
+
+
+        // Show success modal controlled by local state
+        if (showSuccessModal) {
+            GenericAlertModal(
+                modalType = ModalType.Success(iconRes = Res.drawable.success_icon),
+                title = "Success!",
+                message = "Your profile information has been changed successfully",
+                primaryButton = ModalButton(
+                    text = "Continue",
+                    backgroundColor = Color(0xFF10B981),
+                    action = {
+                        showSuccessModal = false
+                        onBackClick?.invoke()
+                    }
+                )
+            )
+        }
+
+        // Show error modal controlled by local state
+        if (!errorMessage.isEmpty()) {
+            GenericAlertModal(
+                modalType = ModalType.Error(iconRes = Res.drawable.warning_icon),
+                title = "Error!",
+                message = errorMessage,
+                primaryButton = ModalButton(
+                    text = "Continue",
+                    backgroundColor = Color(0xFF10B981),
+                    action = {
+                        errorMessage = ""
+
+                    }
+                )
+            )
+        }
+
+        // Show image upload error modal
+        if (imageUploadError != null) {
+            GenericAlertModal(
+                modalType = ModalType.Error(iconRes = Res.drawable.warning_icon),
+                title = "Upload Failed",
+                message = imageUploadError ?: "Failed to upload image.",
+                primaryButton = ModalButton(
+                    text = "Retry",
+                    backgroundColor = Color(0xFFF29100),
+                    action = {
+                        imageByte?.let { viewModel.uploadImage(it, generateImageFileName(it)) }
+                        imageUploadError = null
+                    }
+                ),
+                secondaryButton = ModalButton(
+                    text = "Dismiss",
+                    backgroundColor = Color(0xFF64748B),
+                    action = { imageUploadError = null }
+                )
+            )
+        }
+
+        if (showImageSourceDialog) {
+            MediaSourceDialog(
+                onDismiss = { showImageSourceDialog = false },
+                title = "Upload Picture",
+                description = "Choose how you'd like to upload your picture:",
+                showCamera = true,
+                showGallery = true,
+                showDocument = false,
+                onCameraSelected = {
+                    showImageSourceDialog = false
+                    cameraLauncher.launch()
+                },
+                onGallerySelected = {
+                    showImageSourceDialog = false
+                    imagePickerLaunch.launch()
+                }
+            )
+        }
     }
 
     // Handle state changes
@@ -424,13 +566,13 @@ fun ProfileFormScreen(
             // Show success message or navigate back
             LaunchedEffect(Unit) {
                 // TODO: Show success snackbar
-                onBackClick?.invoke()
+                showSuccessModal = true
             }
         }
         is ProfileFormState.Error -> {
             // Show error message
             LaunchedEffect(state) {
-                // TODO: Show error snackbar
+                errorMessage = (state as ProfileFormState.Error).message
             }
         }
         else -> {}

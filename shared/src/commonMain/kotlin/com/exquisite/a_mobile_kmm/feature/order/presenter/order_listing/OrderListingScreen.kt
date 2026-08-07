@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -29,7 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatToReadableDate
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold11
@@ -49,8 +50,6 @@ import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium11
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.feature.order.domain.model.CustomerOrder
-import kotlinx.coroutines.flow.first
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -137,12 +136,36 @@ fun OrderListingScreen(
                 }
 
                 is OrderListingState.Success -> {
-                    val orders = (state as OrderListingState.Success).data.orders
-                    println("orders ${orders.first()}")
+                    val successState = state as OrderListingState.Success
+                    val orders = successState.data.orders
+
                     if (orders.isEmpty()) {
                         EmptyOrdersState()
                     } else {
+                        val listState = rememberLazyListState()
+
+                        // Detect when user scrolls near the bottom
+                        val shouldLoadMore = remember {
+                            derivedStateOf {
+                                val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+                                val totalItems = listState.layoutInfo.totalItemsCount
+
+                                lastVisibleItem != null &&
+                                lastVisibleItem.index >= totalItems - 3 && // Trigger 3 items before end
+                                successState.hasMore &&
+                                !successState.isLoadingMore
+                            }
+                        }
+
+                        // Load next page when user scrolls near bottom
+                        LaunchedEffect(shouldLoadMore.value, successState.hasMore) {
+                            if (shouldLoadMore.value && successState.hasMore && !successState.isLoadingMore) {
+                                viewModel.loadNextPage()
+                            }
+                        }
+
                         LazyColumn(
+                            state = listState,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(16.dp),
@@ -151,8 +174,27 @@ fun OrderListingScreen(
                             items(orders) { order ->
                                 OrderCard(
                                     order = order,
-                                    onClick = { onOrderClick?.invoke(order) }
+                                    onClick = {
+                                        onOrderClick?.invoke(order)
+                                    }
                                 )
+                            }
+
+                            // Loading more indicator at bottom
+                            if (successState.isLoadingMore) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = Color(0xFFF29100),
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -340,10 +382,9 @@ private fun ErrorState(message: String) {
 
 // Helper functions
 private fun formatOrderDate(dateString: String): String {
-
     return try {
         "Ordered on ${dateString.take(10)}"
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         "Ordered on $dateString"
     }
 }

@@ -3,7 +3,9 @@ package com.exquisite.a_mobile_kmm.feature.address.presenter.address_list
 import amobilekmm.shared.generated.resources.Res
 import amobilekmm.shared.generated.resources.*
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,14 +22,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -43,11 +54,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.exquisite.a_mobile_kmm.core.screen_components.EmptyState
 import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold18
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium13
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.address.domain.model.AddressModel
@@ -62,7 +77,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AddressListScreen(
     goBack: () -> Unit,
     goBackToCheckout: () -> Unit,
-
+    from:String,
     addNewAddress: (Int?,String?,String?) -> Unit,
     viewModel: AddressListViewModel = koinViewModel<AddressListViewModel>(),
     modifier: Modifier = Modifier
@@ -82,6 +97,7 @@ fun AddressListScreen(
         }
 
         is AddressListState.GetAddressesSuccess -> {
+            viewModel.clearState()
             addressList = result.data
         }
 
@@ -105,6 +121,36 @@ fun AddressListScreen(
                 onBackClick = goBack
             )
 
+            // Add New Address Button
+            OutlinedButton(
+                onClick = { addNewAddress.invoke(null, null, null) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .height(56.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color(0xFFF29100)
+                ),
+                border = BorderStroke(
+                    width = 1.5.dp,
+                    color = Color(0xFFF29100)
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Add New Address",
+                    style = getPoppinsSemiBold16(),
+                    color = Color(0xFFF29100)
+                )
+            }
+
             // Scrollable Content
             Column(
                 modifier = Modifier
@@ -114,33 +160,8 @@ fun AddressListScreen(
             ) {
                 if (addressList.isEmpty()) {
                     // empty address
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(Res.drawable.no_address_icon),
-                            contentDescription = "no address icon",
-                        )
-                        Text(
-                            text = "No Address Found",
-                            style = getPoppinsRegular14(),
-                            color = Color(0xFF252525)
-                        )
-                        Text(
-                            text = "Please Add New Address",
-                            style = getPoppinsRegular14(),
-                            color = Color(0xFF252525)
-                        )
-                        Text(
-                            text = "Add New Address",
-                            style = getPoppinsMedium16(),
-                            color = Color(0xFFF09103),
-                            modifier = modifier.padding(20.dp).clickable {
-                                addNewAddress.invoke(null, null, null)
-                            })
-                        Spacer(modifier = modifier.height(40.dp))
-                    }
+                    EmptyState("No Address!", "Click on Add New Address to continue.")
+
                 } else {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -151,6 +172,7 @@ fun AddressListScreen(
 
                             AddressItem(
                                 address = address,
+                                from = from,
                                 onAddressSelected = { address ->
                                     viewModel.selectAddress(address.id)
                                     viewModel.saveSelectedAddress(address)
@@ -210,46 +232,138 @@ fun AddressListScreen(
 @Composable
 private fun AddressItem(
     address: AddressModel,
+    from:String,
     onAddressSelected: (AddressModel) -> Unit,
     editAddress: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column {
-        Row(modifier = modifier.padding(horizontal = 26.dp).clickable {
-            onAddressSelected.invoke(address)
-        }) {
-            Image(
-                painter = painterResource(if (address.isSelected) Res.drawable.selected_radio_icon else Res.drawable.unselected_radio_icon),
-                contentDescription = "selected"
-            )
-            Spacer(modifier = modifier.width(10.dp))
+    val isSelected = address.isSelected
+    val borderColor = if (isSelected) Color(0xFFF29100) else Color(0xFFE2E8F0)
+    val backgroundColor = if (isSelected) Color(0xFFFFF8ED) else Color.White
 
-            Column {
-                Text(
-                    text = address.address,
-                    style = getPoppinsSemiBold16(),
-                    color = Color(0xFF252525)
-                )
-                Spacer(modifier = modifier.height(8.dp))
-                Text(text = address.phone, color = Color(0xFF2525252))
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(backgroundColor, RoundedCornerShape(16.dp))
+            .border(2.dp, borderColor, RoundedCornerShape(16.dp))
+            .clickable {
+                onAddressSelected.invoke(address)
             }
-        }
-        Row(modifier = modifier.padding(horizontal = 20.dp)) {
-            Spacer(modifier = modifier.weight(1f))
-            Image(
-                painter = painterResource(Res.drawable.trash_bin_icon),
-                contentDescription = "delete",
-                modifier = modifier.padding(10.dp).clickable {
-                    onDeleteClick()
-                })
-            Image(
-                painter = painterResource(Res.drawable.edit_icon),
-                contentDescription = "edit",
-                modifier = modifier.padding(10.dp).clickable { editAddress() })
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            // Left section: Radio button and address details
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Radio button
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .border(
+                            width = 2.dp,
+                            color = if (isSelected) Color(0xFFF29100) else Color(0xFFCBD5E1),
+                            shape = CircleShape
+                        )
+                        .background(
+                            color = if (isSelected) Color(0xFFF29100) else Color.Transparent,
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isSelected) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(Color.White, CircleShape)
+                        )
+                    }
+                }
+
+                // Address details
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // Address with icon
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = "Location",
+                            tint = Color(0xFF64748B),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = address.address,
+                            style = getPoppinsSemiBold14(),
+                            color = Color(0xFF0F172A)
+                        )
+                    }
+
+                    // Phone with icon
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.Phone,
+                            contentDescription = "Phone",
+                            tint = Color(0xFF64748B),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = address.phone,
+                            style = getPoppinsMedium13(),
+                            color = Color(0xFF64748B)
+                        )
+                    }
+                }
+            }
+
+            if(from.equals("profile")){
+                // Right section: Edit and Delete actions
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    // Edit button
+                    IconButton(
+                        onClick = editAddress,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = Color(0xFF64748B),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    // Delete button
+                    IconButton(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color(0xFFEF4444),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
 
         }
-        HorizontalDivider(thickness = 1.dp, color = Color(0xFFD5D5D5))
     }
 }
 

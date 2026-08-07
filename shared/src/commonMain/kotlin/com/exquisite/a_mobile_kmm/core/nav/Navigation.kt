@@ -82,7 +82,7 @@ object PasswordManager
 object MyOrder
 
 @Serializable
-data class MyOrderDetails(val orderData: String = "")
+data class MyOrderDetails(val orderId: Int)
 
 @Serializable
 object MyWallet
@@ -114,7 +114,7 @@ data class ProductListing(
 object CheckoutList
 
 @Serializable
-object AddressList
+data class AddressList(val from:String)
 
 @Serializable
 data class AddressForm

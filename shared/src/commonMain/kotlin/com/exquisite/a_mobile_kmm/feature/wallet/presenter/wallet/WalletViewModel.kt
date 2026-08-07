@@ -23,20 +23,30 @@ class WalletViewModel(
     private val dataStore: AMobileDataStore
 ) : ViewModel() {
 
-    private var _walletState = MutableStateFlow<WalletState>(WalletState.Idle)
-    val walletState = _walletState.asStateFlow()
+    // Separate states for balance and transactions to avoid conflicts
+    private var _balanceState = MutableStateFlow<BalanceState>(BalanceState.Idle)
+    val balanceState = _balanceState.asStateFlow()
+
+    private var _transactionsState = MutableStateFlow<TransactionsState>(TransactionsState.Idle)
+    val transactionsState = _transactionsState.asStateFlow()
+
+    private var _topUptState = MutableStateFlow<TopUpState>(TopUpState.Idle)
+    val topUptState = _topUptState.asStateFlow()
 
     private val _ref = MutableStateFlow<String>("")
     val ref = _ref.asStateFlow()
 
     fun getCustomerBalance() {
         viewModelScope.launch {
-            val  customerId  = dataStore.getUserId().first().toInt()
-            _walletState.value = WalletState.Loading
+            val customerId = dataStore.getUserId().first().toInt()
+            _balanceState.value = BalanceState.Loading
             getCustomerBalanceUseCase.invoke(customerId).collect { response ->
                 when (response) {
-                    is UseCaseResult.Success -> _walletState.value = WalletState.GetBalanceSuccess(response.data)
-                    is UseCaseResult.Error -> _walletState.value = WalletState.Error(response.message)
+                    is UseCaseResult.Success -> _balanceState.value =
+                        BalanceState.Success(response.data)
+
+                    is UseCaseResult.Error -> _balanceState.value =
+                        BalanceState.Error(response.message)
                 }
             }
         }
@@ -44,46 +54,61 @@ class WalletViewModel(
 
     fun getCustomerTransactions() {
         viewModelScope.launch {
-            val  customerId  = dataStore.getUserId().first().toInt()
-            _walletState.value = WalletState.Loading
+            val customerId = dataStore.getUserId().first().toInt()
+            _transactionsState.value = TransactionsState.Loading
             getCustomerTransactionsUseCase.invoke(customerId).collect { response ->
                 when (response) {
-                    is UseCaseResult.Success -> _walletState.value = WalletState.GetTransactionsSuccess(response.data)
-                    is UseCaseResult.Error -> _walletState.value = WalletState.Error(response.message)
+                    is UseCaseResult.Success -> _transactionsState.value =
+                        TransactionsState.Success(response.data)
+
+                    is UseCaseResult.Error -> _transactionsState.value =
+                        TransactionsState.Error(response.message)
                 }
             }
         }
     }
 
-    fun initTopUpAccount(amount:Int) {
+    fun initTopUpAccount(amount: Int) {
         viewModelScope.launch {
-            val  customerId  = dataStore.getUserId().first().toInt()
-            val request =  InitTopUpAccountRequest(customerId = customerId, amount = amount)
-            _walletState.value = WalletState.Loading
+            val customerId = dataStore.getUserId().first().toInt()
+            val request = InitTopUpAccountRequest(customerId = customerId, amount = amount)
+            _topUptState.value = TopUpState.Loading
             initTopUpAccountUseCase.invoke(request).collect { response ->
                 when (response) {
-                    is UseCaseResult.Success -> {_walletState.value = WalletState.InitTopUpSuccess(response.data)}
-                    is UseCaseResult.Error -> _walletState.value = WalletState.Error(response.message)
+                    is UseCaseResult.Success -> {
+                        _ref.value = response.data.ref
+                        _topUptState.value = TopUpState.InitTopUpSuccess(response.data)
+                    }
+
+                    is UseCaseResult.Error -> _topUptState.value =
+                        TopUpState.Error(response.message)
                 }
             }
         }
     }
 
-    fun completeTopUpAccount(txnRef:String) {
+    fun completeTopUpAccount(txnRef: String) {
         viewModelScope.launch {
-            val  customerId  = dataStore.getUserId().first().toInt()
-            val  request = CompleteTopUpAccountRequest(
+            val customerId = dataStore.getUserId().first().toInt()
+            val request = CompleteTopUpAccountRequest(
                 customerId = customerId,
-                ref = _ref.value,
+                ref = ref.value,
                 txnRef = txnRef
             )
-            _walletState.value = WalletState.Loading
+            _topUptState.value = TopUpState.Loading
             completeTopUpAccountUseCase.invoke(request).collect { response ->
                 when (response) {
-                    is UseCaseResult.Success -> _walletState.value = WalletState.CompleteTopUpSuccess(response.data)
-                    is UseCaseResult.Error -> _walletState.value = WalletState.Error(response.message)
+                    is UseCaseResult.Success -> _topUptState.value =
+                        TopUpState.CompleteTopUpSuccess(response.data)
+
+                    is UseCaseResult.Error -> _topUptState.value =
+                        TopUpState.Error(response.message)
                 }
             }
         }
+    }
+
+    fun clearTopUpState(){
+        _topUptState.value = TopUpState.Idle
     }
 }

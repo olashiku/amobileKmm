@@ -179,7 +179,7 @@ fun DeliveryOptionScreen(
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                getCheckoutBalances(cartState,selectedDeliveryOption?:ShippingDetail()).forEach {
+                getCheckoutBalances(cartState,selectedDeliveryOption?:ShippingDetail()).filter{it.balance != 0.0}.forEach {
                     Item(checkoutItemModel = it)
                 }
             }

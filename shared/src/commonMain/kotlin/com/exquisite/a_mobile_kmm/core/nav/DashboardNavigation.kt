@@ -368,7 +368,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                             navController.navigate(MyWallet)
                         }
                         "address_book" -> {
-                            navController.navigate(AddressList)
+                            navController.navigate(AddressList("profile]"))
                         }
                         "contact_us" -> {
                             navController.navigate(ContactUs)
@@ -395,41 +395,58 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 })
             }
 
-            composable<MyOrder> {
+            composable<MyOrder> { backStackEntry ->
                 OrderListingScreen(
                     onBackClick = {
                         navController.popBackStack()
                     },
                     onOrderClick = { order ->
-                        val orderJson = NavigationUtils.encodeObject(order)
-                        navController.navigate(MyOrderDetails(orderData = orderJson))
+                        // Store the order as JSON string in savedStateHandle (no URL encoding = no regex)
+                        val orderJson = kotlinx.serialization.json.Json.encodeToString(
+                            kotlinx.serialization.serializer<com.exquisite.a_mobile_kmm.feature.order.domain.model.CustomerOrder>(),
+                            order
+                        )
+                        navController.currentBackStackEntry?.savedStateHandle?.set("selected_order_json", orderJson)
+                        navController.navigate(MyOrderDetails(orderId = order.order.id))
                     }
                 )
             }
 
             composable<MyOrderDetails> { backStackEntry ->
                 val orderDetailsRoute = backStackEntry.toRoute<MyOrderDetails>()
-                val order = if (orderDetailsRoute.orderData.isNotEmpty()) {
-                    decodeObject<com.exquisite.a_mobile_kmm.feature.order.domain.model.CustomerOrder>(orderDetailsRoute.orderData)
-                } else null
+
+                // Retrieve and deserialize the order from savedStateHandle
+                val order = try {
+                    val orderJson = navController.previousBackStackEntry
+                        ?.savedStateHandle
+                        ?.get<String>("selected_order_json")
+
+                    if (orderJson != null) {
+                        kotlinx.serialization.json.Json.decodeFromString(
+                            kotlinx.serialization.serializer<com.exquisite.a_mobile_kmm.feature.order.domain.model.CustomerOrder>(),
+                            orderJson
+                        )
+                    } else null
+                } catch (e: Exception) {
+                    println("Error deserializing order: ${e.message}")
+                    null
+                }
 
                 OrderDetailsScreen(
+                    orderId = orderDetailsRoute.orderId,
                     order = order,
                     onBackClick = {
                         navController.popBackStack()
-                    },
-                    onTrackShipment = { trackingUrl ->
-                        navController.navigate(WebViewUrl(url = trackingUrl))
                     }
                 )
             }
-            composable<MyWallet> {
-                WalletScreen(
+            composable<MyWallet> { backStack->
+                WalletScreen( savedStateHandle = backStack.savedStateHandle,
                     onBackClick = {
                         navController.popBackStack()
                     },
-                    onFundWallet = {
-                        // TODO: Navigate to fund wallet screen or show payment dialog
+                    goToWebView = { url ->
+                        navController.navigate(WebViewUrl(url))
                     }
                 )
             }
@@ -465,7 +482,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 CheckoutListScreen(goBack = {
                     navController.popBackStack()
                 }, addNewAddress = {
-                    navController.navigate(AddressList)
+                    navController.navigate(AddressList("cart"))
                 }, continueButton = { createOrderModelJson, paymentOption ->
                     navController.navigate(DeliverOption(createOrderModelJson, paymentOption))
                 })
@@ -503,12 +520,13 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                 }
             }
 
-            composable<AddressList> {
+            composable<AddressList> { backTrack ->
+                val data = backTrack.toRoute<AddressList>()
                 AddressListScreen(goBack = {
                     navController.popBackStack()
                 }, goBackToCheckout = {
                     navController.popBackStack()
-                }, { id, address, phone ->
+                },data.from, { id, address, phone ->
                     navController.navigate(AddressForm(id, address, phone))
                 })
             }

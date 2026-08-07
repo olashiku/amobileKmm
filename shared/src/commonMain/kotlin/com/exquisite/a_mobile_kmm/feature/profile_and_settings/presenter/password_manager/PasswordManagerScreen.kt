@@ -352,7 +352,7 @@ fun PasswordManagerScreen(
         )
     }
 
-    // Show success modal controlled by local state
+    // Show error modal controlled by local state
     if (!errorMessage.isEmpty()) {
         GenericAlertModal(
             modalType = ModalType.Error(iconRes = Res.drawable.warning_icon),

@@ -1,9 +1,7 @@
 package com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.product_details
 
 import amobilekmm.shared.generated.resources.Res
-import amobilekmm.shared.generated.resources.back_arrow
 import amobilekmm.shared.generated.resources.cart_icon
-import amobilekmm.shared.generated.resources.cart_icon_white
 import amobilekmm.shared.generated.resources.search_icon
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,21 +19,27 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,12 +56,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.exquisite.a_mobile_kmm.core.screenUtils.formatBalance
-import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButtonWithIcon
 import com.exquisite.a_mobile_kmm.core.screen_components.QuantityCounter
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold12
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold24
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsLight16
-import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular24
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold20
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold28
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.feature.cart.domain.model.CartModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.ProductItem
@@ -87,7 +94,7 @@ fun ProductDetailsScreen(
 
     Box(
         modifier = Modifier.fillMaxSize().background(
-            color = Color.White
+            color = Color(0xFFF8F9FA)
         )
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
@@ -95,167 +102,339 @@ fun ProductDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 80.dp) // Space for the button
+                .padding(top = 64.dp, bottom = 100.dp) // Space for header and button
         ) {
-            Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "Product Details",
-                            style = getPoppinsSemiBold18(),
-                            color = Color(0xFF252525),
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Image(
-                                painter = painterResource(Res.drawable.back_arrow),
-                                contentDescription = "Back",
+            // Image Gallery Section
+            Surface(
+                color = Color.White,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column {
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(380.dp)
+                    ) { page ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AsyncImage(
+                                model = productItem.images[page],
+                                contentDescription = "Product image ${page + 1}",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
                             )
                         }
-                    },
-                    actions = {
-                        IconButton(onClick = onSearchClick) {
-                            Image(
-                                painter = painterResource(Res.drawable.search_icon),
-                                contentDescription = "Back",
-                            )
-                        }
-                        if (cartCount > 0) {
-                            BadgedBox(
-                                badge = {
-                                    Badge { Text(text = if (cartCount > 99) "99+" else cartCount.toString()) }
-                                }
-                            ) {
-                                IconButton(onClick = onCartClick) {
-                                    Image(
-                                        painter = painterResource(Res.drawable.cart_icon),
-                                        contentDescription = "Back",
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFFFFFFFF), // light gray background
-                    ),
-                )
-                // Orange bottom divider
-                HorizontalDivider(
-                    thickness = 2.dp,
-                    color = Color(0xFFFFA500),
-                )
-
-            }
-            Column{
-
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth().wrapContentHeight()
-                ) { page ->
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                        AsyncImage(
-                            model = productItem.images[page],
-                            contentDescription = "product images",
-                            modifier = Modifier.fillMaxWidth(),
-                            contentScale = ContentScale.Crop
-                        )
                     }
-                }
 
-                Spacer(modifier = modifier.height(20.dp))
-                Column(
-                    modifier = modifier.fillMaxWidth().wrapContentHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                    // Pager Indicators
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.wrapContentHeight()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         repeat(pagerState.pageCount) { index ->
                             val isSelected = pagerState.currentPage == index
                             Box(
                                 modifier = Modifier
-                                    .size(10.dp)
-                                    .clip(CircleShape)
+                                    .padding(horizontal = 4.dp)
+                                    .size(
+                                        width = if (isSelected) 24.dp else 8.dp,
+                                        height = 8.dp
+                                    )
+                                    .clip(RoundedCornerShape(4.dp))
                                     .background(
-                                        if (isSelected) Color(0xFFF09103)
-                                        else Color.Transparent
+                                        if (isSelected) Color(0xFFF29100)
+                                        else Color(0xFFE2E8F0)
                                     )
-                                    .then(
-                                        if (!isSelected) {
-                                            Modifier.border(1.dp, Color(0xFFBEBEBE), CircleShape)
-                                        } else Modifier
-                                    )
-                                    .clickable { scope.launch { pagerState.animateScrollToPage(index) } }
+                                    .clickable {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(index)
+                                        }
+                                    }
                             )
                         }
                     }
                 }
             }
 
-            Column(modifier = Modifier.padding(24.dp)){
-                Text(text = productItem.product?.name?:"",
-                    style = getPoppinsBold24(),
-                    color = Color(0xFF252525))
+            Spacer(modifier = Modifier.height(16.dp))
 
-                Spacer(modifier = modifier.height(8.dp))
-                Text(text = "₦${productItem.product?.price?.formatBalance()}",
-                    style = getPoppinsRegular24(),
-                    color = Color(0xFF252525))
-                Spacer(modifier = modifier.height(18.dp))
-                Text(text = "PRODUCT DETAILS",
-                    letterSpacing = 1.5.sp,
-                    style = getPoppinsBold12(),
-                    color = Color(0xFF252525))
-                Spacer(modifier = modifier.height(10.dp))
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = Color(0xFFEEEEEE),
-                )
-                Spacer(modifier = modifier.height(15.dp))
+            // Product Info Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    // Product Name
+                    Text(
+                        text = productItem.product?.name ?: "",
+                        style = getPoppinsBold20(),
+                        color = Color(0xFF0F172A),
+                        lineHeight = 28.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Price and Stock Row
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Price
+                        Text(
+                            text = "₦${productItem.product?.price?.formatBalance()}",
+                            style = getPoppinsBold28(),
+                            color = Color(0xFFF29100)
+                        )
+
+                        // Stock Status
+                        val stockQuantity = productItem.product?.quantity ?: 0
+                        val isLowStock = stockQuantity in 1..10
+                        val isOutOfStock = stockQuantity <= 0
+
+                        Surface(
+                            color = when {
+                                isOutOfStock -> Color(0xFFFEE2E2)
+                                isLowStock -> Color(0xFFFEF3C7)
+                                else -> Color(0xFFDCFCE7)
+                            },
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (!isOutOfStock) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = when {
+                                            isLowStock -> Color(0xFFD97706)
+                                            else -> Color(0xFF10B981)
+                                        },
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Text(
+                                    text = when {
+                                        isOutOfStock -> "Out of Stock"
+                                        isLowStock -> "Only $stockQuantity left"
+                                        else -> "In Stock"
+                                    },
+                                    style = getPoppinsSemiBold14(),
+                                    color = when {
+                                        isOutOfStock -> Color(0xFFEF4444)
+                                        isLowStock -> Color(0xFFD97706)
+                                        else -> Color(0xFF10B981)
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Description Card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                ) {
+                    Text(
+                        text = "PRODUCT DESCRIPTION",
+                        style = getPoppinsBold14(),
+                        color = Color(0xFF64748B),
+                        letterSpacing = 1.2.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = productItem.product?.description ?: "",
+                        style = getPoppinsRegular14(),
+                        color = Color(0xFF475569),
+                        lineHeight = 22.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Fixed Header at Top
+        Surface(
+            modifier = Modifier.align(Alignment.TopCenter),
+            color = Color.White,
+            shadowElevation = 4.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color(0xFF0F172A)
+                    )
+                }
+
                 Text(
-                    text = productItem.product?.description?:"",
-                    style = getPoppinsLight16(),
-                    color = Color(0xFF252525),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Justify
+                    text = "Product Details",
+                    style = getPoppinsSemiBold18(),
+                    color = Color(0xFF0F172A)
                 )
-                Spacer(modifier = modifier.height(40.dp))
 
+                Row {
+                    IconButton(onClick = onSearchClick) {
+                        Image(
+                            painter = painterResource(Res.drawable.search_icon),
+                            contentDescription = "Search"
+                        )
+                    }
+
+                    if (cartCount > 0) {
+                        BadgedBox(
+                            badge = {
+                                Badge(
+                                    containerColor = Color(0xFFEF4444)
+                                ) {
+                                    Text(
+                                        text = if (cartCount > 99) "99+" else cartCount.toString(),
+                                        style = getPoppinsBold12(),
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        ) {
+                            IconButton(onClick = onCartClick) {
+                                Image(
+                                    painter = painterResource(Res.drawable.cart_icon),
+                                    contentDescription = "Cart"
+                                )
+                            }
+                        }
+                    } else {
+                        IconButton(onClick = onCartClick) {
+                            Image(
+                                painter = painterResource(Res.drawable.cart_icon),
+                                contentDescription = "Cart"
+                            )
+                        }
+                    }
+                }
             }
         }
 
-
-        // Fixed button at the bottom
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(horizontal = 20.dp, vertical = 16.dp)
-        ){
-            HorizontalDivider(thickness = 1.dp, color = Color(0xFFEEEEEE))
-            Spacer(modifier = modifier.height(20.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)){
-                QuantityCounter(
-                    modifier = modifier.weight(2f),
-                    initialQuantity = 1,
-                    onQuantityChange = { newQuantity ->
-                        quantity = newQuantity
+        // Fixed Action Section at Bottom
+        Surface(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            color = Color.White,
+            shadowElevation = 8.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            ) {
+                // Price Summary Row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Total Price",
+                            style = getPoppinsMedium14(),
+                            color = Color(0xFF64748B)
+                        )
+                        Text(
+                            text = "₦${((productItem.product?.price ?: 0.0) * quantity).formatBalance()}",
+                            style = getPoppinsBold20(),
+                            color = Color(0xFF0F172A)
+                        )
                     }
-                )
-                PrimaryButtonWithIcon(
-                    "Add to Cart",
-                    Res.drawable.cart_icon_white,
-                    {
-                        viewModel.addToCart(CartModel(productItem.product?.id?:0,productItem.product?.name?:"",productItem.images[0],productItem.product?.price?:0.0,quantity))
-                        snackBar.showSuccess("Item added to cart successfully")
-                    },
-                    modifier = modifier.weight(3f)
-                )
-            }
 
+                    // Quantity Counter
+                    QuantityCounter(
+                        initialQuantity = 1,
+                        onQuantityChange = { newQuantity ->
+                            quantity = newQuantity
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Add to Cart Button
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable {
+                            viewModel.addToCart(
+                                CartModel(
+                                    productItem.product?.id ?: 0,
+                                    productItem.product?.name ?: "",
+                                    productItem.images[0],
+                                    productItem.product?.price ?: 0.0,
+                                    quantity
+                                )
+                            )
+                            snackBar.showSuccess("Item added to cart successfully")
+                        },
+                    color = Color(0xFFF29100),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ShoppingCart,
+                            contentDescription = "Cart",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Add to Cart",
+                            style = getPoppinsSemiBold16(),
+                            color = Color.White
+                        )
+                    }
+                }
+            }
         }
 
         // Snackbar at bottom

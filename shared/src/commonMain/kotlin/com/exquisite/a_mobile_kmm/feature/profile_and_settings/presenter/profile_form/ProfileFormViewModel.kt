@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
+import com.exquisite.a_mobile_kmm.feature.auth.domain.usecase.UploadFileUseCase
+import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.ImageUploadState
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.ChangePasswordRequest
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.EditProfileRequest
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.usecase.ChangePasswordUseCase
@@ -25,7 +27,8 @@ data class UserData(
 class ProfileFormViewModel(
     private val editProfileUseCase: EditProfileUseCase,
     private val changePasswordUseCase: ChangePasswordUseCase,
-    private val dataStore: AMobileDataStore
+    private val dataStore: AMobileDataStore,
+    private val uploadFileUseCase:UploadFileUseCase
 ) : ViewModel() {
 
     private var _profileFormState = MutableStateFlow<ProfileFormState>(ProfileFormState.Idle)
@@ -33,6 +36,11 @@ class ProfileFormViewModel(
 
     private var _userData = MutableStateFlow(UserData())
     val userData = _userData.asStateFlow()
+
+
+    private val _imageUploadState = MutableStateFlow<ImageUploadState>(ImageUploadState.Idle)
+    val imageUploadState = _imageUploadState.asStateFlow()
+
 
     init {
         loadUserData()
@@ -45,6 +53,7 @@ class ProfileFormViewModel(
             val firstName = nameParts.firstOrNull() ?: ""
             val lastName = nameParts.drop(1).joinToString(" ")
             val email = dataStore.getUserEmail().first()
+            val phone = dataStore.getUserPhone().first()
             val customerId = dataStore.getUserId().first().toInt()
             val profilePicture = dataStore.getProfilePicture().first()
 
@@ -52,7 +61,7 @@ class ProfileFormViewModel(
                 firstName = firstName,
                 lastName = lastName,
                 email = email,
-                phone = "",
+                phone = phone,
                 customerId = customerId,
                 profilePicture = profilePicture
             )
@@ -64,7 +73,31 @@ class ProfileFormViewModel(
             _profileFormState.value = ProfileFormState.Loading
             editProfileUseCase.invoke(request).collect { response ->
                 when (response) {
-                    is UseCaseResult.Success -> _profileFormState.value = ProfileFormState.EditProfileSuccess(response.data)
+                    is UseCaseResult.Success -> {
+                        // Save updated user data to datastore
+                        val token = dataStore.getAuthorization().first()
+                        dataStore.saveUserProfile(
+                            id = request.customerId.toString(),
+                            firstName = request.firstName,
+                            lastName = request.lastName,
+                            email = request.email,
+                            phone = request.phone,
+                            profilePicture = request.profilePicture,
+                            token = token
+                        )
+
+                        // Update local state
+                        _userData.value = UserData(
+                            firstName = request.firstName,
+                            lastName = request.lastName,
+                            email = request.email,
+                            phone = request.phone,
+                            customerId = request.customerId,
+                            profilePicture = request.profilePicture
+                        )
+
+                        _profileFormState.value = ProfileFormState.EditProfileSuccess(response.data)
+                    }
                     is UseCaseResult.Error -> _profileFormState.value = ProfileFormState.Error(response.message)
                 }
             }
@@ -85,5 +118,23 @@ class ProfileFormViewModel(
 
     fun resetState() {
         _profileFormState.value = ProfileFormState.Idle
+    }
+
+    fun uploadImage(image: ByteArray, fileName: String) {
+        viewModelScope.launch {
+            _imageUploadState.value = ImageUploadState.Loading
+            uploadFileUseCase.invoke(image, fileName)
+                .collect { result ->
+                    when (result) {
+                        is UseCaseResult.Success -> {
+                            _imageUploadState.value = ImageUploadState.Success(result.data)
+                        }
+                        is UseCaseResult.Error -> {
+                            _imageUploadState.value = ImageUploadState.Error(result.message)
+                        }
+                        else -> {}
+                    }
+                }
+        }
     }
 }

@@ -25,6 +25,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -32,7 +35,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -61,9 +70,15 @@ import com.exquisite.a_mobile_kmm.core.screen_components.EmptyState
 import com.exquisite.a_mobile_kmm.core.screen_components.LinerBackground
 import com.exquisite.a_mobile_kmm.core.screen_components.MenuItem
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsBold16
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium12
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium14
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsMedium16
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsRegular12
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold12
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold14
+import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold16
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold18
 import com.exquisite.a_mobile_kmm.core.theme.getPoppinsSemiBold20
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CategoryProduct
@@ -289,16 +304,9 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Join Team Text
-            Text(
-                text = "Join our Team of Cleaners!",
-                color = Color(0xFFF09103),
-                style = getPoppinsSemiBold20().copy(
-                    textDecoration = TextDecoration.Underline
-                ),
-                modifier = Modifier.fillMaxWidth().clickable{
-                    goToCleanersRegistration()
-                }
+            // Join Team CTA Banner
+            CleanersRecruitmentBanner(
+                onClick = { goToCleanersRegistration() }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -410,59 +418,256 @@ fun ProdItem(
     product: ProductItem,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .width(169.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFFFEF9F2))
-            .clickable {
-                getCategoryProduct(NavigationUtils.encodeObject(product))
-            }
-    ) {
-        // Product Image
-        AsyncImage(
-            model = product.images.firstOrNull() ?: "",
-            contentDescription = product.product?.name ?: "",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-        )
+    val quantity = product.product?.quantity ?: 0
+    val isLowStock = quantity in 1..10
+    val isOutOfStock = quantity <= 0
 
-        // Product Details
+    Card(
+        modifier = modifier.width(180.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+            pressedElevation = 4.dp
+        )
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .clickable {
+                    getCategoryProduct(NavigationUtils.encodeObject(product))
+                }
         ) {
-            Text(
-                text = product.product?.name ?: "",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF716F6D),
-                maxLines = 1
-            )
-
-            Spacer(modifier = Modifier.height(5.dp))
-
-            // Price and Quantity
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalAlignment = Alignment.CenterVertically
+            // Image Container with Badges
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
             ) {
-                Text(
-                    text = "₦${product.product?.price?.formatBalance()} | (${product.product?.quantity}) items",
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFFF09103)
+                // Product Image
+                AsyncImage(
+                    model = product.images.firstOrNull() ?: "",
+                    contentDescription = product.product?.name ?: "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFF8F9FA))
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 )
+
+                // Out of Stock Overlay
+                if (isOutOfStock) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Surface(
+                            color = Color.White,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                text = "OUT OF STOCK",
+                                style = getPoppinsBold14(),
+                                color = Color(0xFFEF4444),
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+
+                // Low Stock Badge - Top Left
+                if (isLowStock && !isOutOfStock) {
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(8.dp),
+                        color = Color(0xFFFEF3C7),
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Text(
+                            text = "Only $quantity left",
+                            style = getPoppinsSemiBold12(),
+                            color = Color(0xFFD97706),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                }
+            }
+
+            // Product Details Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Product Name
+                Text(
+                    text = product.product?.name ?: "",
+                    style = getPoppinsSemiBold14(),
+                    color = Color(0xFF0F172A),
+                    maxLines = 2,
+                    lineHeight = 18.sp,
+                    modifier = Modifier.height(36.dp)
+                )
+
+                // Price Section
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = "₦${product.product?.price?.formatBalance()}",
+                            style = getPoppinsBold16(),
+                            color = Color(0xFFF29100)
+                        )
+
+                        // Stock Status Text
+                        if (!isOutOfStock) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .background(
+                                            if (isLowStock) Color(0xFFFBBF24) else Color(0xFF10B981),
+                                            CircleShape
+                                        )
+                                )
+                                Text(
+                                    text = "$quantity in stock",
+                                    style = getPoppinsRegular12(),
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                        }
+                    }
+
+                    // Quick Add to Cart Button
+                    if (!isOutOfStock) {
+                        Surface(
+                            modifier = Modifier.size(36.dp),
+                            color = Color(0xFFF29100),
+                            shape = CircleShape,
+                            shadowElevation = 2.dp
+                        ) {
+                            IconButton(
+                                onClick = { /* TODO: Quick add to cart */ },
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.ShoppingCart,
+                                    contentDescription = "Add to Cart",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(18.dp).clickable{
+                                        getCategoryProduct(NavigationUtils.encodeObject(product))
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 }
 
+
+@Composable
+fun CleanersRecruitmentBanner(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFFFF8ED)
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Left section: Icon and text
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Icon container
+                Surface(
+                    modifier = Modifier.size(56.dp),
+                    color = Color(0xFFF29100),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Join Team",
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp)
+                        )
+                    }
+                }
+
+                // Text content
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Become a Cleaner",
+                        style = getPoppinsSemiBold16(),
+                        color = Color(0xFF0F172A)
+                    )
+                    Text(
+                        text = "Join our team today",
+                        style = getPoppinsMedium14(),
+                        color = Color(0xFF64748B)
+                    )
+                }
+            }
+
+            // Right section: Arrow button
+            Surface(
+                modifier = Modifier.size(40.dp),
+                color = Color(0xFFF29100),
+                shape = CircleShape
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Join",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun ServicesGrid(

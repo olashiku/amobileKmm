@@ -100,4 +100,8 @@ class AddressListViewModel(
         }
 
     }
+
+    fun clearState(){
+        _addressListState.value = AddressListState.Idle
+    }
 }

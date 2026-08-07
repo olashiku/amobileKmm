@@ -69,37 +69,45 @@ fun String.capitalizeWords(): String {
 
 
 fun Double.formatBalance(): String {
-    // Round to 2 decimal places
-    val rounded = (this * 100).toLong() / 100.0
+    // Handle NaN and Infinity
+    if (this.isNaN() || this.isInfinite()) return "0.00"
+
+    // Round to 2 decimal places using proper rounding
+    val cents = kotlin.math.round(kotlin.math.abs(this) * 100).toLong()
 
     // Split into integer and decimal parts
-    val integerPart = rounded.toLong().toString()
-    val decimalPart = ((rounded - integerPart.toLong()) * 100).toInt()
+    val integerPart = cents / 100
+    val decimalPart = kotlin.math.abs(cents % 100).toInt()
 
     // Add thousand separators to integer part
-    val formattedInteger = integerPart.reversed().chunked(3).joinToString(",").reversed()
+    val formattedInteger = integerPart.toString().reversed().chunked(3).joinToString(",").reversed()
 
     // Format decimal part with leading zero if needed
     val formattedDecimal = decimalPart.toString().padStart(2, '0')
 
-    return "$formattedInteger.$formattedDecimal"
+    val result = "$formattedInteger.$formattedDecimal"
+    return if (this < 0) "-$result" else result
 }
 
 fun Double.formatBalance(currencySymbol: String): String {
-    // Round to 2 decimal places
-    val rounded = (this * 100).toLong() / 100.0
+    // Handle NaN and Infinity
+    if (this.isNaN() || this.isInfinite()) return "${currencySymbol}0.00"
+
+    // Round to 2 decimal places using proper rounding
+    val cents = kotlin.math.round(kotlin.math.abs(this) * 100).toLong()
 
     // Split into integer and decimal parts
-    val integerPart = rounded.toLong().toString()
-    val decimalPart = ((rounded - integerPart.toLong()) * 100).toInt()
+    val integerPart = cents / 100
+    val decimalPart = kotlin.math.abs(cents % 100).toInt()
 
     // Add thousand separators to integer part
-    val formattedInteger = integerPart.reversed().chunked(3).joinToString(",").reversed()
+    val formattedInteger = integerPart.toString().reversed().chunked(3).joinToString(",").reversed()
 
     // Format decimal part with leading zero if needed
     val formattedDecimal = decimalPart.toString().padStart(2, '0')
 
-    return "$currencySymbol$formattedInteger.$formattedDecimal"
+    val result = "$formattedInteger.$formattedDecimal"
+    return if (this < 0) "-$currencySymbol$result" else "$currencySymbol$result"
 }
 
 fun String.formatTime():String{

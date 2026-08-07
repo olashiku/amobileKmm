@@ -242,7 +242,7 @@ fun CheckoutListScreen(
             HorizontalDivider(color = Color(0xFFEEEEEE), thickness = 1.dp)
             Spacer(modifier = modifier.height(20.dp))
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                getCheckoutBalances(cartState,ShippingDetail()).forEach {
+                getCheckoutBalances(cartState,ShippingDetail()).filter{it.balance != 0.0}.forEach {
                     Item(checkoutItemModel = it)
                 }
             }
