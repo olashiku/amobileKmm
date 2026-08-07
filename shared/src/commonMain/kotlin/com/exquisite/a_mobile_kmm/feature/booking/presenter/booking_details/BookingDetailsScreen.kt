@@ -82,9 +82,8 @@ import kotlin.math.abs
 fun BookingDetailsScreen(
     customerBooking: CustomerBooking,
     goBack: () -> Unit = {},
-    viewModel: BookingDetailsViewModel = koinViewModel<BookingDetailsViewModel>(),
-    modifier: Modifier = Modifier
-) {
+    viewModel: BookingDetailsViewModel = koinViewModel<BookingDetailsViewModel>()) {
+
     val colorsPalette = LocalColorsPalette.current
     val state = viewModel.bookingDetailsState.collectAsStateWithLifecycle()
     val rateReviewState = viewModel.rateReviewState.collectAsStateWithLifecycle()
@@ -93,7 +92,7 @@ fun BookingDetailsScreen(
     var showRatingAndReview by remember { mutableStateOf(false) }
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(customerBooking.bookingType) {
         when (customerBooking.bookingType) {
             "TOILET" -> viewModel.loadToiletBooking(customerBooking.bookingId)
             "SEPTIC_REQUEST" -> viewModel.loadSepticBooking(customerBooking.bookingId)

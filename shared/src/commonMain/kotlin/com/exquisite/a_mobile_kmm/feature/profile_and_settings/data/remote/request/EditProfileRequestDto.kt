@@ -8,5 +8,6 @@ data class EditProfileRequestDto(
     val firstName: String,
     val lastName: String,
     val phone: String,
-    val customerId: Int
+    val customerId: Int,
+    val profilePicture:String
 )

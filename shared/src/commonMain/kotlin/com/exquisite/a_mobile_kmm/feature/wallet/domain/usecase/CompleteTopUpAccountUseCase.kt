@@ -4,8 +4,8 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.wallet.data.mapper.toBalanceModel
-import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.request.CompleteTopUpAccountRequestDto
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.BalanceModel
+import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.CompleteTopUpAccountRequest
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.repository.WalletRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class CompleteTopUpAccountUseCase(private val repository: WalletRepository) {
-    suspend operator fun invoke(request: CompleteTopUpAccountRequestDto): Flow<UseCaseResult<BalanceModel>> {
+    suspend operator fun invoke(request: CompleteTopUpAccountRequest): Flow<UseCaseResult<BalanceModel>> {
         return repository.completeTopUpAccount(request).map { result ->
             when (result) {
                 is Result.Success -> {

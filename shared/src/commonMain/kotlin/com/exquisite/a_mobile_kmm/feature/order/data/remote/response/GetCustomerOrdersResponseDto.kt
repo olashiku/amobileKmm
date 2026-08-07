@@ -81,7 +81,7 @@ data class ShippingDto(
     val courier_id: String? = null,
     val shipping_amount: String? = null,
     val service_code: String? = null,
-    val status: Boolean? = null,
+    val status: String? = null,
     val tracking_url: String? = null,
     val created_at: String? = null,
     val updated_at: String? = null

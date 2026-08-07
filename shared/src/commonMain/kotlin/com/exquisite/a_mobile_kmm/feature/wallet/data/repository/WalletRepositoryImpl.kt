@@ -2,8 +2,10 @@ package com.exquisite.a_mobile_kmm.feature.wallet.data.repository
 
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.safeApiCall
-import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.request.*
+import com.exquisite.a_mobile_kmm.feature.wallet.data.mapper.toDto
 import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.response.*
+import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.CompleteTopUpAccountRequest
+import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.InitTopUpAccountRequest
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.repository.WalletRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -25,18 +27,18 @@ class WalletRepositoryImpl(private val httpClient: HttpClient) : WalletRepositor
         }
     }
 
-    override suspend fun initTopUpAccount(request: InitTopUpAccountRequestDto): Flow<Result<InitTopUpAccountResponseDto>> {
+    override suspend fun initTopUpAccount(request: InitTopUpAccountRequest): Flow<Result<InitTopUpAccountResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/customer/init_top_up_account") {
-                setBody(request)
+                setBody(request.toDto())
             }
         }
     }
 
-    override suspend fun completeTopUpAccount(request: CompleteTopUpAccountRequestDto): Flow<Result<CompleteTopUpAccountResponseDto>> {
+    override suspend fun completeTopUpAccount(request: CompleteTopUpAccountRequest): Flow<Result<CompleteTopUpAccountResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/customer/complete_top_up_account") {
-                setBody(request)
+                setBody(request.toDto())
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.exquisite.a_mobile_kmm.feature.wallet.data.mapper
 
+import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.request.CompleteTopUpAccountRequestDto
+import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.request.InitTopUpAccountRequestDto
 import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.response.*
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.*
 
@@ -48,4 +50,20 @@ fun CompleteTopUpAccountResponseDto.toBalanceModel(): BalanceModel? {
             updatedAt = it.updated_at
         )
     }
+}
+
+// Request mappers (Domain -> DTO)
+fun InitTopUpAccountRequest.toDto(): InitTopUpAccountRequestDto {
+    return InitTopUpAccountRequestDto(
+        customerId = customerId,
+        amount = amount
+    )
+}
+
+fun CompleteTopUpAccountRequest.toDto(): CompleteTopUpAccountRequestDto {
+    return CompleteTopUpAccountRequestDto(
+        customerId = customerId,
+        ref = ref,
+        txnRef = txnRef
+    )
 }

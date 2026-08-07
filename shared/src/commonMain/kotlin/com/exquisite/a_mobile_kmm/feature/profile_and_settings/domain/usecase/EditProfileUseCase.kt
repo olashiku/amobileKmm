@@ -4,7 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.mapper.toProfileResponseModel
-import com.exquisite.a_mobile_kmm.feature.profile_and_settings.data.remote.request.EditProfileRequestDto
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.EditProfileRequest
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.model.ProfileResponseModel
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.domain.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class EditProfileUseCase(private val repository: ProfileRepository) {
-    suspend operator fun invoke(request: EditProfileRequestDto): Flow<UseCaseResult<ProfileResponseModel>> {
+    suspend operator fun invoke(request: EditProfileRequest): Flow<UseCaseResult<ProfileResponseModel>> {
         return repository.editProfile(request).map { result ->
             when (result) {
                 is Result.Success -> {

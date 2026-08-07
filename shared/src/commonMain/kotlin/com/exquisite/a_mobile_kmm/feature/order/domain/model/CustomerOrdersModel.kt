@@ -1,15 +1,18 @@
 package com.exquisite.a_mobile_kmm.feature.order.domain.model
 
+import kotlinx.serialization.Serializable
+
 data class CustomerOrdersModel(
     val orders: List<CustomerOrder>
 )
 
+@Serializable
 data class CustomerOrder(
     val order: Order,
     val orderDetails: List<OrderDetail>,
     val shipping: Shipping?
 )
-
+@Serializable
 data class Order(
     val id: Int,
     val status: String,
@@ -21,7 +24,7 @@ data class Order(
     val createdAt: String,
     val updatedAt: String
 )
-
+@Serializable
 data class Address(
     val id: Int,
     val address: String,
@@ -31,6 +34,7 @@ data class Address(
     val updatedAt: String
 )
 
+@Serializable
 data class OrderDetail(
     val id: Int,
     val product: OrderProduct,
@@ -38,7 +42,7 @@ data class OrderDetail(
     val amount: Double,
     val ref: String
 )
-
+@Serializable
 data class OrderProduct(
     val id: Int,
     val sku: String,
@@ -55,6 +59,7 @@ data class OrderProduct(
     val updateAt: String
 )
 
+@Serializable
 data class Shipping(
     val id: Int,
     val ref: String,
@@ -62,7 +67,7 @@ data class Shipping(
     val courierId: String,
     val shippingAmount: String,
     val serviceCode: String,
-    val status: Boolean,
+    val status: String,
     val trackingUrl: String?,
     val createdAt: String,
     val updatedAt: String

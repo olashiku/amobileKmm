@@ -71,9 +71,15 @@ fun BookingScreen(
     var isLoading by remember { mutableStateOf(false) }
     var customerBookingsModel by remember { mutableStateOf(CustomerBookingsModel(emptyList())) }
 
+    // Initial load on first composition
+    LaunchedEffect(Unit) {
+        viewModel.loadCustomerBookings()
+    }
+
     when (val result = state.value) {
         is BookingState.Success -> {
             isLoading = false
+            println("customerBookingsModel $customerBookingsModel")
             customerBookingsModel = result.data
         }
 
@@ -88,15 +94,13 @@ fun BookingScreen(
         is BookingState.Idle -> {}
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadCustomerBookings()
-    }
 
     LaunchedEffect(listState) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleIndex ->
                 val totalItems = listState.layoutInfo.totalItemsCount
-                if (lastVisibleIndex != null && lastVisibleIndex >= totalItems - 2 && !isLoading) {
+                if (lastVisibleIndex != null && lastVisibleIndex >= totalItems - 3 &&
+                    !isLoading && !isLoadingMore && totalItems > 0) {
                     viewModel.loadMoreBookings()
                 }
             }
@@ -132,6 +136,34 @@ fun BookingScreen(
             if (isLoading && customerBookingsModel.bookings.isEmpty()) {
                 items(5) {
                     BookingItemSkeleton()
+                }
+            } else if (!isLoading && customerBookingsModel.bookings.isEmpty()) {
+                // Empty state
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 60.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "📋",
+                            style = getPoppinsSemiBold18().copy(fontSize = 64.sp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "No Bookings Yet",
+                            style = getPoppinsSemiBold18(),
+                            color = Color(0xFF252525)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Your booking history will appear here",
+                            style = getPoppinsRegular14(),
+                            color = Color(0xFF999999)
+                        )
+                    }
                 }
             } else {
                 items(customerBookingsModel.bookings) { item ->

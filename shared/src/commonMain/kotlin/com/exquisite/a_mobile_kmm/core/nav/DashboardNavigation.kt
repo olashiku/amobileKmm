@@ -55,6 +55,7 @@ import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleani
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form.DeepCleaningFormScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form_two.DeepCleaningFormTwoScreen
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_price.DeepCleaningPriceDetailsScreen
+import com.exquisite.a_mobile_kmm.feature.contact_us.ContactUsScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.model.CreateOrderModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.checkout_list.CheckoutListScreen
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.presenter.deliver_option.DeliveryOptionScreen
@@ -75,6 +76,8 @@ import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_event_toilet_form_two.EventToiletFormTwoScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.mobile_toilet_pricing.MobileToiletPricingScreen
 import com.exquisite.a_mobile_kmm.feature.mobile_toilet.presenter.onboarding.MobileToiletOnboardingScreen
+import com.exquisite.a_mobile_kmm.feature.order.presenter.order_details.OrderDetailsScreen
+import com.exquisite.a_mobile_kmm.feature.order.presenter.order_listing.OrderListingScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.PestControlResidentialFormModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.domain.model.ResidentialPestControlFormTwoModel
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control.PestControlScreen
@@ -83,7 +86,9 @@ import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_pr
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_checkout.PestControlResidentialCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form.PestControlResidentialFormScreen
 import com.exquisite.a_mobile_kmm.feature.pest_control.presenter.pest_control_residential_form_two.ResidentialPestControlFormTwoScreen
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.password_manager.PasswordManagerScreen
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile.ProfileScreen
+import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.profile_form.ProfileFormScreen
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticResidentialForm2Model
 import com.exquisite.a_mobile_kmm.feature.septic.domain.model.SepticTruckSizeModel
 import com.exquisite.a_mobile_kmm.feature.septic.presenter.septic_commercial_form.SepticCommercialFormScreen
@@ -98,6 +103,7 @@ import com.exquisite.a_mobile_kmm.feature.training.presenter.course_details.Cour
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training.TrainingScreen
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training_checkout.TrainingCheckoutScreen
 import com.exquisite.a_mobile_kmm.feature.training.presenter.training_registration.TrainingRegistrationScreen
+import com.exquisite.a_mobile_kmm.feature.wallet.presenter.wallet.WalletScreen
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -352,18 +358,94 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
             composable<Profile> {
                 ProfileScreen({ menuItem ->
                     when (menuItem) {
-                        "edit_profile" -> {}
-                        "my_order" -> {}
-                        "my_wallet" -> {}
-                        "address_book" -> {}
-                        "contact_us" -> {}
-                        "password_manager" -> {}
+                        "edit_profile" -> {
+                        navController.navigate(ProfileForm)
+                        }
+                        "my_order" -> {
+                            navController.navigate(MyOrder)
+                        }
+                        "my_wallet" -> {
+                            navController.navigate(MyWallet)
+                        }
+                        "address_book" -> {
+                            navController.navigate(AddressList)
+                        }
+                        "contact_us" -> {
+                            navController.navigate(ContactUs)
+                        }
+                        "password_manager" -> {
+                            navController.navigate(PasswordManager)
+                        }
                         "logout" -> {
                             onLogout.invoke()
                         }
-
                     }
                 })
+            }
+
+            composable<ProfileForm> {
+                ProfileFormScreen(onBackClick = {
+                    navController.popBackStack()
+                })
+            }
+
+            composable<PasswordManager> {
+                PasswordManagerScreen(onBackClick = {
+                    navController.popBackStack()
+                })
+            }
+
+            composable<MyOrder> {
+                OrderListingScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onOrderClick = { order ->
+                        val orderJson = NavigationUtils.encodeObject(order)
+                        navController.navigate(MyOrderDetails(orderData = orderJson))
+                    }
+                )
+            }
+
+            composable<MyOrderDetails> { backStackEntry ->
+                val orderDetailsRoute = backStackEntry.toRoute<MyOrderDetails>()
+                val order = if (orderDetailsRoute.orderData.isNotEmpty()) {
+                    decodeObject<com.exquisite.a_mobile_kmm.feature.order.domain.model.CustomerOrder>(orderDetailsRoute.orderData)
+                } else null
+
+                OrderDetailsScreen(
+                    order = order,
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onTrackShipment = { trackingUrl ->
+                        navController.navigate(WebViewUrl(url = trackingUrl))
+                    }
+                )
+            }
+            composable<MyWallet> {
+                WalletScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onFundWallet = {
+                        // TODO: Navigate to fund wallet screen or show payment dialog
+                    }
+                )
+            }
+            composable<ContactUs> {
+                ContactUsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    },
+                    onContactClick = { action ->
+                        // TODO: Handle contact actions
+                        // - CALL: Open phone dialer
+                        // - WHATSAPP: Open WhatsApp
+                        // - FACEBOOK: Open Facebook page
+                        // - INSTAGRAM: Open Instagram profile
+                    }
+                )
             }
 
             composable<ProductDetails> { backStackEntry ->

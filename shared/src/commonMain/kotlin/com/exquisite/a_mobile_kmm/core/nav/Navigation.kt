@@ -73,6 +73,24 @@ data class TrainingCheckout(val trainingCourse: String,val trainingFormModel:Str
 object Profile
 
 @Serializable
+object ProfileForm
+
+@Serializable
+object PasswordManager
+
+@Serializable
+object MyOrder
+
+@Serializable
+data class MyOrderDetails(val orderData: String = "")
+
+@Serializable
+object MyWallet
+
+@Serializable
+object ContactUs
+
+@Serializable
 object AuthNav
 
 @Serializable

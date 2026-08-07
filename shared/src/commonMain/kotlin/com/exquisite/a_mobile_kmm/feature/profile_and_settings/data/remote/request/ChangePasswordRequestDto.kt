@@ -4,9 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ChangePasswordRequestDto(
-    val email: String,
-    val firstName: String,
-    val lastName: String,
-    val phone: String,
-    val customerId: Int
+    val customerId: Int,
+    val oldPassword: String,
+    val newPassword: String
 )

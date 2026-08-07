@@ -4,7 +4,7 @@ import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.handleException
 import com.exquisite.a_mobile_kmm.core.usecase.UseCaseResult
 import com.exquisite.a_mobile_kmm.feature.wallet.data.mapper.toTopUpDataModel
-import com.exquisite.a_mobile_kmm.feature.wallet.data.remote.request.InitTopUpAccountRequestDto
+import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.InitTopUpAccountRequest
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.model.TopUpDataModel
 import com.exquisite.a_mobile_kmm.feature.wallet.domain.repository.WalletRepository
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class InitTopUpAccountUseCase(private val repository: WalletRepository) {
-    suspend operator fun invoke(request: InitTopUpAccountRequestDto): Flow<UseCaseResult<TopUpDataModel>> {
+    suspend operator fun invoke(request: InitTopUpAccountRequest): Flow<UseCaseResult<TopUpDataModel>> {
         return repository.initTopUpAccount(request).map { result ->
             when (result) {
                 is Result.Success -> {
