@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.exquisite.a_mobile_kmm.core.screen_components.EmptyState
 import com.exquisite.a_mobile_kmm.core.screen_components.FixedHeaderWithBackButton
 import com.exquisite.a_mobile_kmm.core.screen_components.PrimaryButton
@@ -72,6 +73,7 @@ import com.exquisite.dripp.core.components.rememberSnackBar
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.collections.emptyList
 
 @Composable
 fun AddressListScreen(
@@ -84,8 +86,9 @@ fun AddressListScreen(
 ) {
 
     val (snackBar, snackBarHostState) = rememberSnackBar()
-    var addressList by remember { mutableStateOf<List<AddressModel>>(emptyList()) }
+    var addressList by remember { mutableStateOf<MutableList<AddressModel>>(mutableListOf()) }
     var isAddressSelected by remember { mutableStateOf(false) }
+    val selectedAddress = viewModel.selectedAddress.collectAsStateWithLifecycle().value
 
     val state by viewModel.addressListState.collectAsState()
 
@@ -98,12 +101,12 @@ fun AddressListScreen(
 
         is AddressListState.GetAddressesSuccess -> {
             viewModel.clearState()
-            addressList = result.data
+            addressList = result.data.toMutableList()
+            addressList.find{it.id == selectedAddress?.id}?.let{it.isSelected = true}
         }
 
         is AddressListState.Error -> {
             snackBar.showError("Error: ${result.message}")
-
         }
     }
 
@@ -206,7 +209,7 @@ fun AddressListScreen(
         }
 
         // Button at bottom (in Box scope)
-        if (isAddressSelected) {
+        if (isAddressSelected && from.equals("cart")) {
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -329,6 +332,7 @@ private fun AddressItem(
                 }
             }
 
+            println("from $from")
             if(from.equals("profile")){
                 // Right section: Edit and Delete actions
                 Row(

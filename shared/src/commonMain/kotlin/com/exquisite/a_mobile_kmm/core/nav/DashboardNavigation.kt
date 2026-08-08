@@ -368,7 +368,7 @@ fun DashboardNavigation(onLogout: () -> Unit = {}) {
                             navController.navigate(MyWallet)
                         }
                         "address_book" -> {
-                            navController.navigate(AddressList("profile]"))
+                            navController.navigate(AddressList("profile"))
                         }
                         "contact_us" -> {
                             navController.navigate(ContactUs)

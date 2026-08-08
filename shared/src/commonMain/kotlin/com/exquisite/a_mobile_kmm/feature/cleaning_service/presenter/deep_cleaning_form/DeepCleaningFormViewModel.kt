@@ -81,7 +81,7 @@ class DeepCleaningFormViewModel(
             findAllRegionsUseCase.invoke().collect { response ->
                 when (response) {
                     is UseCaseResult.Success -> {
-                        _regions.value = response.data
+                        _regions.value = response.data.sortedBy { it.name }
                         _isRegionLoading.value = false
                     }
 
@@ -100,7 +100,7 @@ class DeepCleaningFormViewModel(
             findLocationByRegionUseCase.invoke(regionId).collect { response ->
                 when (response) {
                     is UseCaseResult.Success -> {
-                        _locations.value = response.data
+                        _locations.value = response.data.sortedBy { it.name }
                         _isLocationLoading.value = false
                     }
 
@@ -119,7 +119,7 @@ class DeepCleaningFormViewModel(
             findApartmentTypeUseCase.invoke().collect { response ->
                 when (response) {
                     is UseCaseResult.Success -> {
-                        _apartmentTypes.value = response.data
+                        _apartmentTypes.value = response.data.sortedBy { it.name }
                         _isApartmentTypeLoading.value = false
                     }
 
@@ -138,7 +138,7 @@ class DeepCleaningFormViewModel(
             findCleaningTypeUseCase.invoke().collect { response ->
                 when (response) {
                     is UseCaseResult.Success -> {
-                        _cleaningTypes.value = response.data
+                        _cleaningTypes.value = response.data.sortedBy { it.name }
                         _isCleaningTypeLoading.value = false
                     }
                     is UseCaseResult.Error -> {

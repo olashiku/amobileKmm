@@ -278,8 +278,7 @@ private fun OrderItemsCard(order: CustomerOrder) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Shipping (calculated as difference if totalAmount exists)
-            val shipping = kotlin.math.max(0.0, (order.order.totalAmount ?: order.order.amount) - order.order.amount - order.order.taxAmount)
+            val shipping = order.shipping?.shippingAmount?.toDouble()?:0.0
             SummaryRow(
                 label = "Shipping",
                 value = "₦${shipping.formatBalance()}"
@@ -316,7 +315,7 @@ private fun OrderItemsCard(order: CustomerOrder) {
                 )
 
                 Text(
-                    text = "₦${(order.order.totalAmount ?: order.order.amount).formatBalance()}",
+                    text = "₦${(order.order.totalAmount ?: (order.order.amount+ order.order.taxAmount+ shipping)).formatBalance()}",
                     style = getPoppinsBold16(),
                     color = Color(0xFFF29100)
                 )

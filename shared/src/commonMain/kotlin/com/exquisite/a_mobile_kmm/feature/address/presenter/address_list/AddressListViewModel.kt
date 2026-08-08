@@ -30,6 +30,14 @@ class AddressListViewModel(
     private var _addressListState = MutableStateFlow<AddressListState>(AddressListState.Idle)
     val addressListState = _addressListState.asStateFlow()
 
+
+    private val _selectedAddress = MutableStateFlow<AddressModel?>(null)
+    val selectedAddress = _selectedAddress.asStateFlow()
+
+    init{
+        loadSelectedAddress()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun getAddresses() {
         viewModelScope.launch {
@@ -48,6 +56,20 @@ class AddressListViewModel(
                             AddressListState.Error(response.message)
                     }
                 }
+        }
+    }
+
+    private fun loadSelectedAddress() {
+        viewModelScope.launch {
+            aMobileDataStore.getSelectedAddress().collect { addressJson ->
+                if (addressJson.isNotEmpty()) {
+                    try {
+                        _selectedAddress.value = json.decodeFromString<AddressModel>(addressJson)
+                    } catch (e: Exception) {
+                        _selectedAddress.value = null
+                    }
+                }
+            }
         }
     }
 
@@ -91,7 +113,12 @@ class AddressListViewModel(
                 }.collect { response ->
                     when (response) {
                         is UseCaseResult.Success -> {
+                            if(_selectedAddress.value?.id == addressId){
+                                _selectedAddress.value = null
+                                aMobileDataStore.saveSelectedAddress("")
+                            }
                             getAddresses()
+
                         }
                         is UseCaseResult.Error -> _addressListState.value =
                             AddressListState.Error(response.message)

@@ -286,7 +286,7 @@ private fun OrderCard(
                 )
 
                 Text(
-                    text = formatPrice(order.order.totalAmount ?: order.order.amount),
+                    text = formatPrice(order.order.totalAmount ?:(order.order.amount+ order.order.taxAmount+ (order.shipping?.shippingAmount?.toDouble()?:0.0))),
                     style = getPoppinsBold16(),
                     color = Color(0xFF1E293B)
                 )
