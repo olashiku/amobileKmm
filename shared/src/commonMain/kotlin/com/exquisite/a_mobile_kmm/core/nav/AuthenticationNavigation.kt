@@ -18,10 +18,11 @@ import com.exquisite.a_mobile_kmm.feature.auth.presenter.upload_image.UploadImag
 import kotlinx.coroutines.delay
 
 @Composable
-fun AuthenticationNavigation( goToDashboard: () -> Unit,
-                              startDestination: Any = Splash,
+fun AuthenticationNavigation(
+    goToDashboard: () -> Unit, goToEmployeeDashboard: () -> Unit,
+    startDestination: Any = Splash,
 
-                              ) {
+    ) {
 
     val navController = rememberNavController()
     NavHost(
@@ -47,6 +48,8 @@ fun AuthenticationNavigation( goToDashboard: () -> Unit,
             LoginScreen({
                 goToDashboard.invoke()
             }, {
+                goToEmployeeDashboard.invoke()
+            }, {
                 navController.navigate(ForgotPassword)
             }, {
                 navController.navigate(SignUp)
@@ -57,16 +60,16 @@ fun AuthenticationNavigation( goToDashboard: () -> Unit,
         composable<ForgotPassword> {
             ForgotPasswordScreen({
                 navController.popBackStack()
-            }, { uniqueRef,email,from ->
-                navController.navigate(Otp(uniqueRef, email,from))
+            }, { uniqueRef, email, from ->
+                navController.navigate(Otp(uniqueRef, email, from))
             })
         }
 
         composable<SignUp> {
             SignupScreen({
                 navController.popBackStack()
-            }, { uniqueRef, email,from ->
-                navController.navigate(Otp(uniqueRef, email,from))
+            }, { uniqueRef, email, from ->
+                navController.navigate(Otp(uniqueRef, email, from))
             }, {
 
             })
@@ -77,34 +80,41 @@ fun AuthenticationNavigation( goToDashboard: () -> Unit,
             OtpScreen(otp, {
                 navController.popBackStack()
             }, { realOtp ->
-                navController.navigate(CreatePassword(otp.uniqueRef, realOtp,otp.from))
+                navController.navigate(CreatePassword(otp.uniqueRef, realOtp, otp.from))
             })
         }
 
         composable<CreatePassword> { backStack ->
             val createPassword = backStack.toRoute<CreatePassword>()
-            CreatePasswordScreen(createPassword,{
-                navController.popBackStack()
-            }, { password ->
-                navController.navigate(UploadImage(createPassword.uniqueRef,createPassword.realOtp, password))
-            },
-                { message,title,buttonText ->
-                    navController.navigate(Success(message,title,buttonText,true))
+            CreatePasswordScreen(
+                createPassword, {
+                    navController.popBackStack()
+                }, { password ->
+                    navController.navigate(
+                        UploadImage(
+                            createPassword.uniqueRef,
+                            createPassword.realOtp,
+                            password
+                        )
+                    )
+                },
+                { message, title, buttonText ->
+                    navController.navigate(Success(message, title, buttonText, true))
                 })
         }
 
         composable<UploadImage> { backStack ->
             val uploadImage = backStack.toRoute<UploadImage>()
-            UploadImageScreen(uploadImage,{
+            UploadImageScreen(uploadImage, {
                 navController.popBackStack()
-            }, { message,title,buttonTitle ->
-                navController.navigate(Success(message,title,buttonTitle,true))
+            }, { message, title, buttonTitle ->
+                navController.navigate(Success(message, title, buttonTitle, true))
 
             })
         }
-        composable<Success> { backTrack->
+        composable<Success> { backTrack ->
             val successData = backTrack.toRoute<Success>()
-            SuccessScreen(successData.title,successData.message,successData.buttonText) {
+            SuccessScreen(successData.title, successData.message, successData.buttonText) {
                 navController.popBackStack(Login, false)
             }
         }

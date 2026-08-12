@@ -38,3 +38,20 @@ sealed class DashboardBottomNav(
         Res.drawable.unselected_profile
     )
 }
+
+sealed class EmployeeDashboardBottomNav(
+    val route: String,
+    val label: String,
+    val selectedIcon: DrawableResource,
+    val unselectedIcon: DrawableResource
+) {
+    object Home : DashboardBottomNav("home", "Home", Res.drawable.selected_home, Res.drawable.unselected_home)
+
+
+    object Profile : DashboardBottomNav(
+        "profile",
+        "Profile",
+        Res.drawable.selected_profile,
+        Res.drawable.unselected_profile
+    )
+}

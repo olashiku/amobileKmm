@@ -52,6 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LoginScreen(
     goToDashboard: () -> Unit,
+    goToEmployeeDashboard: () -> Unit,
     goToForgotPassword: () -> Unit,
     goToSignUp: () -> Unit,
     modifier: Modifier = Modifier,
@@ -83,7 +84,12 @@ fun LoginScreen(
         }
 
         is LoginState.Success -> {
-            goToDashboard.invoke()
+            if(result.loginModel.role.equals("CUSTOMER")){
+                goToDashboard.invoke()
+            }else {
+                goToEmployeeDashboard.invoke()
+            }
+
         }
 
         is LoginState.Idle -> {

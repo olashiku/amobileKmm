@@ -71,7 +71,8 @@ class LoginUseCase(
             loginModel.user.email,
             loginModel.user.phone,
             loginModel.user.profilePictureUrl ?: "",
-            loginModel.authorization
+            loginModel.authorization,
+            loginModel.role
         )
     }
 }

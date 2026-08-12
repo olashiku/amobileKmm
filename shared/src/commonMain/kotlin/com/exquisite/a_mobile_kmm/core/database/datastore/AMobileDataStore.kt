@@ -35,12 +35,13 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
         val HAS_LOGGED_IN = booleanPreferencesKey("has_logged_in")
         val REMEMBER_ME = booleanPreferencesKey("remember_me")
         val SELECTED_ADDRESS = stringPreferencesKey("selected_address")
+        val ROLE = stringPreferencesKey("role")
 
     }
 
     suspend fun saveUserProfile(
         id: String, firstName: String,  lastName: String,email: String, phone: String,
-        profilePicture: String, token: String
+        profilePicture: String, token: String,role:String
     ) {
         dataStore.edit { preferences ->
             preferences[ID_KEY] = id
@@ -50,6 +51,8 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
             preferences[PHONE_KEY] = phone
             preferences[TOKEN_KEY] = token
             preferences[PROFILE_PICTURE] = profilePicture
+            preferences[ROLE] = role
+
         }
     }
 
@@ -91,12 +94,6 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
         preferences[PHONE_KEY] ?: ""
     }
 
-
-
-
-
-
-
     suspend fun saveHasLoggedIn(hasLoggedIn:Boolean?){
         dataStore.edit { preferences ->
             preferences[HAS_LOGGED_IN] = hasLoggedIn ?:false
@@ -105,6 +102,16 @@ class AMobileDataStore(private val dataStore: DataStore<Preferences>) {
 
     fun hasLoggedIn() = dataStore.data.map { preferences ->
         preferences[HAS_LOGGED_IN]
+    }
+
+    fun getRole() = dataStore.data.map { preferences ->
+        preferences[ROLE]
+    }
+
+    suspend fun saveRole(role: String) {
+        dataStore.edit { preferences ->
+            preferences[ROLE] = role
+        }
     }
 
     suspend fun saveSelectedAddress(addressJson: String) {

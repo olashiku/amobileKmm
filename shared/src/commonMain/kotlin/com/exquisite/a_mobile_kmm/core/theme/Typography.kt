@@ -202,6 +202,7 @@ fun poppinsTextStyle(
 @Composable fun getPoppinsRegular10() = poppinsTextStyle(FontWeight.Normal, 10, 14)
 @Composable fun getPoppinsRegular11() = poppinsTextStyle(FontWeight.Normal, 11, 16)
 @Composable fun getPoppinsRegular12() = poppinsTextStyle(FontWeight.Normal, 12, 16)
+@Composable fun getPoppinsRegular13() = poppinsTextStyle(FontWeight.Normal, 13, 16)
 @Composable fun getPoppinsRegular14() = poppinsTextStyle(FontWeight.Normal, 14, 20)
 @Composable fun getPoppinsRegular16() = poppinsTextStyle(FontWeight.Normal, 16, 22)
 @Composable fun getPoppinsRegular18() = poppinsTextStyle(FontWeight.Normal, 18, 26)

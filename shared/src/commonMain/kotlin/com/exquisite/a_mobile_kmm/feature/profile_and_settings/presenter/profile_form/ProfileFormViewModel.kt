@@ -76,6 +76,7 @@ class ProfileFormViewModel(
                     is UseCaseResult.Success -> {
                         // Save updated user data to datastore
                         val token = dataStore.getAuthorization().first()
+                        val role = dataStore.getRole().first()
                         dataStore.saveUserProfile(
                             id = request.customerId.toString(),
                             firstName = request.firstName,
@@ -83,7 +84,8 @@ class ProfileFormViewModel(
                             email = request.email,
                             phone = request.phone,
                             profilePicture = request.profilePicture,
-                            token = token
+                            token = token,
+                            role =role?:""
                         )
 
                         // Update local state

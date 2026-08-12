@@ -1,7 +1,6 @@
 package com.exquisite.a_mobile_kmm
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +15,8 @@ import com.exquisite.a_mobile_kmm.core.nav.AuthNav
 import com.exquisite.a_mobile_kmm.core.nav.AuthenticationNavigation
 import com.exquisite.a_mobile_kmm.core.nav.DashboardNav
 import com.exquisite.a_mobile_kmm.core.nav.DashboardNavigation
+import com.exquisite.a_mobile_kmm.core.nav.EmployeeDashboardNav
+import com.exquisite.a_mobile_kmm.core.nav.EmployeeDashboardNavigation
 import com.exquisite.a_mobile_kmm.core.nav.Login
 import com.exquisite.a_mobile_kmm.core.nav.Splash
 import com.exquisite.a_mobile_kmm.core.theme.AMobileTheme
@@ -32,26 +33,47 @@ fun App() {
 
         var authStartDestination by remember { mutableStateOf<Any?>(null) }
         var isLoggedIn by remember { mutableStateOf(false) }
+        var userRole by remember { mutableStateOf<String?>(null) }
 
         LaunchedEffect(Unit) {
             dataStore.hasLoggedIn().collect { loggedIn ->
                 println("App: hasLoggedIn: $loggedIn")
                 isLoggedIn = loggedIn ?: false
             }
+
+            dataStore.getRole().collect { role ->
+                println("App: role: $role")
+                userRole = role
+                if (role == "CUSTOMER") {
+                    authStartDestination = DashboardNav
+                } else {
+                    authStartDestination = EmployeeDashboardNav
+                }
+            }
         }
 
-        NavHost(navController = navController,
-            startDestination = if(isLoggedIn) DashboardNav else AuthNav
+        NavHost(
+            navController = navController,
+            startDestination = if (isLoggedIn) {
+                if (userRole == "CUSTOMER") DashboardNav else EmployeeDashboardNav
+            } else {
+                AuthNav
+            }
         ) {
 
             composable<AuthNav> {
                 AuthenticationNavigation(
                     goToDashboard = {
-                        navController.navigate(DashboardNav){
+                        navController.navigate(DashboardNav) {
                             popUpTo(AuthNav) { inclusive = true }
                         }
                     },
-                    startDestination =  authStartDestination ?: Splash
+                    goToEmployeeDashboard = {
+                        navController.navigate(EmployeeDashboardNav) {
+                            popUpTo(AuthNav) { inclusive = true }
+                        }
+                    },
+                    startDestination = authStartDestination ?: Splash
                 )
             }
             composable<DashboardNav> {
@@ -59,15 +81,11 @@ fun App() {
                     onLogout = {
                         scope.launch {
 
-
-
                             // Set start destination to Login screen
                             authStartDestination = Login
 
-                            // Clear all user data from DataStore
                             dataStore.saveHasLoggedIn(false)
-
-                            // Navigate back to Auth screen
+                            dataStore.saveRole("")
                             navController.navigate(AuthNav) {
                                 popUpTo(DashboardNav) { inclusive = true }
                             }
@@ -76,6 +94,20 @@ fun App() {
                 )
             }
 
+            composable<EmployeeDashboardNav> {
+                EmployeeDashboardNavigation(
+                    onLogout = {
+                        scope.launch {
+                            authStartDestination = Login
+                            dataStore.saveHasLoggedIn(false)
+                            dataStore.saveRole("")
+                            navController.navigate(AuthNav) {
+                                popUpTo(EmployeeDashboardNav) { inclusive = true }
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
 }

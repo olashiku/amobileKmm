@@ -1,4 +1,4 @@
-package com.exquisite.dripp.core.components
+package com.exquisite.a_mobile_kmm.core.screen_components
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -40,9 +40,9 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     background(
         brush = Brush.linearGradient(
             colors = listOf(
-                Color(0xFF1F1F1F),  // Base dark color
-                Color(0xFF2D2D2D),  // Lighter shimmer
-                Color(0xFF1F1F1F),  // Base dark color
+                Color(0xFFE0E0E0),  // Base light gray
+                Color(0xFFF5F5F5),  // Lighter shimmer
+                Color(0xFFE0E0E0),  // Base light gray
             ),
             start = Offset(startOffsetX, 0f),
             end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())

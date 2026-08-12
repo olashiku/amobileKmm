@@ -72,6 +72,13 @@ import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.cleaning_se
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_checkout.DeepCleaningCheckoutViewModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form.DeepCleaningFormViewModel
 import com.exquisite.a_mobile_kmm.feature.cleaning_service.presenter.deep_cleaning_form_two.DeepCleaningFormTwoViewModel
+import com.exquisite.a_mobile_kmm.feature.employee.data.repository.EmployeeRepositoryImpl
+import com.exquisite.a_mobile_kmm.feature.employee.domain.repository.EmployeeRepository
+import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.GetAgentBookingsUseCase
+import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.GetAgentServiceCountsUseCase
+import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.UpdateAgentBookingUseCase
+import com.exquisite.a_mobile_kmm.feature.employee.presenter.booking.UpdateBookingViewModel
+import com.exquisite.a_mobile_kmm.feature.employee.presenter.home.EmployeeHomeScreenViewModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.local.data_source.ProductDataSource
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.repository.EcommerceRepositoryImpl
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.domain.repository.EcommerceRepository
@@ -217,6 +224,7 @@ val sharedModule: Module = module {
     single<AddressRepository> { AddressRepositoryImpl(get()) }
     single<ProfileRepository> { ProfileRepositoryImpl(get()) }
     single<WalletRepository> { WalletRepositoryImpl(get()) }
+    single<EmployeeRepository> { EmployeeRepositoryImpl(get()) }
 
     //usecase
     single { InitRegisterUseCase(get()) }
@@ -292,6 +300,9 @@ val sharedModule: Module = module {
     single { InitTopUpAccountUseCase(get()) }
     single { CompleteTopUpAccountUseCase(get()) }
     single { CartUseCase(get()) }
+    single { GetAgentServiceCountsUseCase(get()) }
+    single { UpdateAgentBookingUseCase(get()) }
+    single { GetAgentBookingsUseCase(get()) }
 
     //viewModel
     viewModel { SignupViewModel(get()) }
@@ -341,4 +352,8 @@ val sharedModule: Module = module {
     viewModel { MobileToiletEventFormOneViewModel(get()) }
     viewModel { MobileToiletFormThreeViewModel(get()) }
     viewModel { ProfileViewModel(get()) }
+
+    //employee view model
+    viewModel { EmployeeHomeScreenViewModel(get(), get()) }
+    viewModel { UpdateBookingViewModel(get(), get(), get()) }
 }

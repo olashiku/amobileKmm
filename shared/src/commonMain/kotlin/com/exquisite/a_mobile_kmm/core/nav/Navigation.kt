@@ -48,6 +48,15 @@ data class Success(
 object Home
 
 @Serializable
+object EmployeeHome
+
+@Serializable
+data class EmployeeBooking(val bookingType: String)
+
+@Serializable
+object EmployeeProfile
+
+@Serializable
 object Booking
 
 @Serializable
@@ -95,6 +104,11 @@ object AuthNav
 
 @Serializable
 object DashboardNav
+
+@Serializable
+object EmployeeDashboardNav
+
+
 
 @Serializable
 data class ProductDetails(
