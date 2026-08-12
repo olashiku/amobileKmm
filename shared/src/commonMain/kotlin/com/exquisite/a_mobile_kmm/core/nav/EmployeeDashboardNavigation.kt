@@ -26,8 +26,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.exquisite.a_mobile_kmm.core.nav.NavigationUtils.decodeObject
 import com.exquisite.a_mobile_kmm.core.theme.LocalColorsPalette
+import com.exquisite.a_mobile_kmm.feature.employee.domain.model.AgentBooking
 import com.exquisite.a_mobile_kmm.feature.employee.presenter.booking.BookingsListScreen
+import com.exquisite.a_mobile_kmm.feature.employee.presenter.booking_details.EmployeeBookingDetailsScreen
 import com.exquisite.a_mobile_kmm.feature.employee.presenter.home.EmployeeHomeScreen
 import com.exquisite.a_mobile_kmm.feature.employee.presenter.profile.EmployeeProfileScreen
 import com.exquisite.a_mobile_kmm.feature.profile_and_settings.presenter.password_manager.PasswordManagerScreen
@@ -85,22 +88,36 @@ fun EmployeeDashboardNavigation(onLogout: () -> Unit = {}) {
                 val data = backTrack.toRoute<EmployeeBooking>()
                 BookingsListScreen(data.bookingType, goBack = {
                     navController.popBackStack()
-                }, toBookingDetails = {
-
+                }, toBookingDetails = { agentBooking ->
+                    navController.navigate(EmployeeBookingDetails(agentBooking))
                 })
+            }
+
+            composable<EmployeeBookingDetails> { backTrack ->
+                val data = backTrack.toRoute<EmployeeBookingDetails>()
+                val agentBooking = decodeObject<AgentBooking>(data.agentBooking)
+                EmployeeBookingDetailsScreen(
+                    agentBooking = agentBooking,
+                    goBack = { navController.popBackStack() },
+                    goToHomePage = {
+                        navController.popBackStack<EmployeeHome>(inclusive = false)
+                    }
+                )
             }
 
 
             composable<EmployeeProfile> {
                 EmployeeProfileScreen(onMenuItemClick = { label ->
-                    when(label){
-                        "edit_profile" ->{
+                    when (label) {
+                        "edit_profile" -> {
                             navController.navigate(ProfileForm)
                         }
-                        "password_manager" ->{
+
+                        "password_manager" -> {
                             navController.navigate(PasswordManager)
                         }
-                        "logout" ->{
+
+                        "logout" -> {
                             onLogout()
                         }
                     }

@@ -53,6 +53,10 @@ object EmployeeHome
 @Serializable
 data class EmployeeBooking(val bookingType: String)
 
+
+@Serializable
+data class EmployeeBookingDetails(val agentBooking:String)
+
 @Serializable
 object EmployeeProfile
 

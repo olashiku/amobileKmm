@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 class UpdateBookingViewModel(
     private val dataStore: AMobileDataStore,
-    private val updateAgentBookingUseCase: UpdateAgentBookingUseCase,
     private val getAgentBookingsUseCase: GetAgentBookingsUseCase
 ) : ViewModel() {
 
@@ -72,49 +71,7 @@ class UpdateBookingViewModel(
         }
     }
 
-    fun updateBooking(
-        bookingId: Int,
-        updateType: BookingUpdateType,
-        agentRemark: String
-    ) {
-        viewModelScope.launch {
-            _updateState.value = UpdateBookingUiState.Loading
 
-            // Get employee ID from datastore
-            val employeeId = dataStore.getUserId().first().toIntOrNull()
-
-            if (employeeId == null) {
-                _updateState.value = UpdateBookingUiState.Error("Employee ID not found")
-                return@launch
-            }
-
-            val request = UpdateAgentBookingRequest(
-                employeeId = employeeId,
-                bookingId = bookingId,
-                updateType = updateType,
-                agentRemark = agentRemark
-            )
-
-            updateAgentBookingUseCase(request).collect { result ->
-                _updateState.value = when (result) {
-                    is Result.Success -> {
-                        result.data?.let {
-                            if (it.isSuccess) {
-                                UpdateBookingUiState.Success(it.message)
-                            } else {
-                                UpdateBookingUiState.Error(it.message)
-                            }
-                        } ?: UpdateBookingUiState.Error("No response data")
-                    }
-                    is Result.Exception -> {
-                        UpdateBookingUiState.Error(
-                            result.exception.message ?: "An error occurred"
-                        )
-                    }
-                }
-            }
-        }
-    }
 
 
     fun resetUpdateState() {

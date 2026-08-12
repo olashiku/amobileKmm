@@ -1,17 +1,21 @@
 package com.exquisite.a_mobile_kmm.feature.employee.data.mapper
 
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.request.UpdateAgentBookingRequestDto
+import com.exquisite.a_mobile_kmm.feature.employee.data.remote.request.UpdateBookingImagesRequestDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.AgentBookingDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.AgentServiceCountsDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.AssignedAgentDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.RoleDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.UpdateAgentBookingResponseDto
+import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.UpdateBookingImagesResponseDto
 import com.exquisite.a_mobile_kmm.feature.employee.domain.model.AgentBooking
 import com.exquisite.a_mobile_kmm.feature.employee.domain.model.AgentRole
 import com.exquisite.a_mobile_kmm.feature.employee.domain.model.AgentServiceCounts
 import com.exquisite.a_mobile_kmm.feature.employee.domain.model.AssignedAgent
 import com.exquisite.a_mobile_kmm.feature.employee.domain.model.UpdateAgentBookingRequest
 import com.exquisite.a_mobile_kmm.feature.employee.domain.model.UpdateAgentBookingResult
+import com.exquisite.a_mobile_kmm.feature.employee.domain.model.UpdateBookingImagesRequest
+import com.exquisite.a_mobile_kmm.feature.employee.domain.model.UpdateBookingImagesResult
 
 /**
  * Maps AgentServiceCountsDto to AgentServiceCounts domain model
@@ -56,6 +60,32 @@ fun UpdateAgentBookingRequest.toDto(): UpdateAgentBookingRequestDto {
 fun UpdateAgentBookingResponseDto.toDomainModel(): UpdateAgentBookingResult? {
     return if (responseMessage != null && responseCode != null) {
         UpdateAgentBookingResult(
+            isSuccess = responseCode == "00",
+            message = responseMessage
+        )
+    } else {
+        null
+    }
+}
+
+/**
+ * Maps UpdateBookingImagesRequest domain model to DTO
+ */
+fun UpdateBookingImagesRequest.toDto(): UpdateBookingImagesRequestDto {
+    return UpdateBookingImagesRequestDto(
+        employeeId = employeeId.toString(),
+        bookingId = bookingId.toString(),
+        images = images
+    )
+}
+
+/**
+ * Maps UpdateBookingImagesResponseDto to UpdateBookingImagesResult domain model
+ * Returns null if response is invalid
+ */
+fun UpdateBookingImagesResponseDto.toDomainModel(): UpdateBookingImagesResult? {
+    return if (responseMessage != null && responseCode != null) {
+        UpdateBookingImagesResult(
             isSuccess = responseCode == "00",
             message = responseMessage
         )

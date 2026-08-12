@@ -189,9 +189,6 @@ fun BookingsListScreen(
             }
 
         }
-
-
-
     }
 }
 

@@ -77,7 +77,9 @@ import com.exquisite.a_mobile_kmm.feature.employee.domain.repository.EmployeeRep
 import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.GetAgentBookingsUseCase
 import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.GetAgentServiceCountsUseCase
 import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.UpdateAgentBookingUseCase
+import com.exquisite.a_mobile_kmm.feature.employee.domain.usecase.UpdateBookingImagesUseCase
 import com.exquisite.a_mobile_kmm.feature.employee.presenter.booking.UpdateBookingViewModel
+import com.exquisite.a_mobile_kmm.feature.employee.presenter.booking_details.EmployeeBookingDetailsViewModel
 import com.exquisite.a_mobile_kmm.feature.employee.presenter.home.EmployeeHomeScreenViewModel
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.local.data_source.ProductDataSource
 import com.exquisite.a_mobile_kmm.feature.home_and_ecommerce.data.repository.EcommerceRepositoryImpl
@@ -302,6 +304,7 @@ val sharedModule: Module = module {
     single { CartUseCase(get()) }
     single { GetAgentServiceCountsUseCase(get()) }
     single { UpdateAgentBookingUseCase(get()) }
+    single { UpdateBookingImagesUseCase(get()) }
     single { GetAgentBookingsUseCase(get()) }
 
     //viewModel
@@ -355,5 +358,7 @@ val sharedModule: Module = module {
 
     //employee view model
     viewModel { EmployeeHomeScreenViewModel(get(), get()) }
-    viewModel { UpdateBookingViewModel(get(), get(), get()) }
+    viewModel { UpdateBookingViewModel(get(), get()) }
+    viewModel { EmployeeBookingDetailsViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+
 }

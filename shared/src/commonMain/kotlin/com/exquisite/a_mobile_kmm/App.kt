@@ -98,9 +98,9 @@ fun App() {
                 EmployeeDashboardNavigation(
                     onLogout = {
                         scope.launch {
-                            authStartDestination = Login
                             dataStore.saveHasLoggedIn(false)
                             dataStore.saveRole("")
+                            authStartDestination = Login
                             navController.navigate(AuthNav) {
                                 popUpTo(EmployeeDashboardNav) { inclusive = true }
                             }

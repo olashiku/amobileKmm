@@ -3,9 +3,11 @@ package com.exquisite.a_mobile_kmm.feature.employee.data.repository
 import com.exquisite.a_mobile_kmm.core.network.Result
 import com.exquisite.a_mobile_kmm.core.network.safeApiCall
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.request.UpdateAgentBookingRequestDto
+import com.exquisite.a_mobile_kmm.feature.employee.data.remote.request.UpdateBookingImagesRequestDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.GetAgentBookingResponseDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.GetAgentServiceCountsResponseDto
 import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.UpdateAgentBookingResponseDto
+import com.exquisite.a_mobile_kmm.feature.employee.data.remote.response.UpdateBookingImagesResponseDto
 import com.exquisite.a_mobile_kmm.feature.employee.domain.repository.EmployeeRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -27,6 +29,14 @@ class EmployeeRepositoryImpl(private val httpClient: HttpClient) : EmployeeRepos
     override suspend fun updateAgentBooking(request: UpdateAgentBookingRequestDto): Flow<Result<UpdateAgentBookingResponseDto>> {
         return safeApiCall {
             httpClient.post("api/v1/bookings/update_agent_booking") {
+                setBody(request)
+            }
+        }
+    }
+
+    override suspend fun updateBookingImages(request: UpdateBookingImagesRequestDto): Flow<Result<UpdateBookingImagesResponseDto>> {
+        return safeApiCall {
+            httpClient.post("api/v1/bookings/update_cleaning_booking_images") {
                 setBody(request)
             }
         }
