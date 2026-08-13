@@ -31,34 +31,85 @@ fun App() {
         val scope = rememberCoroutineScope()
         val dataStore: AMobileDataStore = koinInject()
 
-        var authStartDestination by remember { mutableStateOf<Any?>(null) }
-        var isLoggedIn by remember { mutableStateOf(false) }
+        // Auth start destination - set once and stable
+        val authStartDestination = remember { mutableStateOf<Any>(Splash) }
         var userRole by remember { mutableStateOf<String?>(null) }
 
+        // Determine initial start destination - set once and never changes
+        val initialStartDestination = remember {
+            mutableStateOf<Any?>(null)
+        }
+
         LaunchedEffect(Unit) {
-            dataStore.hasLoggedIn().collect { loggedIn ->
-                println("App: hasLoggedIn: $loggedIn")
-                isLoggedIn = loggedIn ?: false
+            // Collect both values first before setting startDestination
+            var loggedIn: Boolean? = null
+            var role: String? = null
+            var hasSetStartDestination = false
+
+            launch {
+                dataStore.hasLoggedIn().collect { value ->
+                    println("App: hasLoggedIn: $value")
+                    loggedIn = value ?: false
+
+                    // Only set start destination once when we have both values
+                    if (!hasSetStartDestination && loggedIn != null && role != null) {
+                        hasSetStartDestination = true
+
+                        // Set auth start destination (for nested AuthenticationNavigation)
+                        authStartDestination.value = when {
+                            role == "CUSTOMER" -> Login
+                            role.isNullOrEmpty() -> Splash
+                            else -> Login
+                        }
+
+                        // Set main start destination
+                        initialStartDestination.value = if (loggedIn == true && !role.isNullOrEmpty()) {
+                            if (role == "CUSTOMER") DashboardNav else EmployeeDashboardNav
+                        } else {
+                            AuthNav
+                        }
+                    }
+                }
             }
 
-            dataStore.getRole().collect { role ->
-                println("App: role: $role")
-                userRole = role
-                if (role == "CUSTOMER") {
-                    authStartDestination = DashboardNav
-                } else {
-                    authStartDestination = EmployeeDashboardNav
+            launch {
+                dataStore.getRole().collect { value ->
+                    println("App: role: $value")
+                    role = value
+                    userRole = value
+
+                    // Only set start destination once when we have both values
+                    if (!hasSetStartDestination && loggedIn != null && role != null) {
+                        hasSetStartDestination = true
+
+                        // Set auth start destination (for nested AuthenticationNavigation)
+                        authStartDestination.value = when {
+                            value == "CUSTOMER" -> Login
+                            value.isNullOrEmpty() -> Splash
+                            else -> Login
+                        }
+
+                        // Set main start destination
+                        initialStartDestination.value = if (loggedIn == true && !value.isNullOrEmpty()) {
+                            if (value == "CUSTOMER") DashboardNav else EmployeeDashboardNav
+                        } else {
+                            AuthNav
+                        }
+                        println("App: authStartDestination set to ${authStartDestination.value}")
+                        println("App: initialStartDestination set to ${initialStartDestination.value}")
+                    }
                 }
             }
         }
 
+        // Wait for initial data to load
+        if (initialStartDestination.value == null) {
+            return@AMobileTheme
+        }
+
         NavHost(
             navController = navController,
-            startDestination = if (isLoggedIn) {
-                if (userRole == "CUSTOMER") DashboardNav else EmployeeDashboardNav
-            } else {
-                AuthNav
-            }
+            startDestination = initialStartDestination.value!!
         ) {
 
             composable<AuthNav> {
@@ -73,17 +124,13 @@ fun App() {
                             popUpTo(AuthNav) { inclusive = true }
                         }
                     },
-                    startDestination = authStartDestination ?: Splash
+                    startDestination = authStartDestination.value
                 )
             }
             composable<DashboardNav> {
                 DashboardNavigation(
                     onLogout = {
                         scope.launch {
-
-                            // Set start destination to Login screen
-                            authStartDestination = Login
-
                             dataStore.saveHasLoggedIn(false)
                             dataStore.saveRole("")
                             navController.navigate(AuthNav) {
@@ -100,7 +147,6 @@ fun App() {
                         scope.launch {
                             dataStore.saveHasLoggedIn(false)
                             dataStore.saveRole("")
-                            authStartDestination = Login
                             navController.navigate(AuthNav) {
                                 popUpTo(EmployeeDashboardNav) { inclusive = true }
                             }
