@@ -20,6 +20,7 @@ import com.exquisite.a_mobile_kmm.core.nav.EmployeeDashboardNavigation
 import com.exquisite.a_mobile_kmm.core.nav.Login
 import com.exquisite.a_mobile_kmm.core.nav.Splash
 import com.exquisite.a_mobile_kmm.core.theme.AMobileTheme
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -41,64 +42,61 @@ fun App() {
         }
 
         LaunchedEffect(Unit) {
-            // Collect both values first before setting startDestination
-            var loggedIn: Boolean? = null
-            var role: String? = null
-            var hasSetStartDestination = false
+            try {
+                // Read initial values once using first() instead of collect()
+                // This avoids iOS Flow collection issues
+                println("App: Reading initial data...")
 
-            launch {
-                dataStore.hasLoggedIn().collect { value ->
-                    println("App: hasLoggedIn: $value")
-                    loggedIn = value ?: false
+                val loggedIn = try {
+                    dataStore.hasLoggedIn().first() ?: false
+                } catch (e: Exception) {
+                    println("App: Error reading hasLoggedIn: ${e.message}")
+                    false
+                }
 
-                    // Only set start destination once when we have both values
-                    if (!hasSetStartDestination && loggedIn != null && role != null) {
-                        hasSetStartDestination = true
+                val role = try {
+                    dataStore.getRole().first()
+                } catch (e: Exception) {
+                    println("App: Error reading role: ${e.message}")
+                    null
+                }
 
-                        // Set auth start destination (for nested AuthenticationNavigation)
-                        authStartDestination.value = when {
-                            role == "CUSTOMER" -> Login
-                            role.isNullOrEmpty() -> Splash
-                            else -> Login
-                        }
+                println("App: hasLoggedIn: $loggedIn")
+                println("App: role: $role")
 
-                        // Set main start destination
-                        initialStartDestination.value = if (loggedIn == true && !role.isNullOrEmpty()) {
-                            if (role == "CUSTOMER") DashboardNav else EmployeeDashboardNav
-                        } else {
+                userRole = role
+
+                // Set auth start destination (for nested AuthenticationNavigation)
+                authStartDestination.value = when {
+                    role == "CUSTOMER" -> Login
+                    role.isNullOrEmpty() -> Splash
+                    else -> Login
+                }
+
+                // Set main start destination
+                initialStartDestination.value = if (loggedIn && !role.isNullOrEmpty()) {
+                    when (role) {
+                        "CUSTOMER" -> DashboardNav
+                        "EMPLOYEE", "AGENT" -> EmployeeDashboardNav
+                        else -> {
+                            // Unknown role - log and redirect to auth
+                            println("App: WARNING - Unknown role '$role', redirecting to auth")
                             AuthNav
                         }
                     }
+                } else {
+                    AuthNav
                 }
-            }
 
-            launch {
-                dataStore.getRole().collect { value ->
-                    println("App: role: $value")
-                    role = value
-                    userRole = value
+                println("App: authStartDestination set to ${authStartDestination.value}")
+                println("App: initialStartDestination set to ${initialStartDestination.value}")
 
-                    // Only set start destination once when we have both values
-                    if (!hasSetStartDestination && loggedIn != null && role != null) {
-                        hasSetStartDestination = true
-
-                        // Set auth start destination (for nested AuthenticationNavigation)
-                        authStartDestination.value = when {
-                            value == "CUSTOMER" -> Login
-                            value.isNullOrEmpty() -> Splash
-                            else -> Login
-                        }
-
-                        // Set main start destination
-                        initialStartDestination.value = if (loggedIn == true && !value.isNullOrEmpty()) {
-                            if (value == "CUSTOMER") DashboardNav else EmployeeDashboardNav
-                        } else {
-                            AuthNav
-                        }
-                        println("App: authStartDestination set to ${authStartDestination.value}")
-                        println("App: initialStartDestination set to ${initialStartDestination.value}")
-                    }
-                }
+            } catch (e: Exception) {
+                println("App: Error in LaunchedEffect: ${e.message}")
+                e.printStackTrace()
+                // Fallback to default navigation
+                authStartDestination.value = Splash
+                initialStartDestination.value = AuthNav
             }
         }
 

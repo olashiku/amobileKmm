@@ -22,6 +22,8 @@ import platform.UIKit.UIImagePickerControllerDelegateProtocol
 import platform.UIKit.UIImagePickerControllerSourceType
 import platform.UIKit.UINavigationControllerDelegateProtocol
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 import platform.posix.memcpy
 
 @OptIn(ExperimentalForeignApi::class)
@@ -56,10 +58,15 @@ private class CameraLauncherImpl(
                 // Permission not requested yet, request it
                 AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
                     if (granted) {
-                        launchCameraPicker()
+                        // Ensure UI operations happen on main thread
+                        dispatch_async(dispatch_get_main_queue()) {
+                            launchCameraPicker()
+                        }
                     } else {
                         println("Camera permission denied")
-                        onResult(null)
+                        dispatch_async(dispatch_get_main_queue()) {
+                            onResult(null)
+                        }
                     }
                 }
             }
@@ -76,55 +83,60 @@ private class CameraLauncherImpl(
     }
 
     private fun launchCameraPicker() {
-        // Check if camera is available
-        if (!UIImagePickerController.isSourceTypeAvailable(
-                UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
-            )
-        ) {
-            println("Camera not available on this device")
-            onResult(null)
-            return
-        }
-
-        try {
-            val picker = UIImagePickerController()
-            picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
-            picker.allowsEditing = false
-            picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureMode.UIImagePickerControllerCameraCaptureModePhoto
-            picker.cameraDevice = UIImagePickerControllerCameraDevice.UIImagePickerControllerCameraDeviceRear
-            picker.showsCameraControls = true
-
-            // Explicitly set media types to photo only
-            picker.setMediaTypes(listOf("public.image"))
-
-            // Create and retain delegate
-            val delegate = CameraPickerDelegate { result ->
-                // Clear references after completion
-                this.pickerRef = null
-                this.delegateRef = null
-                onResult(result)
+        // Ensure this runs on the main thread
+        dispatch_async(dispatch_get_main_queue()) {
+            // Check if camera is available
+            if (!UIImagePickerController.isSourceTypeAvailable(
+                    UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
+                )
+            ) {
+                println("Camera not available on this device")
+                onResult(null)
+                return@dispatch_async
             }
 
-            this.delegateRef = delegate
-            this.pickerRef = picker
+            try {
+                val picker = UIImagePickerController()
+                picker.sourceType = UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
+                picker.allowsEditing = false
+                picker.cameraCaptureMode = UIImagePickerControllerCameraCaptureMode.UIImagePickerControllerCameraCaptureModePhoto
+                picker.cameraDevice = UIImagePickerControllerCameraDevice.UIImagePickerControllerCameraDeviceRear
+                picker.showsCameraControls = true
 
-            picker.delegate = delegate
+                // Explicitly set media types to photo only
+                picker.setMediaTypes(listOf("public.image"))
 
-            // Get the root view controller and present the picker on main thread
-            val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
-            if (rootViewController != null) {
-                rootViewController.presentViewController(picker, animated = true, completion = null)
-            } else {
-                println("No root view controller found")
+                // Create and retain delegate
+                val delegate = CameraPickerDelegate { result ->
+                    // Clear references after completion (on main thread)
+                    dispatch_async(dispatch_get_main_queue()) {
+                        this.pickerRef = null
+                        this.delegateRef = null
+                        onResult(result)
+                    }
+                }
+
+                this.delegateRef = delegate
+                this.pickerRef = picker
+
+                picker.delegate = delegate
+
+                // Get the root view controller and present the picker
+                val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
+                if (rootViewController != null) {
+                    rootViewController.presentViewController(picker, animated = true, completion = null)
+                } else {
+                    println("No root view controller found")
+                    this.pickerRef = null
+                    this.delegateRef = null
+                    onResult(null)
+                }
+            } catch (e: Exception) {
+                println("Error launching camera: ${e.message}")
                 this.pickerRef = null
                 this.delegateRef = null
                 onResult(null)
             }
-        } catch (e: Exception) {
-            println("Error launching camera: ${e.message}")
-            this.pickerRef = null
-            this.delegateRef = null
-            onResult(null)
         }
     }
 
@@ -134,10 +146,12 @@ private class CameraLauncherImpl(
 
         if (authStatus == AVAuthorizationStatusNotDetermined) {
             AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
-                if (granted) {
-                    println("Camera permission granted")
-                } else {
-                    println("Camera permission denied")
+                dispatch_async(dispatch_get_main_queue()) {
+                    if (granted) {
+                        println("Camera permission granted")
+                    } else {
+                        println("Camera permission denied")
+                    }
                 }
             }
         }

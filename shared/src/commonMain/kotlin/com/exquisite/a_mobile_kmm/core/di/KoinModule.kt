@@ -3,6 +3,7 @@ package com.exquisite.a_mobile_kmm.core.di
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.exquisite.a_mobile_kmm.core.database.datastore.AMobileDataStore
+import com.exquisite.a_mobile_kmm.core.database.room.ALL_MIGRATIONS
 import com.exquisite.a_mobile_kmm.core.database.room.AppDatabase
 import com.exquisite.a_mobile_kmm.core.network.ApiConfig
 import com.exquisite.a_mobile_kmm.core.network.HttpClientFactory
@@ -207,7 +208,10 @@ val sharedModule: Module = module {
             .setDriver(BundledSQLiteDriver())
             .setQueryCoroutineContext(Dispatchers.IO)
             .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
-            .fallbackToDestructiveMigration(true)
+            .addMigrations(*ALL_MIGRATIONS)
+            // ONLY use fallbackToDestructiveMigration in development
+            // Remove this line before production or you'll lose user data!
+            .fallbackToDestructiveMigrationOnDowngrade(true)
             .build()
     }
 

@@ -34,7 +34,7 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
         CategoryProductEntity::class,
         ProductEntity::class
     ],
-    version = 5,
+    version = 1,
     exportSchema = true
 )
 @ConstructedBy(AppDatabaseConstructor::class)
