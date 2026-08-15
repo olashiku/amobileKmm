@@ -115,6 +115,7 @@ fun DeepCleaningFormScreen(
 
         is DeepCleaningFormState.Error -> {
             showPriceLoadingDialog = false
+            snackBar.showError(result.message)
         }
     }
 

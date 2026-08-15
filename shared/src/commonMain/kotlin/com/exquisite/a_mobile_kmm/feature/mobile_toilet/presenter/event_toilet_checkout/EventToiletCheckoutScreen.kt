@@ -141,7 +141,7 @@ fun EventToiletCheckoutScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             // Fixed Header
             FixedHeaderWithBackButton(
-                title = "Residential Septic Request Checkout",
+                title = "Toilet Checkout",
                 onBackClick = goBack
             )
 
@@ -165,10 +165,10 @@ fun EventToiletCheckoutScreen(
                             .background(Color(0XFFFFF9F0)).padding(20.dp)
                     ) {
                         Spacer(modifier = modifier.height(1.dp))
-                        Badge("RESIDENTIAL SEPTIC REQUEST")
+                        Badge("TOILET REQUEST")
                         Spacer(modifier = modifier.height(8.dp))
                         Text(
-                            text = "Septic request service",
+                            text = "Toilet request service",
                             style = getPoppinsSemiBold18(),
                             color = Color(0XFF1A1A1A)
                         )

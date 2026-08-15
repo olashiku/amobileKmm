@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
@@ -676,7 +677,7 @@ private fun ServicesGrid(
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
-        modifier = modifier.height(200.dp),
+        modifier = modifier.wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(50.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
