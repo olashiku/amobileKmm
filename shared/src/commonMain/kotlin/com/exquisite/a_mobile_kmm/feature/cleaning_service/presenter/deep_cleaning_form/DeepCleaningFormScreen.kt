@@ -178,7 +178,7 @@ fun DeepCleaningFormScreen(
                     placeHolder = "Select your current region",
                     fieldValidator = regionValidator,
                     defaultText = persistedFormData.region?.first?:"",
-                    options = regionData.map { it.name },
+                    options = regionData.filter{it.id != 5}.map { it.name },
                     onSelectionChange = { selectedRegion ->
                         regionId = regionData.find { it.name == selectedRegion }?.id ?: 0
                         viewModel.findLocationByRegion(regionId)

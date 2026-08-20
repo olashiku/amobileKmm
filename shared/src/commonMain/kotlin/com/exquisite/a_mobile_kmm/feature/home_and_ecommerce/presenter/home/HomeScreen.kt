@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -154,188 +155,222 @@ fun HomeScreen(
             .fillMaxSize()
             .background(color = Color.White)
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState())
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 27.dp, vertical = 20.dp)
+                .fillMaxSize()
+                .padding(horizontal = 27.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            // Header Section
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    if(profilePictureState.value.isEmpty()){
-                        AvatarIcon(50.dp, vectorResource(Res.drawable.avatar_line))
-                    }else {
-                        AsyncImage(
-                            model = profilePictureState.value,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = modifier
-                                .size(50.dp)
-                                .clip(CircleShape)
-                                .border(
-                                    1.dp,
-                                    LocalColorsPalette.current.borderColor,
-                                    CircleShape
-                                )
-                        )
-                    }
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Column {
-                        Text(
-                            text = getTimeBasedGreeting(),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = customerNameState.value,
-                            style = getPoppinsSemiBold18()
-                        )
-                    }
-                }
+            item {
+                // Header Section
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Box {
-                        Image(
-                            painter = painterResource(Res.drawable.cart_icon),
-                            contentDescription = "cart",
-                            modifier = Modifier.clickable {
-                                goToCartScreen.invoke()
-                            }
-                        )
-                        if (cartState.value > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .align(Alignment.TopEnd)
-                                    .offset(x = 6.dp, y = (-6).dp)
-                                    .background(Color.Red, shape = CircleShape)
-                                    .padding(0.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = if (cartState.value > 99) "99+" else cartState.value.toString(),
-                                    color = Color.White,
-                                    style = getPoppinsSemiBold12(),
-                                    modifier = Modifier.padding(0.dp)
-                                )
-                            }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        if(profilePictureState.value.isEmpty()){
+                            AvatarIcon(50.dp, vectorResource(Res.drawable.avatar_line))
+                        }else {
+                            AsyncImage(
+                                model = profilePictureState.value,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = modifier
+                                    .size(50.dp)
+                                    .clip(CircleShape)
+                                    .border(
+                                        1.dp,
+                                        LocalColorsPalette.current.borderColor,
+                                        CircleShape
+                                    )
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = getTimeBasedGreeting(),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = customerNameState.value,
+                                style = getPoppinsSemiBold18()
+                            )
                         }
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    // TODO:  implement this  later
-                    Image(
-                        painter = painterResource(Res.drawable.notification_icon),
-                        contentDescription = "notifications"
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Search and Settings Section
-            Row(
-                modifier = Modifier.fillMaxWidth().clickable {
-                    goToSearchDialog.invoke()
-                },
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                LinerBackground(modifier = Modifier.weight(1f)) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(Res.drawable.magnifer_icon),
-                            contentDescription = "search"
-                        )
+                        Box {
+                            Image(
+                                painter = painterResource(Res.drawable.cart_icon),
+                                contentDescription = "cart",
+                                modifier = Modifier.clickable {
+                                    goToCartScreen.invoke()
+                                }
+                            )
+                            if (cartState.value > 0) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 6.dp, y = (-6).dp)
+                                        .background(Color.Red, shape = CircleShape)
+                                        .padding(0.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (cartState.value > 99) "99+" else cartState.value.toString(),
+                                        color = Color.White,
+                                        style = getPoppinsSemiBold12(),
+                                        modifier = Modifier.padding(0.dp)
+                                    )
+                                }
+                            }
+                        }
                         Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Search",
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(0xFF252525)
-                        )
-                    }
-                }
-                LinerBackground {
-                    Box(
-                        modifier = Modifier.padding(10.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                        // TODO:  implement this  later
                         Image(
-                            painter = painterResource(Res.drawable.settings_icon),
-                            contentDescription = "settings"
+                            painter = painterResource(Res.drawable.notification_icon),
+                            contentDescription = "notifications"
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Services Section
-            Banner(
-                bannerColor = Color(0xFFE8492A),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Our Services",
-                    color = Color(0xFF252525),
-                    style = getPoppinsBold16()
-                )
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
-
-            ServicesGrid(
-                services = dashboardMenu,
-                modifier = Modifier.fillMaxWidth(),
-                goToMenuItem
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Join Team CTA Banner
-            CleanersRecruitmentBanner(
-                onClick = { goToCleanersRegistration() }
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Products Section
-            Banner(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Our Products",
-                    color = Color(0xFF252525),
-                    style = getPoppinsBold16()
-                )
+            item {
+                // Search and Settings Section
+                Row(
+                    modifier = Modifier.fillMaxWidth().clickable {
+                        goToSearchDialog.invoke()
+                    },
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    LinerBackground(modifier = Modifier.weight(1f)) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(Res.drawable.magnifer_icon),
+                                contentDescription = "search"
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Search",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color(0xFF252525)
+                            )
+                        }
+                    }
+                    LinerBackground {
+                        Box(
+                            modifier = Modifier.padding(10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(Res.drawable.settings_icon),
+                                contentDescription = "settings"
+                            )
+                        }
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
 
-            if (isLoading) {
-                ProductListingShimmer()
-            } else {
-                if (productsListing.isEmpty()) {
-                    EmptyState("No Product!", "Products would be available soon")
-                } else {
-                    ProductListing(
-                        productCategory = productsListing,
-                        getCategoryProduct,
-                        goToProductListing,
-                        modifier = Modifier.fillMaxWidth()
+            item {
+                // Services Section
+                Banner(
+                    bannerColor = Color(0xFFE8492A),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Our Services",
+                        color = Color(0xFF252525),
+                        style = getPoppinsBold16()
                     )
                 }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            item {
+                ServicesGrid(
+                    services = dashboardMenu,
+                    modifier = Modifier.fillMaxWidth(),
+                    goToMenuItem
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                // Join Team CTA Banner
+                CleanersRecruitmentBanner(
+                    onClick = { goToCleanersRegistration() }
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                // Products Section
+                Banner(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Our Products",
+                        color = Color(0xFF252525),
+                        style = getPoppinsBold16()
+                    )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+            item {
+                if (isLoading) {
+                    ProductListingShimmer()
+                } else {
+                    if (productsListing.isEmpty()) {
+                        EmptyState("No Product!", "Products would be available soon")
+                    } else {
+                        ProductListing(
+                            productCategory = productsListing,
+                            getCategoryProduct,
+                            goToProductListing,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
 
@@ -675,11 +710,19 @@ private fun ServicesGrid(
     services: List<DashboardModel>,
     modifier: Modifier = Modifier,goToMenuItem: (String) -> Unit
 ) {
+    // Calculate grid height dynamically
+    val itemHeight = 100.dp
+    val verticalSpacing = 12.dp
+    val columns = 3
+    val rows = kotlin.math.ceil(services.size / columns.toDouble()).toInt()
+    val gridHeight = (itemHeight * rows) + (verticalSpacing * (rows - 1))
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
-        modifier = modifier.wrapContentHeight(),
+        modifier = modifier.height(gridHeight),
         horizontalArrangement = Arrangement.spacedBy(50.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        userScrollEnabled = false
     ) {
         items(services.size) { index ->
             MenuItem(services[index],goToMenuItem)

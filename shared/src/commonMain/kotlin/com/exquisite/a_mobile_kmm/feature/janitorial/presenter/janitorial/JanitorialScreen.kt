@@ -149,7 +149,7 @@ fun JanitorialScreen(
         is JanitorialState.Success -> {
             goToSuccessPage.invoke(
                 "Successful!✅",
-                "Thank you for faking this request, our representative will get in touch soon",
+                "Thank you for taking this request, our representative will get in touch with you soon",
                 "Done"
             )
         }
@@ -260,7 +260,7 @@ fun JanitorialScreen(
                     placeHolder = "Enter your company address",
                     fieldValidator = addressValidator,
                     defaultText = "",
-                    keyboardType = KeyboardType.Phone,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 )
 

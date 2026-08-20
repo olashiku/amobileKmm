@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -83,105 +84,117 @@ fun EmployeeHomeScreen(
     val rows = kotlin.math.ceil(menuItems.size / columns.toDouble()).toInt()
     val gridHeight = (itemHeight * rows) + (verticalSpacing * (rows - 1))
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.White)
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 20.dp)
+            .padding(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        // Header Section
-        HeaderSection(
-            profilePicture = profilePictureState.value,
-            customerName = customerNameState.value,
-            modifier = Modifier.fillMaxWidth()
-        )
+        item {
+            Spacer(modifier = Modifier.height(0.dp)) // Top padding
+        }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        item {
+            // Header Section
+            HeaderSection(
+                profilePicture = profilePictureState.value,
+                customerName = customerNameState.value,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
-        // Section Title
-        SectionTitle(
-            title = "Manage Tasks",
-            subtitle = "Select a department to update status"
-        )
+        item {
+            Spacer(modifier = Modifier.height(12.dp))
+        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        item {
+            // Section Title
+            SectionTitle(
+                title = "Manage Tasks",
+                subtitle = "Select a department to update status"
+            )
+        }
 
-        // Handle different states with exhaustive when
-        when (val state = serviceCountsState.value) {
-            is ServiceCountsUiState.Initial -> {
-                // Show skeleton loader
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.height(gridHeight),
-                    userScrollEnabled = false
-                ) {
-                    items(menuItems.size) {
-                        SkeletonMenuItem()
+        item {
+            // Handle different states with exhaustive when
+            when (val state = serviceCountsState.value) {
+                is ServiceCountsUiState.Initial -> {
+                    // Show skeleton loader
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.height(gridHeight),
+                        userScrollEnabled = false
+                    ) {
+                        items(menuItems.size) {
+                            SkeletonMenuItem()
+                        }
                     }
                 }
-            }
-            is ServiceCountsUiState.Loading -> {
-                // Show skeleton loader
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.height(gridHeight),
-                    userScrollEnabled = false
-                ) {
-                    items(menuItems.size) {
-                        SkeletonMenuItem()
+                is ServiceCountsUiState.Loading -> {
+                    // Show skeleton loader
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.height(gridHeight),
+                        userScrollEnabled = false
+                    ) {
+                        items(menuItems.size) {
+                            SkeletonMenuItem()
+                        }
                     }
                 }
-            }
-            is ServiceCountsUiState.Success -> {
-                // Show menu grid with actual counts
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.height(gridHeight),
-                    userScrollEnabled = false
-                ) {
-                    items(menuItems) { item ->
-                        MenuItem(
-                            employeeHomeModel = item,
-                            count = getCountForItem(item.tag, state.data),
-                            goToBooking = goToBooking
+                is ServiceCountsUiState.Success -> {
+                    // Show menu grid with actual counts
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.height(gridHeight),
+                        userScrollEnabled = false
+                    ) {
+                        items(menuItems) { item ->
+                            MenuItem(
+                                employeeHomeModel = item,
+                                count = getCountForItem(item.tag, state.data),
+                                goToBooking = goToBooking
+                            )
+                        }
+                    }
+                }
+                is ServiceCountsUiState.Error -> {
+                    // Show error with retry
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(gridHeight),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = state.message,
+                            style = getPoppinsRegular13(),
+                            color = Color.Red
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Tap to retry",
+                            style = getPoppinsSemiBold13(),
+                            color = Color(0xFF0F172A),
+                            modifier = Modifier.clickable { viewModel.retryFetchServiceCounts() }
                         )
                     }
                 }
             }
-            is ServiceCountsUiState.Error -> {
-                // Show error with retry
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(gridHeight),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = state.message,
-                        style = getPoppinsRegular13(),
-                        color = Color.Red
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Tap to retry",
-                        style = getPoppinsSemiBold13(),
-                        color = Color(0xFF0F172A),
-                        modifier = Modifier.clickable { viewModel.retryFetchServiceCounts() }
-                    )
-                }
-            }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        item {
+            Spacer(modifier = Modifier.height(0.dp)) // Bottom padding
+        }
     }
 }
 
